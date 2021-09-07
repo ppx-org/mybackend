@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@EnableJdbcRepositories(basePackages = {"com.planb"})
+@EnableJdbcRepositories(basePackages = {"com.platb"})
 class ApplicationConfig extends AbstractJdbcConfiguration {
 
 //    @Bean

@@ -9,18 +9,17 @@ import java.util.List;
 @Service
 public class TestServ extends MyDaoSupport {
 
-    private PersonRepository personRepository;
+    private TestExampleRepo testExampleRepo;
 
     @Autowired
-    public TestServ(PersonRepository personRepository) {
-        this.personRepository = personRepository;
+    public TestServ(TestExampleRepo testExampleRepo) {
+        this.testExampleRepo = testExampleRepo;
     }
 
     public void test() {
-        List<Person> list = personRepository.findByLastName("sss");
 
-        String s = list.get(0).firstName;
+        TestExample t = testExampleRepo.findById(1);
 
-        System.out.println("---------003:" + s);
+        System.out.println("---------003:" + t.exampleName);
     }
 }
