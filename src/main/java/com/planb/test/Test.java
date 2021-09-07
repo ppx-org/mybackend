@@ -1,4 +1,4 @@
-package com.platb.test;
+package com.planb.test;
 
 public class Test {
     public static void main(String[] args) {
