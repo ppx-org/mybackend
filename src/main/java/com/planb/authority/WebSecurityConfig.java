@@ -1,3 +1,4 @@
+package com.planb.authority;
 //package com.platb.authority;
 //
 //import org.springframework.beans.factory.annotation.Autowired;
