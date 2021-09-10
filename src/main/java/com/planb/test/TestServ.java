@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
@@ -67,8 +67,8 @@ public class TestServ extends MyDaoSupport {
         
         System.out.println("xxx:" + forwardChain);
 
-        MyPage<TestExample> t = testExampleRepo.findById(1, c);
+        Page<TestExample> t = testExampleRepo.testQuery(1, c, null);
 
-        System.out.println("---------003:" + t.getList().size());
+        System.out.println("---------00end>>>>>>>size::" + t.toList().size());
     }
 }

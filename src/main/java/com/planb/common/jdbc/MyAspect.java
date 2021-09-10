@@ -8,6 +8,9 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Component;
 
@@ -39,9 +42,9 @@ public class MyAspect extends MyDaoSupport {
 		System.out.println("<<<<<<<<<<<:001:" + getJdbcTemplate());
 		
 		
+		Page<?> page = new PageImpl(list, PageRequest.of(1, 1), 101);
 		
-		
-		// Object obj = jp.proceed();		
+//		 Object obj = jp.proceed();		
 		
 		
 		System.out.println("---------->>>>>>>>>>>>>>>>>>>>>>>>> --------- end");
@@ -50,7 +53,7 @@ public class MyAspect extends MyDaoSupport {
 //		List<TestExample> list = new ArrayList<TestExample>();
 //        MyPage<TestExample> page = new MyPageImpl<TestExample>(100, list);
         
-		
-		return new MyPageImpl<>(16, list);
+		return page;
+		// return new MyPageImpl<>(16, list);
 	}
 }
