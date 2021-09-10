@@ -41,23 +41,42 @@ public class TestServ extends MyDaoSupport {
         
         
        
+//        
+//        Criteria sub = Criteria.where("vvvvv").is("TTTT").or("vvvv2").is(1);
+//       
+//        Criteria c = Criteria.where("id").like("a1").and("kk").like(1).and("vw2").is(1).and("vw").is(1).and(sub);
+//        
         
-        
+        Criteria c = Criteria.where("e.example_id").is(100)
+        		.and("e.example_date").like(null)
+        		.and("e.example_name").is("test_value");
                 
-        Criteria c = Criteria.where("id").like("a1").and("kk").like("b2").and("kk2").like("c3");
+        
+        
+        String cSql = c.toString();
+        
+        System.out.println("xxxxxxxx:cccc:ccc:cc1:" + cSql);
+        System.out.println("xxxxxxxx:cccc:ccc:cc2:" + c.getParamMap());
+        
         
         
         
         CriteriaDefinition current = c;
+        
+        
+        
      // reverse unroll criteria chain
  		Map<CriteriaDefinition, CriteriaDefinition> forwardChain = new HashMap<>();
 
- 		System.out.println("====0x:" + current.getValue());
+ 		System.out.println("====c:" + current.getValue());
+		System.out.println("====c:" + current.getColumn());
+		System.out.println("====c:" + current.getCombinator());
+		System.out.println("====cx:" + current.getComparator());
  		while (current.hasPrevious()) {
  			forwardChain.put(current.getPrevious(), current);
  			current = current.getPrevious();
- 			
- 			System.out.println("====01:" + current.getValue());
+ 			System.out.println("");
+ 			System.out.println("====c:" + current.getValue());
  			System.out.println("====c:" + current.getColumn());
  			System.out.println("====c:" + current.getCombinator());
  			System.out.println("====c:" + current.getComparator());
@@ -65,7 +84,7 @@ public class TestServ extends MyDaoSupport {
         
         
         
-        System.out.println("xxx:" + forwardChain);
+        System.out.println("xxx:" + c);
 
         Page<TestExample> t = testExampleRepo.testQuery(1, c, null);
 
