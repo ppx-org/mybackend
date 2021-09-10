@@ -1,2 +1,7 @@
 /.idea/
 /target/
+.classpath
+.project
+rebel.xml
+org.eclipse.*
+

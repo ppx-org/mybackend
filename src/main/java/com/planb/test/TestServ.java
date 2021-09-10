@@ -1,17 +1,19 @@
 package com.planb.test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
 
 import com.planb.common.jdbc.MyDaoSupport;
+import com.planb.common.jdbc.MyPage;
+import com.planb.common.jdbc.MyPageImpl;
 
 @Service
 public class TestServ extends MyDaoSupport {
@@ -34,7 +36,13 @@ public class TestServ extends MyDaoSupport {
 
 //        testExampleRepo.save(insertT);
         
+        List<TestExample> list = new ArrayList<TestExample>();
+        MyPage<TestExample> page = new MyPageImpl<TestExample>(100, list);
+        
+        
        
+        
+        
                 
         Criteria c = Criteria.where("id").like("a1").and("kk").like("b2").and("kk2").like("c3");
         
@@ -59,8 +67,8 @@ public class TestServ extends MyDaoSupport {
         
         System.out.println("xxx:" + forwardChain);
 
-        TestExample t = testExampleRepo.findById(1, c);
+        MyPage<TestExample> t = testExampleRepo.findById(1, c);
 
-        System.out.println("---------003:" + t.subName);
+        System.out.println("---------003:" + t.getList().size());
     }
 }
