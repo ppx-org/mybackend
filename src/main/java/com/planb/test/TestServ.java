@@ -1,11 +1,13 @@
 package com.planb.test;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.events.Event.ID;
 
 import com.planb.common.jdbc.MyDaoSupport;
 import com.planb.common.jdbc.page.MyCriteria;
@@ -26,6 +28,11 @@ public class TestServ extends MyDaoSupport {
         insertT.setExampleId(58);
         insertT.setExampleName("----------58");
         insertT.setExampleType("t");
+        
+        TestExample test = testExampleRepo.findById(1);
+        System.out.println("xxxxxxxxxxxx000:" + test.getSubName());
+        
+        
         
         /**
          * select nextval('test_example_example_id_seq');

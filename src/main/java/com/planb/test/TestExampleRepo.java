@@ -10,6 +10,12 @@ import com.planb.common.jdbc.page.MyCriteria;
 
 interface TestExampleRepo extends PagingAndSortingRepository<TestExample, String> {
 
+	@Query("""
+	        select e.*, sub.sub_name from test_example e
+	    		left join test_example_sub sub on e.example_id = sub.example_id
+	        where e.example_id = :id
+	    """)
+	TestExample findById(Integer id);
 	
 	
 	@Query("""
