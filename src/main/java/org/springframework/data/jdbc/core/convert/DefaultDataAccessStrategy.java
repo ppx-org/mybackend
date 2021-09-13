@@ -127,7 +127,6 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		if (idValue == null) {
 			return executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
 		} else {
-
 			operations.update(insertSql, parameterSource);
 			return null;
 		}
@@ -161,10 +160,29 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 	 */
 	@Override
 	public <S> boolean update(S instance, Class<S> domainType) {
-
+		// dengxz
 		RelationalPersistentEntity<S> persistentEntity = getRequiredPersistentEntity(domainType);
-		return operations.update(sql(domainType).getUpdate(),
-				getParameterSource(instance, persistentEntity, "", Predicates.includeAll(), getIdentifierProcessing())) != 0;
+		
+		System.out.println("<<<<<<<<<>>>>>>>>:" + sql(domainType).getUpdate());
+		System.out.println("<<<<<<<<<>>>>>>>>:" + sql(domainType));
+//		sql(domainType).createBaseUpdate2().
+		// System.out.println("xxxxxxxx111:" + sql(domainType).createBaseUpdate2());
+		
+		
+		SqlIdentifierParameterSource parameterSource = getParameterSource(instance, persistentEntity, "", Predicates.includeAll(), getIdentifierProcessing());
+		
+		System.out.println("xxxxxxxx0000000000-1:" + sql(domainType).createUpdateSql2(parameterSource));
+		
+		for (SqlIdentifier sqlIdentifier : parameterSource.getIdentifiers()) {
+			System.out.println("xxx:" + sqlIdentifier.getReference());
+			System.out.println("xxx:" + parameterSource.getValue(sqlIdentifier.getReference()));
+		}
+		
+		System.out.println("end.............:" + parameterSource.getParameterNames().length);
+		
+		
+		return operations.update(sql(domainType).createUpdateSql2(parameterSource),
+				parameterSource) != 0;
 	}
 
 	/*

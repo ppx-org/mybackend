@@ -486,6 +486,8 @@ class SqlGenerator {
 	 */
 	@Nullable
 	Column getColumn(PersistentPropertyPathExtension path) {
+		
+		
 
 		// an embedded itself doesn't give an column, its members will though.
 		// if there is a collection or map on the path it won't get selected at all, but it will get loaded with a separate
@@ -600,6 +602,9 @@ class SqlGenerator {
 	private String createUpdateSql() {
 		return render(createBaseUpdate().build());
 	}
+	public String createUpdateSql2(SqlIdentifierParameterSource parameterSource) {
+		return render(createBaseUpdate2(parameterSource).build());
+	}
 
 	private String createUpdateWithVersionSql() {
 
@@ -609,10 +614,36 @@ class SqlGenerator {
 
 		return render(update);
 	}
+	
+	public UpdateBuilder.UpdateWhereAndOr createBaseUpdate2(SqlIdentifierParameterSource parameterSource) {
+		
+
+		System.out.println("---------------112233444--00x1:" + parameterSource);
+		
+		Table table = getTable();		
+		
+		Set<SqlIdentifier> mySet = new HashSet<SqlIdentifier>();
+		columns.getUpdateableColumns().forEach(o -> {
+			if (parameterSource.getValue(o.getReference()) != null) {
+				mySet.add(o);
+			}
+		});
+
+		List<AssignValue> assignments = mySet //
+				.stream() //
+				.map(columnName -> Assignments.value( //
+						table.column(columnName), //
+						getBindMarker(columnName))) //
+				.collect(Collectors.toList());
+
+		return Update.builder() //
+				.table(table) //
+				.set(assignments) //
+				.where(getIdColumn().isEqualTo(getBindMarker(entity.getIdColumn())));
+	}
 
 	private UpdateBuilder.UpdateWhereAndOr createBaseUpdate() {
-
-		Table table = getTable();
+		Table table = getTable();		
 
 		List<AssignValue> assignments = columns.getUpdateableColumns() //
 				.stream() //

@@ -31,11 +31,7 @@ https://www.cnblogs.com/loveer/p/11303608.html
     @RequestMapping("/test")
     String test(Pageable pageable) {
     	
-    	
     	// pageable = PageRequest.of(0, 3);
-    	
-    	System.out.println("-------001:" + pageable.getSort());
-    	
     	
         testServ.test(pageable);
         return "--- OK ---";
