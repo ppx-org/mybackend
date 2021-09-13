@@ -54,8 +54,9 @@ public class TestServ extends MyDaoSupport {
         Page<TestExample> tttt = testExampleRepo.testQuery("t", c, pageable);
         
         List<TestExample> outList = tttt.toList();
+        
         for (TestExample testExample : outList) {
-        	 System.out.println("------------end>>>>>>>name:" + testExample.getExampleName());
+        	 System.out.println("------------endd>>>>>>>name:" + testExample.getExampleName());
 		}
        
     }

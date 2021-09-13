@@ -602,8 +602,10 @@ class SqlGenerator {
 	private String createUpdateSql() {
 		return render(createBaseUpdate().build());
 	}
-	public String createUpdateSql2(SqlIdentifierParameterSource parameterSource) {
-		return render(createBaseUpdate2(parameterSource).build());
+	
+	// dengxz
+	public String createUpdateSqlNew(SqlIdentifierParameterSource parameterSource) {
+		return render(createBaseUpdateNew(parameterSource).build());
 	}
 
 	private String createUpdateWithVersionSql() {
@@ -615,11 +617,8 @@ class SqlGenerator {
 		return render(update);
 	}
 	
-	public UpdateBuilder.UpdateWhereAndOr createBaseUpdate2(SqlIdentifierParameterSource parameterSource) {
-		
-
-		System.out.println("---------------112233444--00x1:" + parameterSource);
-		
+	// dengxz
+	private UpdateBuilder.UpdateWhereAndOr createBaseUpdateNew(SqlIdentifierParameterSource parameterSource) {
 		Table table = getTable();		
 		
 		Set<SqlIdentifier> mySet = new HashSet<SqlIdentifier>();

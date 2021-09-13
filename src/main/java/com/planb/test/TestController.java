@@ -17,13 +17,20 @@ public class TestController {
     }
 
     /**
-     * Spring支持的request参数如下：
+     *
+     * 
+
+# Spring支持的request参数如下
 page，第几页，从0开始，默认为第0页
 size，每一页的大小，默认为20
 sort，排序相关的信息，例如sort=firstname&sort=lastname,desc表示在按firstname正序排列基础上按lastname倒序排列
 
 https://www.cnblogs.com/loveer/p/11303608.html
 
+
+# 系列
+select nextval('test_example_example_id_seq');
+alter sequence test_example_example_id_seq restart with 300;
 
      * @param pageable
      * @return
