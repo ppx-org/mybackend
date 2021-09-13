@@ -2,10 +2,11 @@ package com.planb.common.jdbc;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -19,6 +20,7 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.page.MyCriteria;
 
@@ -39,11 +41,15 @@ public class MyAspect extends MyDaoSupport {
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
         
-        int myCriteriaIndex = -1;
-        for (int i = 0; i < parameters.length; i++) {
+        short myCriteriaIndex = -1;
+        short myPageable = -1;
+        for (short i = 0; i < parameters.length; i++) {
         	Parameter p = parameters[i];
         	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName())) {
         		myCriteriaIndex = i;
+        	}
+        	if (p.getParameterizedType().getTypeName().equals(Pageable.class.getTypeName())) {
+        		myPageable = i;
         	}
         	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName()) ||
         			p.getParameterizedType().getTypeName().equals(Pageable.class.getTypeName())) {
@@ -52,6 +58,7 @@ public class MyAspect extends MyDaoSupport {
         	paramMap.put(p.getName(), jp.getArgs()[i]);
 		}
         MyCriteria myCriteria = (MyCriteria)jp.getArgs()[myCriteriaIndex];
+        Pageable pageable = (Pageable)jp.getArgs()[myPageable];
         
         String cSql = myCriteria.toString();
         
@@ -69,14 +76,25 @@ public class MyAspect extends MyDaoSupport {
 		
 		
         String preWhere = myCriteria.isBeginWhere() ? "WHERE " : "AND ";
+        System.out.println("iiiiiii:" + cSql);
     	if (cSql.startsWith(" AND ")) {
     		cSql = preWhere + cSql.replaceFirst(" AND ", "");
     	}
-    	else {
+    	else if (Strings.isNotEmpty(cSql)) {
     		cSql = preWhere + cSql;
     	}
-    	querySql = querySql.replace("${c}", cSql);
     	
+    	List<String> orderList = new ArrayList<String>();
+    	pageable.getSort().toList().forEach(m -> {
+    		orderList.add(m.getProperty() + " " + m.getDirection());
+    	});
+    	
+    	System.out.println("jjjjjjjjjjjj:" + StringUtils.collectionToCommaDelimitedString(orderList));
+    	
+    	querySql = querySql.replace("${c}", cSql);
+    	querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
+    	// page
+    	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
     	
 		NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
 		
@@ -89,7 +107,6 @@ public class MyAspect extends MyDaoSupport {
 		
 		
 		Page<?> page = new PageImpl(list, PageRequest.of(1, 1), 101);
-		
 		
 //		 Object obj = jp.proceed();		
 		

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class TestServ extends MyDaoSupport {
     
     
 
-    public void test() {
+    public void test(Pageable pageable) {
 
         TestExample insertT = new TestExample();
         insertT.exampleId = null;
@@ -48,7 +49,7 @@ public class TestServ extends MyDaoSupport {
         MyCriteria c = MyCriteria.empty().and("e.example_id").is(null)
         		.and("e.example_id").is(null)
         		.and("e.example_date").like(null)
-        		.and("e.example_name").like("abc").and("e.example_date").like(null)
+        		.and("e.example_name").like(null).and("e.example_date").like(null)
         		.and("e.example_name").like(null);
         
         
@@ -86,11 +87,15 @@ public class TestServ extends MyDaoSupport {
 // 			System.out.println("====c:" + current.getComparator());
 // 		}
         
+        System.out.println("xxx--->>>>>>>>>:" + pageable.getSort());
         
-        
-        System.out.println("xxx:" + c);
 
-        Page<TestExample> t = testExampleRepo.testQuery("t", c, null);
-        System.out.println("------------end>>>>>>>size::" + t.toList().size());
+        Page<TestExample> t = testExampleRepo.testQuery("t", c, pageable);
+        
+        List<TestExample> outList = t.toList();
+        for (TestExample testExample : outList) {
+        	 System.out.println("------------end>>>>>>>size::" + testExample.exampleName);
+		}
+       
     }
 }

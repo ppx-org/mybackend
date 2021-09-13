@@ -10,10 +10,10 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.jdbc.repository.query.Query;
 
 
-class TestExample {
+public class TestExample {
     @Id
     Integer exampleId;
-    String exampleName;
+    public String exampleName;
     String exampleType;
 
     LocalDate exampleDate;
@@ -22,5 +22,15 @@ class TestExample {
    
     @ReadOnlyProperty
     String subName;
+
+	public String getExampleName() {
+		return exampleName;
+	}
+
+	public void setExampleName(String exampleName) {
+		this.exampleName = exampleName;
+	}
+    
+    
 
 }

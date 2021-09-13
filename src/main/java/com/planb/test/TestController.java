@@ -1,6 +1,7 @@
 package com.planb.test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,14 @@ https://www.cnblogs.com/loveer/p/11303608.html
      */
     @RequestMapping("/test")
     String test(Pageable pageable) {
-        testServ.test();
+    	
+    	
+    	// pageable = PageRequest.of(0, 3);
+    	
+    	System.out.println("-------001:" + pageable.getSort());
+    	
+    	
+        testServ.test(pageable);
         return "--- OK ---";
     }
 }

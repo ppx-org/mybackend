@@ -15,6 +15,6 @@ interface TestExampleRepo extends PagingAndSortingRepository<TestExample, String
 	    		left join test_example_sub sub on e.example_id = sub.example_id
 	        where e.example_type = :exampleType ${c}
 	    """)
-    Page<TestExample> testQuery(String exampleType, MyCriteria c, Pageable p);
+    Page<TestExample> testQuery(String exampleType,  MyCriteria c, Pageable p);
 
 }
