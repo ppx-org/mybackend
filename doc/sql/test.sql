@@ -1,5 +1,5 @@
 
-# 管理员名称和数据库postgres
+-- 管理员名称和数据库postgres
 
 create user planb with password '#postgres13.4#';
 create database planb owner planb;
