@@ -36,7 +36,12 @@ public class MyAspect extends MyDaoSupport {
 		Signature signature = jp.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
-        Class<?> cls = method.getReturnType();
+        Class<?> returnClass = method.getReturnType();
+        
+        if (!returnClass.equals(Page.class)) {
+        	return jp.proceed();
+        }		
+        
         
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
@@ -45,6 +50,7 @@ public class MyAspect extends MyDaoSupport {
         short myPageable = -1;
         for (short i = 0; i < parameters.length; i++) {
         	Parameter p = parameters[i];
+        	
         	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName())) {
         		myCriteriaIndex = i;
         	}
@@ -76,7 +82,6 @@ public class MyAspect extends MyDaoSupport {
 		
 		
         String preWhere = myCriteria.isBeginWhere() ? "WHERE " : "AND ";
-        System.out.println("iiiiiii:" + cSql);
     	if (cSql.startsWith(" AND ")) {
     		cSql = preWhere + cSql.replaceFirst(" AND ", "");
     	}
@@ -89,10 +94,12 @@ public class MyAspect extends MyDaoSupport {
     		orderList.add(m.getProperty() + " " + m.getDirection());
     	});
     	
-    	System.out.println("jjjjjjjjjjjj:" + StringUtils.collectionToCommaDelimitedString(orderList));
     	
     	querySql = querySql.replace("${c}", cSql);
-    	querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
+    	if (!pageable.getSort().isEmpty()) {
+    		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
+    	}
+    	
     	// page
     	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
     	

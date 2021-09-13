@@ -1,26 +1,23 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+/*
+ * Copyright 2017-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.data.jdbc.core.convert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jdbc.repository.support.SimpleJdbcRepository;
 import org.springframework.data.mapping.PersistentPropertyPath;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.relational.core.dialect.Dialect;
@@ -29,549 +26,859 @@ import org.springframework.data.relational.core.mapping.PersistentPropertyPathEx
 import org.springframework.data.relational.core.mapping.RelationalMappingContext;
 import org.springframework.data.relational.core.mapping.RelationalPersistentEntity;
 import org.springframework.data.relational.core.mapping.RelationalPersistentProperty;
-import org.springframework.data.relational.core.sql.AssignValue;
-import org.springframework.data.relational.core.sql.Assignments;
-import org.springframework.data.relational.core.sql.BindMarker;
-import org.springframework.data.relational.core.sql.Column;
-import org.springframework.data.relational.core.sql.Comparison;
-import org.springframework.data.relational.core.sql.Condition;
-import org.springframework.data.relational.core.sql.Delete;
-import org.springframework.data.relational.core.sql.Expression;
-import org.springframework.data.relational.core.sql.Expressions;
-import org.springframework.data.relational.core.sql.Functions;
-import org.springframework.data.relational.core.sql.Insert;
-import org.springframework.data.relational.core.sql.LockMode;
-import org.springframework.data.relational.core.sql.OrderByField;
-import org.springframework.data.relational.core.sql.SQL;
-import org.springframework.data.relational.core.sql.Select;
-import org.springframework.data.relational.core.sql.SqlIdentifier;
-import org.springframework.data.relational.core.sql.StatementBuilder;
-import org.springframework.data.relational.core.sql.Table;
-import org.springframework.data.relational.core.sql.Update;
-import org.springframework.data.relational.core.sql.DeleteBuilder.DeleteWhere;
-import org.springframework.data.relational.core.sql.DeleteBuilder.DeleteWhereAndOr;
-import org.springframework.data.relational.core.sql.InsertBuilder.InsertIntoColumnsAndValuesWithBuild;
-import org.springframework.data.relational.core.sql.InsertBuilder.InsertValues;
-import org.springframework.data.relational.core.sql.InsertBuilder.InsertValuesWithBuild;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectAndFrom;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectJoin;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectLimitOffset;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectOrdered;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectWhere;
-import org.springframework.data.relational.core.sql.SelectBuilder.SelectWhereAndOr;
-import org.springframework.data.relational.core.sql.UpdateBuilder.UpdateWhereAndOr;
+import org.springframework.data.relational.core.sql.*;
 import org.springframework.data.relational.core.sql.render.RenderContext;
 import org.springframework.data.relational.core.sql.render.SqlRenderer;
 import org.springframework.data.util.Lazy;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+/**
+ * Generates SQL statements to be used by {@link SimpleJdbcRepository}
+ *
+ * @author Jens Schauder
+ * @author Yoichi Imai
+ * @author Bastian Wilhelm
+ * @author Oleksandr Kucher
+ * @author Mark Paluch
+ * @author Tom Hombergs
+ * @author Tyler Van Gorder
+ * @author Milan Milanov
+ * @author Myeonghyeon Lee
+ */
 class SqlGenerator {
-    static final SqlIdentifier VERSION_SQL_PARAMETER = SqlIdentifier.unquoted("___oldOptimisticLockingVersion");
-    static final SqlIdentifier ID_SQL_PARAMETER = SqlIdentifier.unquoted("id");
-    static final SqlIdentifier IDS_SQL_PARAMETER = SqlIdentifier.unquoted("ids");
-    static final SqlIdentifier ROOT_ID_PARAMETER = SqlIdentifier.unquoted("rootId");
-    private static final Pattern parameterPattern = Pattern.compile("\\W");
-    private final RelationalPersistentEntity<?> entity;
-    private final MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext;
-    private final RenderContext renderContext;
-    private final SqlContext sqlContext;
-    private final SqlRenderer sqlRenderer;
-    private final SqlGenerator.Columns columns;
-    private final Lazy<String> findOneSql = Lazy.of(this::createFindOneSql);
-    private final Lazy<String> findAllSql = Lazy.of(this::createFindAllSql);
-    private final Lazy<String> findAllInListSql = Lazy.of(this::createFindAllInListSql);
-    private final Lazy<String> existsSql = Lazy.of(this::createExistsSql);
-    private final Lazy<String> countSql = Lazy.of(this::createCountSql);
-    private final Lazy<String> updateSql = Lazy.of(this::createUpdateSql);
-    private final Lazy<String> updateWithVersionSql = Lazy.of(this::createUpdateWithVersionSql);
-    private final Lazy<String> deleteByIdSql = Lazy.of(this::createDeleteSql);
-    private final Lazy<String> deleteByIdAndVersionSql = Lazy.of(this::createDeleteByIdAndVersionSql);
-    private final Lazy<String> deleteByListSql = Lazy.of(this::createDeleteByListSql);
 
-    SqlGenerator(RelationalMappingContext mappingContext, JdbcConverter converter, RelationalPersistentEntity<?> entity, Dialect dialect) {
-        this.mappingContext = mappingContext;
-        this.entity = entity;
-        this.sqlContext = new SqlContext(entity);
-        this.sqlRenderer = SqlRenderer.create((new RenderContextFactory(dialect)).createRenderContext());
-        this.columns = new SqlGenerator.Columns(entity, mappingContext, converter);
-        this.renderContext = (new RenderContextFactory(dialect)).createRenderContext();
-    }
+	static final SqlIdentifier VERSION_SQL_PARAMETER = SqlIdentifier.unquoted("___oldOptimisticLockingVersion");
+	static final SqlIdentifier ID_SQL_PARAMETER = SqlIdentifier.unquoted("id");
+	static final SqlIdentifier IDS_SQL_PARAMETER = SqlIdentifier.unquoted("ids");
+	static final SqlIdentifier ROOT_ID_PARAMETER = SqlIdentifier.unquoted("rootId");
 
-    private Condition getSubselectCondition(PersistentPropertyPathExtension path, Function<Column, Condition> rootCondition, Column filterColumn) {
-        PersistentPropertyPathExtension parentPath = path.getParentPath();
-        if (!parentPath.hasIdProperty()) {
-            return parentPath.getLength() > 1 ? this.getSubselectCondition(parentPath, rootCondition, filterColumn) : (Condition)rootCondition.apply(filterColumn);
-        } else {
-            Table subSelectTable = Table.create(parentPath.getTableName());
-            Column idColumn = subSelectTable.column(parentPath.getIdColumnName());
-            Column selectFilterColumn = subSelectTable.column(parentPath.getEffectiveIdColumnName());
-            Condition innerCondition;
-            if (parentPath.getLength() == 1) {
-                innerCondition = (Condition)rootCondition.apply(selectFilterColumn);
-            } else {
-                innerCondition = this.getSubselectCondition(parentPath, rootCondition, selectFilterColumn);
-            }
+	private static final Pattern parameterPattern = Pattern.compile("\\W");
+	private final RelationalPersistentEntity<?> entity;
+	private final MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext;
+	private final RenderContext renderContext;
 
-            Select select = Select.builder().select(idColumn).from(subSelectTable).where(innerCondition).build();
-            return filterColumn.in(select);
-        }
-    }
+	private final SqlContext sqlContext;
+	private final SqlRenderer sqlRenderer;
+	private final Columns columns;
 
-    private BindMarker getBindMarker(SqlIdentifier columnName) {
-        return SQL.bindMarker(":" + parameterPattern.matcher(this.renderReference(columnName)).replaceAll(""));
-    }
+	private final Lazy<String> findOneSql = Lazy.of(this::createFindOneSql);
+	private final Lazy<String> findAllSql = Lazy.of(this::createFindAllSql);
+	private final Lazy<String> findAllInListSql = Lazy.of(this::createFindAllInListSql);
 
-    String getFindAllInList() {
-        return (String)this.findAllInListSql.get();
-    }
+	private final Lazy<String> existsSql = Lazy.of(this::createExistsSql);
+	private final Lazy<String> countSql = Lazy.of(this::createCountSql);
 
-    String getFindAll() {
-        return (String)this.findAllSql.get();
-    }
+	private final Lazy<String> updateSql = Lazy.of(this::createUpdateSql);
+	private final Lazy<String> updateWithVersionSql = Lazy.of(this::createUpdateWithVersionSql);
 
-    String getFindAll(Sort sort) {
-        return this.render(this.selectBuilder(Collections.emptyList(), sort, Pageable.unpaged()).build());
-    }
+	private final Lazy<String> deleteByIdSql = Lazy.of(this::createDeleteSql);
+	private final Lazy<String> deleteByIdAndVersionSql = Lazy.of(this::createDeleteByIdAndVersionSql);
+	private final Lazy<String> deleteByListSql = Lazy.of(this::createDeleteByListSql);
 
-    String getFindAll(Pageable pageable) {
-        return this.render(this.selectBuilder(Collections.emptyList(), pageable.getSort(), pageable).build());
-    }
+	/**
+	 * Create a new {@link SqlGenerator} given {@link RelationalMappingContext} and {@link RelationalPersistentEntity}.
+	 *
+	 * @param mappingContext must not be {@literal null}.
+	 * @param converter must not be {@literal null}.
+	 * @param entity must not be {@literal null}.
+	 * @param dialect must not be {@literal null}.
+	 */
+	SqlGenerator(RelationalMappingContext mappingContext, JdbcConverter converter, RelationalPersistentEntity<?> entity,
+			Dialect dialect) {
 
-    String getFindAllByProperty(Identifier parentIdentifier, @Nullable SqlIdentifier keyColumn, boolean ordered) {
-        Assert.isTrue(keyColumn != null || !ordered, "If the SQL statement should be ordered a keyColumn to order by must be provided.");
-        Table table = this.getTable();
-        SelectWhere builder = this.selectBuilder((Collection)(keyColumn == null ? Collections.emptyList() : Collections.singleton(keyColumn)));
-        Condition condition = this.buildConditionForBackReference(parentIdentifier, table);
-        SelectWhereAndOr withWhereClause = builder.where(condition);
-        Select select = ordered ? withWhereClause.orderBy(new Column[]{table.column(keyColumn).as(keyColumn)}).build() : withWhereClause.build();
-        return this.render(select);
-    }
+		this.mappingContext = mappingContext;
+		this.entity = entity;
+		this.sqlContext = new SqlContext(entity);
+		this.sqlRenderer = SqlRenderer.create(new RenderContextFactory(dialect).createRenderContext());
+		this.columns = new Columns(entity, mappingContext, converter);
+		this.renderContext = new RenderContextFactory(dialect).createRenderContext();
+	}
 
-    private Condition buildConditionForBackReference(Identifier parentIdentifier, Table table) {
-        Condition condition = null;
+	/**
+	 * Construct a IN-condition based on a {@link Select Sub-Select} which selects the ids (or stand ins for ids) of the
+	 * given {@literal path} to those that reference the root entities specified by the {@literal rootCondition}.
+	 *
+	 * @param path specifies the table and id to select
+	 * @param rootCondition the condition on the root of the path determining what to select
+	 * @param filterColumn the column to apply the IN-condition to.
+	 * @return the IN condition
+	 */
+	private Condition getSubselectCondition(PersistentPropertyPathExtension path,
+			Function<Column, Condition> rootCondition, Column filterColumn) {
 
-        Comparison newCondition;
-        for(Iterator var4 = parentIdentifier.toMap().keySet().iterator(); var4.hasNext(); condition = condition == null ? newCondition : ((Condition)condition).and(newCondition)) {
-            SqlIdentifier backReferenceColumn = (SqlIdentifier)var4.next();
-            newCondition = table.column(backReferenceColumn).isEqualTo(this.getBindMarker(backReferenceColumn));
-        }
+		PersistentPropertyPathExtension parentPath = path.getParentPath();
 
-        Assert.state(condition != null, "We need at least one condition");
-        return (Condition)condition;
-    }
+		if (!parentPath.hasIdProperty()) {
+			if (parentPath.getLength() > 1) {
+				return getSubselectCondition(parentPath, rootCondition, filterColumn);
+			}
+			return rootCondition.apply(filterColumn);
+		}
 
-    String getExists() {
-        return (String)this.existsSql.get();
-    }
+		Table subSelectTable = Table.create(parentPath.getTableName());
+		Column idColumn = subSelectTable.column(parentPath.getIdColumnName());
+		Column selectFilterColumn = subSelectTable.column(parentPath.getEffectiveIdColumnName());
 
-    String getFindOne() {
-        return (String)this.findOneSql.get();
-    }
+		Condition innerCondition;
 
-    String getAcquireLockById(LockMode lockMode) {
-        return this.createAcquireLockById(lockMode);
-    }
+		if (parentPath.getLength() == 1) { // if the parent is the root of the path
 
-    String getAcquireLockAll(LockMode lockMode) {
-        return this.createAcquireLockAll(lockMode);
-    }
+			// apply the rootCondition
+			innerCondition = rootCondition.apply(selectFilterColumn);
+		} else {
 
-    String getInsert(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
-        return this.createInsertSql(additionalColumns, parameterSource);
-    }
+			// otherwise we need another layer of subselect
+			innerCondition = getSubselectCondition(parentPath, rootCondition, selectFilterColumn);
+		}
 
-    String getUpdate() {
-        return (String)this.updateSql.get();
-    }
+		Select select = Select.builder() //
+				.select(idColumn) //
+				.from(subSelectTable) //
+				.where(innerCondition).build();
 
-    String getUpdateWithVersion() {
-        return (String)this.updateWithVersionSql.get();
-    }
+		return filterColumn.in(select);
+	}
 
-    String getCount() {
-        return (String)this.countSql.get();
-    }
+	private BindMarker getBindMarker(SqlIdentifier columnName) {
+		return SQL.bindMarker(":" + parameterPattern.matcher(renderReference(columnName)).replaceAll(""));
+	}
 
-    String getDeleteById() {
-        return (String)this.deleteByIdSql.get();
-    }
+	/**
+	 * Returns a query for selecting all simple properties of an entity, including those for one-to-one relationships.
+	 * Results are filtered using an {@code IN}-clause on the id column.
+	 *
+	 * @return a SQL statement. Guaranteed to be not {@code null}.
+	 */
+	String getFindAllInList() {
+		return findAllInListSql.get();
+	}
 
-    String getDeleteByIdAndVersion() {
-        return (String)this.deleteByIdAndVersionSql.get();
-    }
+	/**
+	 * Returns a query for selecting all simple properties of an entity, including those for one-to-one relationships.
+	 *
+	 * @return a SQL statement. Guaranteed to be not {@code null}.
+	 */
+	String getFindAll() {
+		return findAllSql.get();
+	}
 
-    String getDeleteByList() {
-        return (String)this.deleteByListSql.get();
-    }
+	/**
+	 * Returns a query for selecting all simple properties of an entity, including those for one-to-one relationships,
+	 * sorted by the given parameter.
+	 *
+	 * @return a SQL statement. Guaranteed to be not {@code null}.
+	 */
+	String getFindAll(Sort sort) {
+		return render(selectBuilder(Collections.emptyList(), sort, Pageable.unpaged()).build());
+	}
 
-    String createDeleteAllSql(@Nullable PersistentPropertyPath<RelationalPersistentProperty> path) {
-        Table table = this.getTable();
-        DeleteWhere deleteAll = Delete.builder().from(table);
-        return path == null ? this.render(deleteAll.build()) : this.createDeleteByPathAndCriteria(new PersistentPropertyPathExtension(this.mappingContext, path), Column::isNotNull);
-    }
+	/**
+	 * Returns a query for selecting all simple properties of an entity, including those for one-to-one relationships,
+	 * paged and sorted by the given parameter.
+	 *
+	 * @return a SQL statement. Guaranteed to be not {@code null}.
+	 */
+	String getFindAll(Pageable pageable) {
+		return render(selectBuilder(Collections.emptyList(), pageable.getSort(), pageable).build());
+	}
 
-    String createDeleteByPath(PersistentPropertyPath<RelationalPersistentProperty> path) {
-        return this.createDeleteByPathAndCriteria(new PersistentPropertyPathExtension(this.mappingContext, path), (filterColumn) -> {
-            return filterColumn.isEqualTo(this.getBindMarker(ROOT_ID_PARAMETER));
-        });
-    }
+	/**
+	 * Returns a query for selecting all simple properties of an entity, including those for one-to-one relationships.
+	 * Results are limited to those rows referencing some other entity using the column specified by
+	 * {@literal columnName}. This is used to select values for a complex property ({@link Set}, {@link Map} ...) based on
+	 * a referencing entity.
+	 *
+	 * @param parentIdentifier name of the column of the FK back to the referencing entity.
+	 * @param keyColumn if the property is of type {@link Map} this column contains the map key.
+	 * @param ordered whether the SQL statement should include an ORDER BY for the keyColumn. If this is {@code true}, the
+	 *          keyColumn must not be {@code null}.
+	 * @return a SQL String.
+	 */
+	String getFindAllByProperty(Identifier parentIdentifier, @Nullable SqlIdentifier keyColumn, boolean ordered) {
 
-    private String createFindOneSql() {
-        Select select = this.selectBuilder().where(this.getIdColumn().isEqualTo(this.getBindMarker(ID_SQL_PARAMETER))).build();
-        return this.render(select);
-    }
+		Assert.isTrue(keyColumn != null || !ordered,
+				"If the SQL statement should be ordered a keyColumn to order by must be provided.");
 
-    private String createAcquireLockById(LockMode lockMode) {
-        Table table = this.getTable();
-        Select select = StatementBuilder.select(this.getIdColumn()).from(table).where(this.getIdColumn().isEqualTo(this.getBindMarker(ID_SQL_PARAMETER))).lock(lockMode).build();
-        return this.render(select);
-    }
+		Table table = getTable();
 
-    private String createAcquireLockAll(LockMode lockMode) {
-        Table table = this.getTable();
-        Select select = StatementBuilder.select(this.getIdColumn()).from(table).lock(lockMode).build();
-        return this.render(select);
-    }
+		SelectBuilder.SelectWhere builder = selectBuilder( //
+				keyColumn == null //
+						? Collections.emptyList() //
+						: Collections.singleton(keyColumn) //
+		);
 
-    private String createFindAllSql() {
-        return this.render(this.selectBuilder().build());
-    }
+		Condition condition = buildConditionForBackReference(parentIdentifier, table);
+		SelectBuilder.SelectWhereAndOr withWhereClause = builder.where(condition);
 
-    private SelectWhere selectBuilder() {
-        return this.selectBuilder(Collections.emptyList());
-    }
+		Select select = ordered //
+				? withWhereClause.orderBy(table.column(keyColumn).as(keyColumn)).build() //
+				: withWhereClause.build();
 
-    private SelectWhere selectBuilder(Collection<SqlIdentifier> keyColumns) {
-        Table table = this.getTable();
-        List<Expression> columnExpressions = new ArrayList();
-        List<SqlGenerator.Join> joinTables = new ArrayList();
-        Iterator var5 = this.mappingContext.findPersistentPropertyPaths(this.entity.getType(), (p) -> {
-            return true;
-        }).iterator();
+		return render(select);
+	}
 
-        SqlGenerator.Join join;
-        while(var5.hasNext()) {
-            PersistentPropertyPath<RelationalPersistentProperty> path = (PersistentPropertyPath)var5.next();
-            PersistentPropertyPathExtension extPath = new PersistentPropertyPathExtension(this.mappingContext, path);
-            join = this.getJoin(extPath);
-            if (join != null) {
-                joinTables.add(join);
-            }
+	private Condition buildConditionForBackReference(Identifier parentIdentifier, Table table) {
 
-            Column column = this.getColumn(extPath);
-            if (column != null) {
-                columnExpressions.add(column);
-            }
-        }
+		Condition condition = null;
+		for (SqlIdentifier backReferenceColumn : parentIdentifier.toMap().keySet()) {
 
-        var5 = keyColumns.iterator();
+			Condition newCondition = table.column(backReferenceColumn).isEqualTo(getBindMarker(backReferenceColumn));
+			condition = condition == null ? newCondition : condition.and(newCondition);
+		}
 
-        while(var5.hasNext()) {
-            SqlIdentifier keyColumn = (SqlIdentifier)var5.next();
-            columnExpressions.add(table.column(keyColumn).as(keyColumn));
-        }
+		Assert.state(condition != null, "We need at least one condition");
 
-        SelectAndFrom selectBuilder = StatementBuilder.select(columnExpressions);
-        SelectJoin baseSelect = selectBuilder.from(table);
+		return condition;
+	}
 
-        for(Iterator var13 = joinTables.iterator(); var13.hasNext(); baseSelect = ((SelectJoin)baseSelect).leftOuterJoin(join.joinTable).on(join.joinColumn).equals(join.parentId)) {
-            join = (SqlGenerator.Join)var13.next();
-        }
+	/**
+	 * Create a {@code SELECT COUNT(id) FROM … WHERE :id = …} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getExists() {
+		return existsSql.get();
+	}
 
-        return (SelectWhere)baseSelect;
-    }
+	/**
+	 * Create a {@code SELECT … FROM … WHERE :id = …} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getFindOne() {
+		return findOneSql.get();
+	}
 
-    private SelectOrdered selectBuilder(Collection<SqlIdentifier> keyColumns, Sort sort, Pageable pageable) {
-        SelectOrdered sortable = this.selectBuilder(keyColumns);
-        sortable = this.applyPagination(pageable, sortable);
-        return sortable.orderBy(this.extractOrderByFields(sort));
-    }
+	/**
+	 * Create a {@code SELECT count(id) FROM … WHERE :id = … (LOCK CLAUSE)} statement.
+	 *
+	 * @param lockMode Lock clause mode.
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getAcquireLockById(LockMode lockMode) {
+		return this.createAcquireLockById(lockMode);
+	}
 
-    private SelectOrdered applyPagination(Pageable pageable, SelectOrdered select) {
-        if (!pageable.isPaged()) {
-            return select;
-        } else {
-            Assert.isTrue(select instanceof SelectLimitOffset, () -> {
-                return String.format("Can't apply limit clause to statement of type %s", select.getClass());
-            });
-            SelectLimitOffset limitable = (SelectLimitOffset)select;
-            SelectLimitOffset limitResult = limitable.limitOffset((long)pageable.getPageSize(), pageable.getOffset());
-            Assert.state(limitResult instanceof SelectOrdered, String.format("The result of applying the limit-clause must be of type SelectOrdered in order to apply the order-by-clause but is of type %s.", select.getClass()));
-            return (SelectOrdered)limitResult;
-        }
-    }
+	/**
+	 * Create a {@code SELECT count(id) FROM … (LOCK CLAUSE)} statement.
+	 *
+	 * @param lockMode Lock clause mode.
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getAcquireLockAll(LockMode lockMode) {
+		return this.createAcquireLockAll(lockMode);
+	}
 
-    @Nullable
-    Column getColumn(PersistentPropertyPathExtension path) {
-        if (!path.isEmbedded() && !path.getParentPath().isMultiValued()) {
-            if (path.isEntity()) {
-                return !path.isQualified() && !path.isCollectionLike() && !path.hasIdProperty() ? this.sqlContext.getReverseColumn(path) : null;
-            } else {
-                return this.sqlContext.getColumn(path);
-            }
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Create a {@code INSERT INTO … (…) VALUES(…)} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	// dengxz
+	String getInsert(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
+		return createInsertSql(additionalColumns, parameterSource);
+	}
 
-    @Nullable
-    SqlGenerator.Join getJoin(PersistentPropertyPathExtension path) {
-        if (path.isEntity() && !path.isEmbedded() && !path.isMultiValued()) {
-            Table currentTable = this.sqlContext.getTable(path);
-            PersistentPropertyPathExtension idDefiningParentPath = path.getIdDefiningParentPath();
-            Table parentTable = this.sqlContext.getTable(idDefiningParentPath);
-            return new SqlGenerator.Join(currentTable, currentTable.column(path.getReverseColumnName()), parentTable.column(idDefiningParentPath.getIdColumnName()));
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Create a {@code UPDATE … SET …} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getUpdate() {
+		return updateSql.get();
+	}
 
-    private String createFindAllInListSql() {
-        Select select = this.selectBuilder().where(this.getIdColumn().in(new Expression[]{this.getBindMarker(IDS_SQL_PARAMETER)})).build();
-        return this.render(select);
-    }
+	/**
+	 * Create a {@code UPDATE … SET … WHERE ID = :id and VERSION_COLUMN = :___oldOptimisticLockingVersion } statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getUpdateWithVersion() {
+		return updateWithVersionSql.get();
+	}
 
-    private String createExistsSql() {
-        Table table = this.getTable();
-        Select select = StatementBuilder.select(Functions.count(new Expression[]{this.getIdColumn()})).from(table).where(this.getIdColumn().isEqualTo(this.getBindMarker(ID_SQL_PARAMETER))).build();
-        return this.render(select);
-    }
+	/**
+	 * Create a {@code SELECT COUNT(*) FROM …} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getCount() {
+		return countSql.get();
+	}
 
-    private String createCountSql() {
-        Table table = this.getTable();
-        Select select = StatementBuilder.select(Functions.count(new Expression[]{Expressions.asterisk()})).from(table).build();
-        return this.render(select);
-    }
+	/**
+	 * Create a {@code DELETE FROM … WHERE :id = …} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getDeleteById() {
+		return deleteByIdSql.get();
+	}
 
-    private String createInsertSql(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
-        Table table = this.getTable();
-        Set<SqlIdentifier> columnNamesForInsert = new HashSet();
-//        columnNamesForInsert.addAll(this.columns.getInsertableColumns());
-        for (SqlIdentifier sqlIdentifier : this.columns.getInsertableColumns()) {
+	/**
+	 * Create a {@code DELETE FROM … WHERE :id = … and :___oldOptimisticLockingVersion = ...} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getDeleteByIdAndVersion() {
+		return deleteByIdAndVersionSql.get();
+	}
+
+	/**
+	 * Create a {@code DELETE FROM … WHERE :ids in (…)} statement.
+	 *
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String getDeleteByList() {
+		return deleteByListSql.get();
+	}
+
+	/**
+	 * Create a {@code DELETE} query and optionally filter by {@link PersistentPropertyPath}.
+	 *
+	 * @param path can be {@literal null}.
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String createDeleteAllSql(@Nullable PersistentPropertyPath<RelationalPersistentProperty> path) {
+
+		Table table = getTable();
+
+		DeleteBuilder.DeleteWhere deleteAll = Delete.builder().from(table);
+
+		if (path == null) {
+			return render(deleteAll.build());
+		}
+
+		return createDeleteByPathAndCriteria(new PersistentPropertyPathExtension(mappingContext, path), Column::isNotNull);
+	}
+
+	/**
+	 * Create a {@code DELETE} query and filter by {@link PersistentPropertyPath}.
+	 *
+	 * @param path must not be {@literal null}.
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	String createDeleteByPath(PersistentPropertyPath<RelationalPersistentProperty> path) {
+		return createDeleteByPathAndCriteria(new PersistentPropertyPathExtension(mappingContext, path),
+				filterColumn -> filterColumn.isEqualTo(getBindMarker(ROOT_ID_PARAMETER)));
+	}
+
+	private String createFindOneSql() {
+
+		Select select = selectBuilder().where(getIdColumn().isEqualTo(getBindMarker(ID_SQL_PARAMETER))) //
+				.build();
+
+		return render(select);
+	}
+
+	private String createAcquireLockById(LockMode lockMode) {
+
+		Table table = this.getTable();
+
+		Select select = StatementBuilder //
+			.select(getIdColumn()) //
+			.from(table) //
+			.where(getIdColumn().isEqualTo(getBindMarker(ID_SQL_PARAMETER))) //
+			.lock(lockMode) //
+			.build();
+
+		return render(select);
+	}
+
+	private String createAcquireLockAll(LockMode lockMode) {
+
+		Table table = this.getTable();
+
+		Select select = StatementBuilder //
+			.select(getIdColumn()) //
+			.from(table) //
+			.lock(lockMode) //
+			.build();
+
+		return render(select);
+	}
+
+	private String createFindAllSql() {
+		return render(selectBuilder().build());
+	}
+
+	private SelectBuilder.SelectWhere selectBuilder() {
+		return selectBuilder(Collections.emptyList());
+	}
+
+	private SelectBuilder.SelectWhere selectBuilder(Collection<SqlIdentifier> keyColumns) {
+
+		Table table = getTable();
+
+		List<Expression> columnExpressions = new ArrayList<>();
+
+		List<Join> joinTables = new ArrayList<>();
+		for (PersistentPropertyPath<RelationalPersistentProperty> path : mappingContext
+				.findPersistentPropertyPaths(entity.getType(), p -> true)) {
+
+			PersistentPropertyPathExtension extPath = new PersistentPropertyPathExtension(mappingContext, path);
+
+			// add a join if necessary
+			Join join = getJoin(extPath);
+			if (join != null) {
+				joinTables.add(join);
+			}
+
+			Column column = getColumn(extPath);
+			if (column != null) {
+				columnExpressions.add(column);
+			}
+		}
+
+		for (SqlIdentifier keyColumn : keyColumns) {
+			columnExpressions.add(table.column(keyColumn).as(keyColumn));
+		}
+
+		SelectBuilder.SelectAndFrom selectBuilder = StatementBuilder.select(columnExpressions);
+		SelectBuilder.SelectJoin baseSelect = selectBuilder.from(table);
+
+		for (Join join : joinTables) {
+			baseSelect = baseSelect.leftOuterJoin(join.joinTable).on(join.joinColumn).equals(join.parentId);
+		}
+
+		return (SelectBuilder.SelectWhere) baseSelect;
+	}
+
+	private SelectBuilder.SelectOrdered selectBuilder(Collection<SqlIdentifier> keyColumns, Sort sort,
+			Pageable pageable) {
+
+		SelectBuilder.SelectOrdered sortable = this.selectBuilder(keyColumns);
+		sortable = applyPagination(pageable, sortable);
+		return sortable.orderBy(extractOrderByFields(sort));
+
+	}
+
+	private SelectBuilder.SelectOrdered applyPagination(Pageable pageable, SelectBuilder.SelectOrdered select) {
+
+		if (!pageable.isPaged()) {
+			return select;
+		}
+
+		Assert.isTrue(select instanceof SelectBuilder.SelectLimitOffset,
+				() -> String.format("Can't apply limit clause to statement of type %s", select.getClass()));
+
+		SelectBuilder.SelectLimitOffset limitable = (SelectBuilder.SelectLimitOffset) select;
+		SelectBuilder.SelectLimitOffset limitResult = limitable.limitOffset(pageable.getPageSize(), pageable.getOffset());
+
+		Assert.state(limitResult instanceof SelectBuilder.SelectOrdered, String.format(
+				"The result of applying the limit-clause must be of type SelectOrdered in order to apply the order-by-clause but is of type %s.",
+				select.getClass()));
+
+		return (SelectBuilder.SelectOrdered) limitResult;
+	}
+
+	/**
+	 * Create a {@link Column} for {@link PersistentPropertyPathExtension}.
+	 *
+	 * @param path the path to the column in question.
+	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
+	 */
+	@Nullable
+	Column getColumn(PersistentPropertyPathExtension path) {
+
+		// an embedded itself doesn't give an column, its members will though.
+		// if there is a collection or map on the path it won't get selected at all, but it will get loaded with a separate
+		// select
+		// only the parent path is considered in order to handle arrays that get stored as BINARY properly
+		if (path.isEmbedded() || path.getParentPath().isMultiValued()) {
+			return null;
+		}
+
+		if (path.isEntity()) {
+
+			// Simple entities without id include there backreference as an synthetic id in order to distinguish null entities
+			// from entities with only null values.
+
+			if (path.isQualified() //
+					|| path.isCollectionLike() //
+					|| path.hasIdProperty() //
+			) {
+				return null;
+			}
+
+			return sqlContext.getReverseColumn(path);
+		}
+
+		return sqlContext.getColumn(path);
+	}
+
+	@Nullable
+	Join getJoin(PersistentPropertyPathExtension path) {
+
+		if (!path.isEntity() || path.isEmbedded() || path.isMultiValued()) {
+			return null;
+		}
+
+		Table currentTable = sqlContext.getTable(path);
+
+		PersistentPropertyPathExtension idDefiningParentPath = path.getIdDefiningParentPath();
+		Table parentTable = sqlContext.getTable(idDefiningParentPath);
+
+		return new Join( //
+				currentTable, //
+				currentTable.column(path.getReverseColumnName()), //
+				parentTable.column(idDefiningParentPath.getIdColumnName()) //
+		);
+	}
+
+	private String createFindAllInListSql() {
+
+		Select select = selectBuilder().where(getIdColumn().in(getBindMarker(IDS_SQL_PARAMETER))).build();
+
+		return render(select);
+	}
+
+	private String createExistsSql() {
+
+		Table table = getTable();
+
+		Select select = StatementBuilder //
+				.select(Functions.count(getIdColumn())) //
+				.from(table) //
+				.where(getIdColumn().isEqualTo(getBindMarker(ID_SQL_PARAMETER))) //
+				.build();
+
+		return render(select);
+	}
+
+	private String createCountSql() {
+
+		Table table = getTable();
+
+		Select select = StatementBuilder //
+				.select(Functions.count(Expressions.asterisk())) //
+				.from(table) //
+				.build();
+
+		return render(select);
+	}
+
+	private String createInsertSql(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
+
+		Table table = getTable();
+
+		Set<SqlIdentifier> columnNamesForInsert = new TreeSet<>(Comparator.comparing(SqlIdentifier::getReference));
+//		columnNamesForInsert.addAll(columns.getInsertableColumns());
+// 		columnNamesForInsert.addAll(additionalColumns);
+		// dengxz
+		for (SqlIdentifier sqlIdentifier : this.columns.getInsertableColumns()) {
             if (parameterSource.getValue(sqlIdentifier.getReference()) != null) {
                 columnNamesForInsert.add(sqlIdentifier);
             }
         }
-        columnNamesForInsert.addAll(additionalColumns);
-        InsertIntoColumnsAndValuesWithBuild insert = Insert.builder().into(table);
-
-        SqlIdentifier cn;
-        for(Iterator var5 = columnNamesForInsert.iterator(); var5.hasNext(); insert = insert.column(table.column(cn))) {
-            cn = (SqlIdentifier)var5.next();
-        }
-
-        InsertValuesWithBuild insertWithValues = null;
-
-        for(Iterator var9 = columnNamesForInsert.iterator(); var9.hasNext(); insertWithValues = ((InsertValues)(insertWithValues == null ? insert : insertWithValues)).values(new Expression[]{this.getBindMarker(cn)})) {
-            cn = (SqlIdentifier)var9.next();
-        }
-
-        return this.render(insertWithValues == null ? insert.build() : insertWithValues.build());
-    }
-
-    private String createUpdateSql() {
-        return this.render(this.createBaseUpdate().build());
-    }
-
-    private String createUpdateWithVersionSql() {
-        Update update = this.createBaseUpdate().and(this.getVersionColumn().isEqualTo(SQL.bindMarker(":" + this.renderReference(VERSION_SQL_PARAMETER)))).build();
-        return this.render(update);
-    }
-
-    private UpdateWhereAndOr createBaseUpdate() {
-        Table table = this.getTable();
-        List<AssignValue> assignments = (List)this.columns.getUpdateableColumns().stream().map((columnName) -> {
-            return Assignments.value(table.column(columnName), this.getBindMarker(columnName));
-        }).collect(Collectors.toList());
-        return Update.builder().table(table).set(assignments).where(this.getIdColumn().isEqualTo(this.getBindMarker(this.entity.getIdColumn())));
-    }
-
-    private String createDeleteSql() {
-        return this.render(this.createBaseDeleteById(this.getTable()).build());
-    }
-
-    private String createDeleteByIdAndVersionSql() {
-        Delete delete = this.createBaseDeleteById(this.getTable()).and(this.getVersionColumn().isEqualTo(SQL.bindMarker(":" + this.renderReference(VERSION_SQL_PARAMETER)))).build();
-        return this.render(delete);
-    }
-
-    private DeleteWhereAndOr createBaseDeleteById(Table table) {
-        return Delete.builder().from(table).where(this.getIdColumn().isEqualTo(SQL.bindMarker(":" + this.renderReference(ID_SQL_PARAMETER))));
-    }
-
-    private String createDeleteByPathAndCriteria(PersistentPropertyPathExtension path, Function<Column, Condition> rootCondition) {
-        Table table = Table.create(path.getTableName());
-        DeleteWhere builder = Delete.builder().from(table);
-        Column filterColumn = table.column(path.getReverseColumnName());
-        Delete delete;
-        if (path.getLength() == 1) {
-            delete = builder.where((Condition)rootCondition.apply(filterColumn)).build();
-        } else {
-            Condition condition = this.getSubselectCondition(path, rootCondition, filterColumn);
-            delete = builder.where(condition).build();
-        }
-
-        return this.render(delete);
-    }
-
-    private String createDeleteByListSql() {
-        Table table = this.getTable();
-        Delete delete = Delete.builder().from(table).where(this.getIdColumn().in(new Expression[]{this.getBindMarker(IDS_SQL_PARAMETER)})).build();
-        return this.render(delete);
-    }
-
-    private String render(Select select) {
-        return this.sqlRenderer.render(select);
-    }
-
-    private String render(Insert insert) {
-        return this.sqlRenderer.render(insert);
-    }
-
-    private String render(Update update) {
-        return this.sqlRenderer.render(update);
-    }
-
-    private String render(Delete delete) {
-        return this.sqlRenderer.render(delete);
-    }
-
-    private Table getTable() {
-        return this.sqlContext.getTable();
-    }
-
-    private Column getIdColumn() {
-        return this.sqlContext.getIdColumn();
-    }
-
-    private Column getVersionColumn() {
-        return this.sqlContext.getVersionColumn();
-    }
-
-    private String renderReference(SqlIdentifier identifier) {
-        return identifier.getReference(this.renderContext.getIdentifierProcessing());
-    }
-
-    private List<OrderByField> extractOrderByFields(Sort sort) {
-        return (List)sort.stream().map(this::orderToOrderByField).collect(Collectors.toList());
-    }
-
-    private OrderByField orderToOrderByField(Order order) {
-        SqlIdentifier columnName = ((RelationalPersistentProperty)this.entity.getRequiredPersistentProperty(order.getProperty())).getColumnName();
-        Column column = Column.create(columnName, this.getTable());
-        return OrderByField.from(column, order.getDirection());
-    }
-
-    static class Columns {
-        private final MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext;
-        private final JdbcConverter converter;
-        private final List<SqlIdentifier> columnNames = new ArrayList();
-        private final List<SqlIdentifier> idColumnNames = new ArrayList();
-        private final List<SqlIdentifier> nonIdColumnNames = new ArrayList();
-        private final Set<SqlIdentifier> readOnlyColumnNames = new HashSet();
-        private final Set<SqlIdentifier> insertableColumns;
-        private final Set<SqlIdentifier> updateableColumns;
-
-        Columns(RelationalPersistentEntity<?> entity, MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext, JdbcConverter converter) {
-            this.mappingContext = mappingContext;
-            this.converter = converter;
-            this.populateColumnNameCache(entity, "");
-            Set<SqlIdentifier> insertable = new LinkedHashSet(this.nonIdColumnNames);
-            insertable.removeAll(this.readOnlyColumnNames);
-            this.insertableColumns = Collections.unmodifiableSet(insertable);
-            Set<SqlIdentifier> updateable = new LinkedHashSet(this.columnNames);
-            updateable.removeAll(this.idColumnNames);
-            updateable.removeAll(this.readOnlyColumnNames);
-            this.updateableColumns = Collections.unmodifiableSet(updateable);
-        }
-
-        private void populateColumnNameCache(RelationalPersistentEntity<?> entity, String prefix) {
-            entity.doWithAll((property) -> {
-                if (!property.isEntity()) {
-                    this.initSimpleColumnName(property, prefix);
-                } else if (property.isEmbedded()) {
-                    this.initEmbeddedColumnNames(property, prefix);
-                }
-
-            });
-        }
-
-        private void initSimpleColumnName(RelationalPersistentProperty property, String prefix) {
-            SqlIdentifier var10000 = property.getColumnName();
-            prefix.getClass();
-            SqlIdentifier columnName = var10000.transform(prefix::concat);
-            this.columnNames.add(columnName);
-            if (!property.getOwner().isIdProperty(property)) {
-                this.nonIdColumnNames.add(columnName);
-            } else {
-                this.idColumnNames.add(columnName);
-            }
-
-            if (!property.isWritable()) {
-                this.readOnlyColumnNames.add(columnName);
-            }
-
-        }
-
-        private void initEmbeddedColumnNames(RelationalPersistentProperty property, String prefix) {
-            String embeddedPrefix = property.getEmbeddedPrefix();
-            RelationalPersistentEntity<?> embeddedEntity = (RelationalPersistentEntity)this.mappingContext.getRequiredPersistentEntity(this.converter.getColumnType(property));
-            this.populateColumnNameCache(embeddedEntity, prefix + embeddedPrefix);
-        }
-
-        Set<SqlIdentifier> getInsertableColumns() {
-            return this.insertableColumns;
-        }
-
-        Set<SqlIdentifier> getUpdateableColumns() {
-            return this.updateableColumns;
-        }
-    }
-
-    static final class Join {
-        private final Table joinTable;
-        private final Column joinColumn;
-        private final Column parentId;
-
-        Join(Table joinTable, Column joinColumn, Column parentId) {
-            Assert.notNull(joinTable, "JoinTable must not be null.");
-            Assert.notNull(joinColumn, "JoinColumn must not be null.");
-            Assert.notNull(parentId, "ParentId must not be null.");
-            this.joinTable = joinTable;
-            this.joinColumn = joinColumn;
-            this.parentId = parentId;
-        }
-
-        Table getJoinTable() {
-            return this.joinTable;
-        }
-
-        Column getJoinColumn() {
-            return this.joinColumn;
-        }
-
-        Column getParentId() {
-            return this.parentId;
-        }
-
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            } else if (o != null && this.getClass() == o.getClass()) {
-                SqlGenerator.Join join = (SqlGenerator.Join)o;
-                return this.joinTable.equals(join.joinTable) && this.joinColumn.equals(join.joinColumn) && this.parentId.equals(join.parentId);
-            } else {
-                return false;
+		for (SqlIdentifier sqlIdentifier : additionalColumns) {
+            if (parameterSource.getValue(sqlIdentifier.getReference()) != null) {
+                columnNamesForInsert.add(sqlIdentifier);
             }
         }
 
-        public int hashCode() {
-            return Objects.hash(new Object[]{this.joinTable, this.joinColumn, this.parentId});
-        }
+		InsertBuilder.InsertIntoColumnsAndValuesWithBuild insert = Insert.builder().into(table);
 
-        public String toString() {
-            return "Join{joinTable=" + this.joinTable + ", joinColumn=" + this.joinColumn + ", parentId=" + this.parentId + '}';
-        }
-    }
+		for (SqlIdentifier cn : columnNamesForInsert) {
+			insert = insert.column(table.column(cn));
+		}
+
+		InsertBuilder.InsertValuesWithBuild insertWithValues = null;
+		for (SqlIdentifier cn : columnNamesForInsert) {
+			insertWithValues = (insertWithValues == null ? insert : insertWithValues).values(getBindMarker(cn));
+		}
+
+		return render(insertWithValues == null ? insert.build() : insertWithValues.build());
+	}
+
+	private String createUpdateSql() {
+		return render(createBaseUpdate().build());
+	}
+
+	private String createUpdateWithVersionSql() {
+
+		Update update = createBaseUpdate() //
+				.and(getVersionColumn().isEqualTo(SQL.bindMarker(":" + renderReference(VERSION_SQL_PARAMETER)))) //
+				.build();
+
+		return render(update);
+	}
+
+	private UpdateBuilder.UpdateWhereAndOr createBaseUpdate() {
+
+		Table table = getTable();
+
+		List<AssignValue> assignments = columns.getUpdateableColumns() //
+				.stream() //
+				.map(columnName -> Assignments.value( //
+						table.column(columnName), //
+						getBindMarker(columnName))) //
+				.collect(Collectors.toList());
+
+		return Update.builder() //
+				.table(table) //
+				.set(assignments) //
+				.where(getIdColumn().isEqualTo(getBindMarker(entity.getIdColumn())));
+	}
+
+	private String createDeleteSql() {
+		return render(createBaseDeleteById(getTable()).build());
+	}
+
+	private String createDeleteByIdAndVersionSql() {
+
+		Delete delete = createBaseDeleteById(getTable()) //
+				.and(getVersionColumn().isEqualTo(SQL.bindMarker(":" + renderReference(VERSION_SQL_PARAMETER)))) //
+				.build();
+
+		return render(delete);
+	}
+
+	private DeleteBuilder.DeleteWhereAndOr createBaseDeleteById(Table table) {
+		return Delete.builder().from(table)
+				.where(getIdColumn().isEqualTo(SQL.bindMarker(":" + renderReference(ID_SQL_PARAMETER))));
+	}
+
+	private String createDeleteByPathAndCriteria(PersistentPropertyPathExtension path,
+			Function<Column, Condition> rootCondition) {
+
+		Table table = Table.create(path.getTableName());
+
+		DeleteBuilder.DeleteWhere builder = Delete.builder() //
+				.from(table);
+		Delete delete;
+
+		Column filterColumn = table.column(path.getReverseColumnName());
+
+		if (path.getLength() == 1) {
+
+			delete = builder //
+					.where(rootCondition.apply(filterColumn)) //
+					.build();
+		} else {
+
+			Condition condition = getSubselectCondition(path, rootCondition, filterColumn);
+			delete = builder.where(condition).build();
+		}
+
+		return render(delete);
+	}
+
+	private String createDeleteByListSql() {
+
+		Table table = getTable();
+
+		Delete delete = Delete.builder() //
+				.from(table) //
+				.where(getIdColumn().in(getBindMarker(IDS_SQL_PARAMETER))) //
+				.build();
+
+		return render(delete);
+	}
+
+	private String render(Select select) {
+		return this.sqlRenderer.render(select);
+	}
+
+	private String render(Insert insert) {
+		return this.sqlRenderer.render(insert);
+	}
+
+	private String render(Update update) {
+		return this.sqlRenderer.render(update);
+	}
+
+	private String render(Delete delete) {
+		return this.sqlRenderer.render(delete);
+	}
+
+	private Table getTable() {
+		return sqlContext.getTable();
+	}
+
+	private Column getIdColumn() {
+		return sqlContext.getIdColumn();
+	}
+
+	private Column getVersionColumn() {
+		return sqlContext.getVersionColumn();
+	}
+
+	private String renderReference(SqlIdentifier identifier) {
+		return identifier.getReference(renderContext.getIdentifierProcessing());
+	}
+
+	private List<OrderByField> extractOrderByFields(Sort sort) {
+
+		return sort.stream() //
+				.map(this::orderToOrderByField) //
+				.collect(Collectors.toList());
+	}
+
+	private OrderByField orderToOrderByField(Sort.Order order) {
+
+		SqlIdentifier columnName = this.entity.getRequiredPersistentProperty(order.getProperty()).getColumnName();
+		Column column = Column.create(columnName, this.getTable());
+		return OrderByField.from(column, order.getDirection());
+	}
+
+	/**
+	 * Value object representing a {@code JOIN} association.
+	 */
+	static final class Join {
+
+		private final Table joinTable;
+		private final Column joinColumn;
+		private final Column parentId;
+
+		Join(Table joinTable, Column joinColumn, Column parentId) {
+
+			Assert.notNull( joinTable,"JoinTable must not be null.");
+			Assert.notNull( joinColumn,"JoinColumn must not be null.");
+			Assert.notNull( parentId,"ParentId must not be null.");
+
+			this.joinTable = joinTable;
+			this.joinColumn = joinColumn;
+			this.parentId = parentId;
+		}
+
+		Table getJoinTable() {
+			return this.joinTable;
+		}
+
+		Column getJoinColumn() {
+			return this.joinColumn;
+		}
+
+		Column getParentId() {
+			return this.parentId;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Join join = (Join) o;
+			return joinTable.equals(join.joinTable) &&
+					joinColumn.equals(join.joinColumn) &&
+					parentId.equals(join.parentId);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(joinTable, joinColumn, parentId);
+		}
+
+		@Override
+		public String toString() {
+
+			return "Join{" +
+					"joinTable=" + joinTable +
+					", joinColumn=" + joinColumn +
+					", parentId=" + parentId +
+					'}';
+		}
+	}
+
+	/**
+	 * Value object encapsulating column name caches.
+	 *
+	 * @author Mark Paluch
+	 * @author Jens Schauder
+	 */
+	static class Columns {
+
+		private final MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext;
+		private final JdbcConverter converter;
+
+		private final List<SqlIdentifier> columnNames = new ArrayList<>();
+		private final List<SqlIdentifier> idColumnNames = new ArrayList<>();
+		private final List<SqlIdentifier> nonIdColumnNames = new ArrayList<>();
+		private final Set<SqlIdentifier> readOnlyColumnNames = new HashSet<>();
+		private final Set<SqlIdentifier> insertableColumns;
+		private final Set<SqlIdentifier> updateableColumns;
+
+		Columns(RelationalPersistentEntity<?> entity,
+				MappingContext<RelationalPersistentEntity<?>, RelationalPersistentProperty> mappingContext,
+				JdbcConverter converter) {
+
+			this.mappingContext = mappingContext;
+			this.converter = converter;
+
+			populateColumnNameCache(entity, "");
+
+			Set<SqlIdentifier> insertable = new LinkedHashSet<>(nonIdColumnNames);
+			insertable.removeAll(readOnlyColumnNames);
+
+			this.insertableColumns = Collections.unmodifiableSet(insertable);
+
+			Set<SqlIdentifier> updateable = new LinkedHashSet<>(columnNames);
+
+			updateable.removeAll(idColumnNames);
+			updateable.removeAll(readOnlyColumnNames);
+
+			this.updateableColumns = Collections.unmodifiableSet(updateable);
+		}
+
+		private void populateColumnNameCache(RelationalPersistentEntity<?> entity, String prefix) {
+
+			entity.doWithAll(property -> {
+
+				// the referencing column of referenced entity is expected to be on the other side of the relation
+				if (!property.isEntity()) {
+					initSimpleColumnName(property, prefix);
+				} else if (property.isEmbedded()) {
+					initEmbeddedColumnNames(property, prefix);
+				}
+			});
+		}
+
+		private void initSimpleColumnName(RelationalPersistentProperty property, String prefix) {
+
+			SqlIdentifier columnName = property.getColumnName().transform(prefix::concat);
+
+			columnNames.add(columnName);
+
+			if (!property.getOwner().isIdProperty(property)) {
+				nonIdColumnNames.add(columnName);
+			} else {
+				idColumnNames.add(columnName);
+			}
+
+			if (!property.isWritable()) {
+				readOnlyColumnNames.add(columnName);
+			}
+		}
+
+		private void initEmbeddedColumnNames(RelationalPersistentProperty property, String prefix) {
+
+			String embeddedPrefix = property.getEmbeddedPrefix();
+
+			RelationalPersistentEntity<?> embeddedEntity = mappingContext
+					.getRequiredPersistentEntity(converter.getColumnType(property));
+
+			populateColumnNameCache(embeddedEntity, prefix + embeddedPrefix);
+		}
+
+		/**
+		 * @return Column names that can be used for {@code INSERT}.
+		 */
+		Set<SqlIdentifier> getInsertableColumns() {
+			return insertableColumns;
+		}
+
+		/**
+		 * @return Column names that can be used for {@code UPDATE}.
+		 */
+		Set<SqlIdentifier> getUpdateableColumns() {
+			return updateableColumns;
+		}
+	}
 }

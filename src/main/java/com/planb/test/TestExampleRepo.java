@@ -9,6 +9,8 @@ import com.planb.common.jdbc.page.MyCriteria;
 
 
 interface TestExampleRepo extends PagingAndSortingRepository<TestExample, String> {
+
+	
 	
 	@Query("""
 	        select e.*, sub.sub_name from test_example e
@@ -16,5 +18,6 @@ interface TestExampleRepo extends PagingAndSortingRepository<TestExample, String
 	        where e.example_type = :exampleType ${c}
 	    """)
     Page<TestExample> testQuery(String exampleType,  MyCriteria c, Pageable p);
+	
 
 }
