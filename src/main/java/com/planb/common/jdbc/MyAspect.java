@@ -30,7 +30,6 @@ import com.planb.common.jdbc.page.MyCriteria;
 public class MyAspect extends MyDaoSupport {
 	@Around("this(org.springframework.data.repository.CrudRepository)")
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
-		System.out.println("---------->>>>>>>>>>>>>>>>>>>>>>>>> --------- begin");
 		
 		Signature signature = jp.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
@@ -55,7 +54,7 @@ public class MyAspect extends MyDaoSupport {
         MyCriteria myCriteria = (MyCriteria)jp.getArgs()[myCriteriaIndex];
         
         String cSql = myCriteria.toString();
-        System.out.println("ccccccccccc:" + cSql);
+        
         paramMap.putAll(myCriteria.getParamMap());
         
 //		System.out.println("xxxx-----------9:" + method.getGenericReturnType());
@@ -67,7 +66,18 @@ public class MyAspect extends MyDaoSupport {
 		
 		
 		String querySql = method.getAnnotationsByType(Query.class)[0].value();
-		querySql += " and " + cSql;
+		
+		
+        String preWhere = myCriteria.isBeginWhere() ? "WHERE " : "AND ";
+    	if (cSql.startsWith(" AND ")) {
+    		cSql = preWhere + cSql.replaceFirst(" AND ", "");
+    	}
+    	else {
+    		cSql = preWhere + cSql;
+    	}
+    	querySql = querySql.replace("${c}", cSql);
+    	
+    	
 		NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
 		
 		
@@ -84,7 +94,6 @@ public class MyAspect extends MyDaoSupport {
 //		 Object obj = jp.proceed();		
 		
 		
-		System.out.println("---------->>>>>>>>>>>>>>>>>>>>>>>>> --------- end");
 		
 		
 //		List<TestExample> list = new ArrayList<TestExample>();

@@ -58,6 +58,7 @@ import org.springframework.util.Assert;
  */
 public class MyCriteria implements CriteriaDefinition {
 	
+	// dengxz
 	private Map<String, Object> paramMap = new HashMap<String, Object>();
 
 	public Map<String, Object> getParamMap() {
@@ -67,6 +68,26 @@ public class MyCriteria implements CriteriaDefinition {
 	public void setParamMap(Map<String, Object> paramMap) {
 		this.paramMap = paramMap;
 	}
+	
+	private boolean beginWhere = true;
+
+	public boolean setBeginWhere() {
+		return beginWhere;
+	}
+
+	public void setBeginWhere(boolean beginWhere) {
+		this.beginWhere = beginWhere;
+	}
+	
+	public boolean isBeginWhere() {
+    	MyCriteria pre = this.getPrevious();
+    	boolean isBegin = false;
+    	while(pre != null) {
+    		isBegin = pre.isBeginWhere();
+    		pre = pre.getPrevious();
+    	}
+    	return isBegin;
+    }
 
 	static final MyCriteria EMPTY = new MyCriteria(SqlIdentifier.EMPTY, Comparator.INITIAL, null);
 
@@ -117,7 +138,9 @@ public class MyCriteria implements CriteriaDefinition {
 	 * @return an empty {@link MyCriteria}.
 	 */
 	public static MyCriteria empty() {
-		return EMPTY;
+		MyCriteria myCriteria = EMPTY;
+		myCriteria.setBeginWhere(false);
+		return myCriteria;
 	}
 
 	/**
@@ -164,7 +187,10 @@ public class MyCriteria implements CriteriaDefinition {
 
 		Assert.hasText(column, "Column name must not be null or empty!");
 
-		return new DefaultCriteriaStep(SqlIdentifier.unquoted(column));
+		CriteriaStep criteriaStep = new DefaultCriteriaStep(SqlIdentifier.unquoted(column));
+		
+		
+		return criteriaStep;
 	}
 
 	/**
@@ -415,7 +441,6 @@ public class MyCriteria implements CriteriaDefinition {
 		}
 
 		// perform the actual mapping
-		System.out.println("888888x:" + current.getValue());
 		render(current, stringBuilder);
 		while (forwardChain.containsKey(current)) {
 			
@@ -426,7 +451,6 @@ public class MyCriteria implements CriteriaDefinition {
 					stringBuilder.append(' ').append(criterion.getCombinator().name()).append(' ');
 				}
 			}
-			System.out.println("888888x:" + criterion.getValue());
 			render(criterion, stringBuilder);
 
 			current = criterion;
@@ -461,6 +485,7 @@ public class MyCriteria implements CriteriaDefinition {
 		if (criteria.getValue() == null) {
 			return;
 		}
+		// dengxz
 		String colName = criteria.getColumn().toSql(IdentifierProcessing.NONE);
 		paramMap.put(colName, criteria.getValue());
 		

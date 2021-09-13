@@ -29,9 +29,7 @@ https://www.cnblogs.com/loveer/p/11303608.html
      */
     @RequestMapping("/test")
     String test(Pageable pageable) {
-        System.out.println("999999999999:-0000003-222");
         testServ.test();
-
-        return "test ---Hello 333World!--009";
+        return "--- OK ---";
     }
 }

@@ -1,9 +1,7 @@
 package com.planb.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,8 +9,6 @@ import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.stereotype.Service;
 
 import com.planb.common.jdbc.MyDaoSupport;
-import com.planb.common.jdbc.MyPage;
-import com.planb.common.jdbc.MyPageImpl;
 import com.planb.common.jdbc.page.MyCriteria;
 
 @Service
@@ -24,6 +20,8 @@ public class TestServ extends MyDaoSupport {
     public TestServ(TestExampleRepo testExampleRepo) {
         this.testExampleRepo = testExampleRepo;
     }
+    
+    
 
     public void test() {
 
@@ -37,7 +35,6 @@ public class TestServ extends MyDaoSupport {
 //        testExampleRepo.save(insertT);
         
         List<TestExample> list = new ArrayList<TestExample>();
-        MyPage<TestExample> page = new MyPageImpl<TestExample>(100, list);
         
         
        
@@ -46,17 +43,24 @@ public class TestServ extends MyDaoSupport {
 //       
 //        Criteria c = Criteria.where("id").like("a1").and("kk").like(1).and("vw2").is(1).and("vw").is(1).and(sub);
 //        
+//        MyCriteria sub = MyCriteria.where("e.sub_status").in(List.of("d", "e")).or("e.sub_type").is("3");
         
-        MyCriteria c = MyCriteria.where("e.example_id").is(null)
+        MyCriteria c = MyCriteria.empty().and("e.example_id").is(null)
         		.and("e.example_id").is(null)
         		.and("e.example_date").like(null)
-        		.and("e.example_name").like("%abc%").and("e.example_date").like(null)
-        		.and("e.example_name").like("%abc%");
+        		.and("e.example_name").like("abc").and("e.example_date").like(null)
+        		.and("e.example_name").like(null);
         
-        String cSql = c.toString();
         
-        System.out.println("xxxxxxxx:cccc:ccc:cc1:" + cSql);
-        System.out.println("xxxxxxxx:cccc:ccc:cc2:" + c.getParamMap());
+        
+       
+        
+ 
+        
+        
+//        System.out.println("--------------sql:" + cSql);
+//        System.out.println("--------------sql-param:" + c.getParamMap());
+//        
         
         
         
@@ -86,8 +90,7 @@ public class TestServ extends MyDaoSupport {
         
         System.out.println("xxx:" + c);
 
-        Page<TestExample> t = testExampleRepo.testQuery("t", c, null); 
-
-        System.out.println("---------0000end>>>>>>>size::" + t.toList().size());
+        Page<TestExample> t = testExampleRepo.testQuery("t", c, null);
+        System.out.println("------------end>>>>>>>size::" + t.toList().size());
     }
 }
