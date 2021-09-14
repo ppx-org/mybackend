@@ -22,7 +22,7 @@ public class TestServ extends MyDaoSupport {
         this.testExampleRepo = testExampleRepo;
     }
     
-    public void test(Pageable pageable) {
+    public Page<TestExample> test(Pageable pageable) {
 
         TestExample insertT = new TestExample();
         insertT.setExampleId(58);
@@ -38,8 +38,8 @@ public class TestServ extends MyDaoSupport {
          * select nextval('test_example_example_id_seq');
 		   alter sequence test_example_example_id_seq restart with 300;
          */
-        TestExample t = testExampleRepo.save(insertT);
-        System.out.println(">>>>>>>>>>>>>>>>>t:" + t.getExampleId());
+        //  TestExample t = testExampleRepo.save(insertT);
+        // System.out.println(">>>>>>>>>>>>>>>>>t:" + t.getExampleId());
         
         
         
@@ -51,13 +51,11 @@ public class TestServ extends MyDaoSupport {
         		.and("e.example_name").like(null).and("e.example_date").like(null)
         		.and("e.example_name").like(null);
         
-        Page<TestExample> tttt = testExampleRepo.testQuery("t", c, pageable);
+        Page<TestExample> page = testExampleRepo.testQuery("t", c, pageable);
         
-        List<TestExample> outList = tttt.toList();
         
-        for (TestExample testExample : outList) {
-        	 System.out.println("------------endd>>>>>>>name:" + testExample.getExampleName());
-		}
+        
+        return page;
        
     }
 }

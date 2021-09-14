@@ -15,7 +15,6 @@ public class MyHandlerInterceptor implements HandlerInterceptor {
 		ControllerContext.getResponseCode().set(200);
 		
 		
-		System.out.println("999999999:01");
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}
 }

@@ -1,13 +1,18 @@
 package com.planb.test;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.planb.common.controller.ControllerContext;
-import com.planb.common.controller.Response;
 
 
 @RestController
@@ -49,11 +54,25 @@ alter sequence test_example_example_id_seq restart with 300;
      * @return
      */
     @RequestMapping("/test")
-    String test(Pageable pageable) {
+    Page<TestExample> test(Pageable pageable) {
+    	
+    	ObjectMapper objectMapper = new ObjectMapper();
+        
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+    	javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy")));
+    	objectMapper.registerModule(javaTimeModule);
+    	try {
+    		TestExample testExample = new TestExample();
+    		testExample.setExampleTime(LocalDateTime.now());
+    		String s = objectMapper.writeValueAsString(testExample);
+    		System.out.println("xxxxxxxxxx:" + s);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+    	
     	
     	// pageable = PageRequest.of(0, 3);
     	
-        testServ.test(pageable);
-        return "--- OK ---";
+    	return testServ.test(pageable);
     }
 }

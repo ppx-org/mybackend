@@ -3,11 +3,14 @@ package com.planb.test;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
-import org.springframework.data.jdbc.repository.query.Query;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 public class TestExample {
@@ -15,8 +18,9 @@ public class TestExample {
     private Integer exampleId;
     private String exampleName;
     private String exampleType;
+    
     private LocalDate exampleDate;
-    private LocalTime exampleTime;
+    private LocalDateTime exampleTime;
     @ReadOnlyProperty
     private String subName;
     
@@ -44,10 +48,10 @@ public class TestExample {
 	public void setExampleDate(LocalDate exampleDate) {
 		this.exampleDate = exampleDate;
 	}
-	public LocalTime getExampleTime() {
+	public LocalDateTime getExampleTime() {
 		return exampleTime;
 	}
-	public void setExampleTime(LocalTime exampleTime) {
+	public void setExampleTime(LocalDateTime exampleTime) {
 		this.exampleTime = exampleTime;
 	}
 	public String getSubName() {
