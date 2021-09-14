@@ -17,6 +17,10 @@ public class ControllerContext {
 	public static void setResponseCode(ThreadLocal<Integer> responseCode) {
 		ControllerContext.responseCode = responseCode;
 	}
+	
+	public static void setErrorCode() {
+		ControllerContext.getResponseCode().set(-1);
+	}
 
 	
 

@@ -23,7 +23,7 @@ public class TestController {
     String test001() {
     	// 业务异常返回
     	if (true) {
-    		ControllerContext.getResponseCode().set(-1);
+    		ControllerContext.setErrorCode();
         	return "不能提交";
     	}
     	return "提交成功";
