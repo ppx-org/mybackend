@@ -76,6 +76,7 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 	private final JdbcConverter converter;
 	private final NamedParameterJdbcOperations operations;
 
+
 	/**
 	 * Creates a {@link DefaultDataAccessStrategy}
 	 *

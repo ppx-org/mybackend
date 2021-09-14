@@ -6,6 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.planb.common.controller.ControllerContext;
+import com.planb.common.controller.Response;
+
 
 @RestController
 public class TestController {
@@ -15,7 +18,17 @@ public class TestController {
     public TestController(TestServ testServ) {
         this.testServ = testServ;
     }
-
+    
+    @RequestMapping("/test001")
+    String test001() {
+    	// 业务异常返回
+    	if (true) {
+    		ControllerContext.getResponseCode().set(-1);
+        	return "不能提交";
+    	}
+    	return "提交成功";
+    }
+    
     /**
      *
      * 

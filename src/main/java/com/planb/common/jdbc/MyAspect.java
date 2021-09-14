@@ -51,6 +51,7 @@ public class MyAspect extends MyDaoSupport {
         for (short i = 0; i < parameters.length; i++) {
         	Parameter p = parameters[i];
         	
+        	// TODO 去掉getTypeName()
         	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName())) {
         		myCriteriaIndex = i;
         	}
