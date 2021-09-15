@@ -10,7 +10,7 @@ interface ExampleRepo extends PagingAndSortingRepository<Example, Integer> {
 	@Modifying
 	@Query("""
 	insert into test_example(example_name, example_type)
-		select :name, :type
+		select :name, :type 
 		where not exists (select 1 from test_example where example_name = :name)
 	""")
 	int insert(String name, String type);
