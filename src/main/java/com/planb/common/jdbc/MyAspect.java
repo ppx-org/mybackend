@@ -43,7 +43,7 @@ public class MyAspect extends MyDaoSupport {
         }
         
         
-        System.out.println("xxxxxx9999:" + method.getGenericReturnType().getClass());
+        System.out.println("xxxxxxxxx99991:" + method.getGenericReturnType().getClass());
         
         
         var paramMap = new HashMap<String, Object>();
