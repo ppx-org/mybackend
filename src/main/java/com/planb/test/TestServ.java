@@ -30,8 +30,8 @@ public class TestServ extends MyDaoSupport {
         insertT.setExampleName("----------58");
         insertT.setExampleType("t");
         
-        TestExample test = testExampleRepo.findById(1);
-        System.out.println("xxxxxxxxxxxx000:" + test.getSubName());
+//        TestExample test = testExampleRepo.findById(1);
+//        System.out.println("xxxxxxxxxxxx000:" + test.getSubName());
         
         
         

@@ -26,25 +26,14 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
-		if (body == null || body instanceof Response) {
+		if (body instanceof Response) {
 			return body;
 		}
 		
 		final Response<Object> result = new Response<>();
-		result.setCode(200);
-		result.setMsg("OK");
-		result.setData(body);
-		
-		
-		ThreadLocal<Integer> t = ControllerContext.getResponseCode();
-		if (t.get() != null) {
-			System.out.println(">>>>>>>>>>>>>:" + t.get());
-			result.setCode(t.get());
-		}
-		else {
-			System.out.println(">>>>>>>>>>>>>:null");
-		}
-		
+		result.setCode(MyContext.getResponseCode().get());
+		result.setMsg(MyContext.getResponseMsg().get());
+		result.setContent(body);
 		
 		if (returnType.getGenericParameterType().equals(String.class)) {
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -56,10 +45,10 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			}
 		}
 		
-		System.out.println("-------------------000:" + Page.class);
-		if (returnType.getGenericParameterType().getTypeName().startsWith("org.springframework.data.domain.Page")) {
+		if (returnType.getGenericParameterType().getTypeName().startsWith(Page.class.getName())) {
 			Page<?> page = (Page<?>)body;
-			result.setData(page.toList());
+			result.setContent(page.toList());
+			result.setPageable(page.getPageable());
 		}
 		
 		return result;

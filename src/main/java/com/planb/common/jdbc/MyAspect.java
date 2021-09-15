@@ -40,7 +40,10 @@ public class MyAspect extends MyDaoSupport {
         
         if (!returnClass.equals(Page.class)) {
         	return jp.proceed();
-        }		
+        }
+        
+        
+        System.out.println("xxxxxx9999:" + method.getGenericReturnType().getClass());
         
         
         var paramMap = new HashMap<String, Object>();

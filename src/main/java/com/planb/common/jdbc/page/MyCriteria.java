@@ -71,7 +71,7 @@ public class MyCriteria implements CriteriaDefinition {
 	
 	private boolean beginWhere = true;
 
-	public boolean setBeginWhere() {
+	public boolean getBeginWhere() {
 		return beginWhere;
 	}
 
@@ -81,8 +81,8 @@ public class MyCriteria implements CriteriaDefinition {
 	
 	public boolean isBeginWhere() {
     	MyCriteria pre = this.getPrevious();
-    	boolean isBegin = false;
-    	while(pre != null) {
+    	boolean isBegin = this.getBeginWhere();
+    	while (pre != null) {
     		isBegin = pre.isBeginWhere();
     		pre = pre.getPrevious();
     	}

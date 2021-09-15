@@ -13,6 +13,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Table("test_example")
@@ -28,7 +29,7 @@ public class Example implements Persistable<Integer> {
     private String subName;
     
     @ReadOnlyProperty
-    private boolean isNew = false;
+    private boolean isNew;
     
 	
 	public Integer getExampleId() {
@@ -69,14 +70,14 @@ public class Example implements Persistable<Integer> {
 	}
 	
 	@Override
+	@JsonIgnore
 	public boolean isNew() {
 		return isNew;
 	}
 	
-	public void setNew(boolean isNew) {
+	public void setNew(Boolean isNew) {
 		this.isNew = isNew;
 	}
-	
 	
 	@Override
 	public Integer getId() {

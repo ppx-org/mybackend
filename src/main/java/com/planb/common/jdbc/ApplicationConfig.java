@@ -24,12 +24,6 @@ import javax.sql.DataSource;
 @EnableJdbcRepositories(basePackages = {"com.planb"})
 class ApplicationConfig extends AbstractJdbcConfiguration {
 
-//    @Bean
-//    public DataSource dataSource() {
-//        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-//        return builder.setType(EmbeddedDatabaseType.).build();
-//    }
-
     @Bean
     NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {
         return new NamedParameterJdbcTemplate(dataSource);

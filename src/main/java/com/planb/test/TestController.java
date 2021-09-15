@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.planb.common.controller.ControllerContext;
+import com.planb.common.controller.MyContext;
 
 
 @RestController
@@ -28,7 +28,7 @@ public class TestController {
     String test001() {
     	// 业务异常返回
     	if (true) {
-    		ControllerContext.setErrorCode();
+    		// MyContext.setErrorCode();
         	return "不能提交";
     	}
     	return "提交成功";
