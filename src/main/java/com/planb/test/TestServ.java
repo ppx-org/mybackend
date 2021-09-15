@@ -15,9 +15,10 @@ import com.planb.common.jdbc.page.MyCriteria;
 @Service
 public class TestServ extends MyDaoSupport {
 
+    @Autowired
     private TestExampleRepo testExampleRepo;
 
-    @Autowired
+
     public TestServ(TestExampleRepo testExampleRepo) {
         this.testExampleRepo = testExampleRepo;
     }

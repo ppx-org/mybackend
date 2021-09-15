@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequestMapping("/example")
 public class ExampleController {
+	
 	@Autowired
-    ExampleServ testServ;
+    private ExampleServ testServ;
     
 	@RequestMapping("/insert")
     Integer insert(Example example) {
