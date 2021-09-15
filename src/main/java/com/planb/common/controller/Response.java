@@ -12,7 +12,19 @@ public class Response<T> {
 	
 	private Pageable pageable;
 	
+	private Long totalElements;
+	
 	private Long time;
+	
+	
+
+	public Long getTotalElements() {
+		return totalElements;
+	}
+
+	public void setTotalElements(Long totalElements) {
+		this.totalElements = totalElements;
+	}
 
 	public Integer getCode() {
 		return code;

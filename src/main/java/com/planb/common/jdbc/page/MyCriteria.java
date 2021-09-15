@@ -487,6 +487,7 @@ public class MyCriteria implements CriteriaDefinition {
 		}
 		// dengxz
 		String colName = criteria.getColumn().toSql(IdentifierProcessing.NONE);
+		colName = colName.replace(".", "_");
 		paramMap.put(colName, criteria.getValue());
 		
 

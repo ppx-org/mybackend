@@ -2,9 +2,11 @@ package com.planb.common.jdbc;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -24,12 +26,35 @@ import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.page.MyCriteria;
 
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Column;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectExpressionItem;
+import net.sf.jsqlparser.statement.select.SelectItem;
+
 //import com.planb.test.TestExample;
 
 
 @Aspect
 @Component
 public class MyAspect extends MyDaoSupport {
+	
+	private String getCountSql(String sql) {
+		try {
+			Select stmt = (Select) CCJSqlParserUtil.parse(sql);
+	        List<SelectItem> list = new ArrayList<SelectItem>();
+	        SelectItem selectItem = new SelectExpressionItem(new Column("count(*) as c"));
+	        list.add(selectItem);
+	        ((PlainSelect)stmt.getSelectBody()).setSelectItems(list);
+			return ((PlainSelect)stmt.getSelectBody()).toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	
 	@Around("this(org.springframework.data.repository.CrudRepository)")
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
 		
@@ -37,51 +62,28 @@ public class MyAspect extends MyDaoSupport {
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
-        
         if (!returnClass.equals(Page.class)) {
         	return jp.proceed();
         }
         
-        
-        System.out.println("xxxxxxxxx99991:" + method.getGenericReturnType().getClass());
-        
-        
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
-        
-        short myCriteriaIndex = -1;
-        short myPageable = -1;
+        MyCriteria myCriteria = null;
+        Pageable pageable = null;
         for (short i = 0; i < parameters.length; i++) {
         	Parameter p = parameters[i];
-        	
-        	// TODO 去掉getTypeName()
-        	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName())) {
-        		myCriteriaIndex = i;
-        	}
-        	if (p.getParameterizedType().getTypeName().equals(Pageable.class.getTypeName())) {
-        		myPageable = i;
-        	}
-        	if (p.getParameterizedType().getTypeName().equals(MyCriteria.class.getTypeName()) ||
-        			p.getParameterizedType().getTypeName().equals(Pageable.class.getTypeName())) {
+        	if (p.getParameterizedType().equals(MyCriteria.class)) {
+        		myCriteria = (MyCriteria)jp.getArgs()[i];
         		continue;
+        	}
+        	if (p.getParameterizedType().equals(Pageable.class)) {
+        		pageable = (Pageable)jp.getArgs()[i];
         	}
         	paramMap.put(p.getName(), jp.getArgs()[i]);
 		}
-        MyCriteria myCriteria = (MyCriteria)jp.getArgs()[myCriteriaIndex];
-        Pageable pageable = (Pageable)jp.getArgs()[myPageable];
         
         String cSql = myCriteria.toString();
-        
         paramMap.putAll(myCriteria.getParamMap());
-        
-//		System.out.println("xxxx-----------9:" + method.getGenericReturnType());
-//		System.out.println("--------《《《4:" + method.getAnnotationsByType(Query.class)[0].value());
-//		CrudRepository cr = (CrudRepository)jp.getTarget();
-        
-		String beanName = "com.planb.test.TestExample";
-		Class<?> c = Class.forName(beanName);
-		
-		
 		String querySql = method.getAnnotationsByType(Query.class)[0].value();
 		
 		
@@ -98,36 +100,26 @@ public class MyAspect extends MyDaoSupport {
     		orderList.add(m.getProperty() + " " + m.getDirection());
     	});
     	
-    	
     	querySql = querySql.replace("${c}", cSql);
+    	
+    	NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
+    	String countSql = getCountSql(querySql.trim());
+    	int c = nameTemplate.queryForObject(countSql, paramMap, Integer.class);
+    	if (c == 0) {
+    		return new PageImpl<Object>(new ArrayList<>(), pageable, c);
+    	}
+    	
     	if (!pageable.getSort().isEmpty()) {
     		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
     	}
-    	
-    	// page
     	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
     	
-		NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
+		
+		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
+		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
 		
 		
-//		var cParamMap = new HashMap<String, Object>();
-//		cParamMap.put("exampleId", 1);
-		System.out.println("xxxxxxxxxx:paramMap:" + paramMap);
-		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(c));
-		
-		
-		
-		Page<?> page = new PageImpl(list, PageRequest.of(1, 1), 101);
-		
-//		 Object obj = jp.proceed();		
-		
-		
-		
-		
-//		List<TestExample> list = new ArrayList<TestExample>();
-//        MyPage<TestExample> page = new MyPageImpl<TestExample>(100, list);
-        
+		Page<?> page = new PageImpl(list, pageable, c);
 		return page;
-		// return new MyPageImpl<>(16, list);
 	}
 }

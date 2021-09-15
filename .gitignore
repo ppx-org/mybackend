@@ -4,4 +4,5 @@
 .project
 rebel.xml
 org.eclipse.*
+/.settings/
 
