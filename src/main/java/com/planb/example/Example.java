@@ -8,6 +8,7 @@ import java.time.LocalTime;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 @Table("test_example")
-public class Example {
+public class Example implements Persistable<Integer> {
     @Id
     private Integer exampleId;
     private String exampleName;
@@ -26,6 +27,10 @@ public class Example {
     @ReadOnlyProperty
     private String subName;
     
+    @ReadOnlyProperty
+    private boolean isNew = false;
+    
+	
 	public Integer getExampleId() {
 		return exampleId;
 	}
@@ -61,5 +66,20 @@ public class Example {
 	}
 	public void setSubName(String subName) {
 		this.subName = subName;
+	}
+	
+	@Override
+	public boolean isNew() {
+		return isNew;
+	}
+	
+	public void setNew(boolean isNew) {
+		this.isNew = isNew;
+	}
+	
+	
+	@Override
+	public Integer getId() {
+		return exampleId;
 	}
 }

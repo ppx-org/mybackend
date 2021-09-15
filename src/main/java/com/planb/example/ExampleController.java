@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExampleController {
 	
 	@Autowired
-    private ExampleServ testServ;
+    ExampleServ testServ;
     
 	@RequestMapping("/insert")
     Integer insert(Example example) {
