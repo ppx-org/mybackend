@@ -9,7 +9,7 @@ public class MyDaoSupport extends JdbcDaoSupport {
 	
 	@Autowired
 	protected void setMyJdbcTemplate(JdbcTemplate jdbcTemplate) {
-		super.setJdbcTemplate(jdbcTemplate);
+		super.setJdbcTemplate(jdbcTemplate); 
 	}
 
 
