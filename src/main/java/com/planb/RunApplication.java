@@ -31,9 +31,13 @@ import com.planb.security.jwt.JwtTokenUtil;
 @ComponentScan({"com.planb"})
 public class RunApplication {
 	
+	@RequestMapping("/home")
+    String home() {
+        return "Hello 333World!--home011:";
+    }
 
     @RequestMapping("/")
-    String home() {
+    String index() {
     	
     	Map<String, Object> claimMap = new HashMap<String, Object>();
     	claimMap.put("userId", "123");

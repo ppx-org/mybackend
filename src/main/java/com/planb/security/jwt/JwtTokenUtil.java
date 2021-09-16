@@ -3,7 +3,9 @@ package com.planb.security.jwt;
 import java.time.Instant;
 import java.util.Map;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
@@ -15,6 +17,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.planb.common.conf.DateConfig;
 
+@Component
 public class JwtTokenUtil {
 	private static long tokenExpiration = 24 * 60 * 60 * 1000;
     private static String tokenSignKey = "012345678901234567890123456789AB";
@@ -71,5 +74,9 @@ public class JwtTokenUtil {
  
     public static String getUserRoleFromToken(String token) {
         return "";
+    }
+    
+    public static boolean validateToken(String token, UserDetails userDetails) {
+    	return false;
     }
 }
