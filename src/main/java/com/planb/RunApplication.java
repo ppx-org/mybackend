@@ -23,6 +23,7 @@ import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
+import com.planb.security.jwt.JwtTokenUtil;
 
 
 @RestController
@@ -30,98 +31,18 @@ import com.nimbusds.jwt.SignedJWT;
 @ComponentScan({"com.planb"})
 public class RunApplication {
 	
-	private static final String ISS_CLAIM = "iss";
-
-	private static final String SUB_CLAIM = "sub";
-
-	private static final String AUD_CLAIM = "aud";
-
-	private static final String EXP_CLAIM = "exp";
-
-	private static final String NBF_CLAIM = "nbf";
-
-	private static final String IAT_CLAIM = "iat";
-
-	private static final String JTI_CLAIM = "jti";
-
-	private static final String ISS_VALUE = "https://provider.com";
-
-	private static final String SUB_VALUE = "subject1";
-
-	private static final List<String> AUD_VALUE = Arrays.asList("aud1", "aud2");
-
-	private static final long EXP_VALUE = Instant.now().plusSeconds(60).toEpochMilli();
-
-	private static final long NBF_VALUE = Instant.now().plusSeconds(5).toEpochMilli();
-
-	private static final long IAT_VALUE = Instant.now().toEpochMilli();
-
-	private static final String JTI_VALUE = "jwt-id-1";
-
-	private static final Map<String, Object> HEADERS;
-
-	private static final Map<String, Object> CLAIMS;
-	
-	private static final String JWT_TOKEN_VALUE = "jwt-token-value";
-	static {
-		HEADERS = new HashMap<>();
-		HEADERS.put("alg", JwsAlgorithms.RS256);
-		CLAIMS = new HashMap<>();
-		CLAIMS.put(ISS_CLAIM, ISS_VALUE);
-		CLAIMS.put(SUB_CLAIM, SUB_VALUE);
-		CLAIMS.put(AUD_CLAIM, AUD_VALUE);
-		CLAIMS.put(EXP_CLAIM, EXP_VALUE);
-		CLAIMS.put(NBF_CLAIM, NBF_VALUE);
-		CLAIMS.put(IAT_CLAIM, IAT_VALUE);
-		CLAIMS.put(JTI_CLAIM, JTI_VALUE);
-	}
-	
 
     @RequestMapping("/")
-    String home() throws Exception {
-    	Jwt j = new Jwt(JWT_TOKEN_VALUE, Instant.ofEpochMilli(IAT_VALUE), Instant.ofEpochMilli(EXP_VALUE), HEADERS, CLAIMS);
-    	System.out.println("cccccccc:");
+    String home() {
     	
-    	JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256),
-                new Payload("{\"a\":123}"));
+    	Map<String, Object> claimMap = new HashMap<String, Object>();
+    	claimMap.put("userId", "123");
+    	String token = JwtTokenUtil.createToken(claimMap);
     	
-		
-		//We need a 256-bit key for HS256 which must be pre-shared
-		byte[] sharedKey = new byte[32];
-		new SecureRandom().nextBytes(sharedKey);
-		//Apply the HMAC to the JWS object
-		jwsObject.sign(new MACSigner("xxxxxxxxxxx-00001-1102xxxxxxxxxxx-00001-110221".getBytes()));
-		
-		//Output in URL-safe format
-		System.out.println(jwsObject.serialize());
-        String s =  jwsObject.serialize();
-        
-        
-		
-		JWSVerifier jwsVerifier = new MACVerifier("xxxxxxxxxxx-00001-1102xxxxxxxxxxx-00001-1102".getBytes());
-		
-		SignedJWT sjwt = SignedJWT.parse(s);
-		boolean b = sjwt.verify(jwsVerifier);
-		
-		
-		System.out.println("sjwt.......111:" + b);
-		System.out.println("sjwt.......222:" + sjwt.getJWTClaimsSet());
-		
-		
-
-    	Jwt jwt = Jwt.withTokenValue("eyJhbGciOiJIUzI1NiJ9.eyJhIjoxMjN9.YTPU6U18N55i31wwKAOC4_68gVopwxI9M0xxckwXV34")
-    		    .header("alg", "none")
-    		    .claim("sub", "user")
-    		    .claim("scope", "read").build();
+    	JwtTokenUtil.getUserNameFromToken(token);
     	
     	
-    	
-    	System.out.println("xxxxxxxx:" + jwt.getSubject());
-    	
-    	
-    	
-    	
-        return "Hello 333World!--006";
+        return "Hello 333World!--008:";
     }
 
     public static void main(String[] args) {
