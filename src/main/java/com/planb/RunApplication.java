@@ -84,6 +84,7 @@ public class RunApplication {
     	
     	JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256),
                 new Payload("{\"a\":123}"));
+    	
 		
 		//We need a 256-bit key for HS256 which must be pre-shared
 		byte[] sharedKey = new byte[32];
@@ -94,6 +95,8 @@ public class RunApplication {
 		//Output in URL-safe format
 		System.out.println(jwsObject.serialize());
         String s =  jwsObject.serialize();
+        
+        
 		
 		JWSVerifier jwsVerifier = new MACVerifier("xxxxxxxxxxx-00001-1102xxxxxxxxxxx-00001-1102".getBytes());
 		
