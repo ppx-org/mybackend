@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title></title>
+<script type="text/javascript" th:src="@{/static/axios/axios.min.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+function test() {
+	axios.get([[@{/testapi/get}]]).then(function (response) {
+		console.log(response);
+	}).catch(function (error) {
+		console.log(error);
+	});
+}
+
+</script>
+</head>
+
+
+<body>
+
+test-api001
+
+<button onclick="test()">go</button>
+
+
+</body>
+</html>
+
+
+
+
+

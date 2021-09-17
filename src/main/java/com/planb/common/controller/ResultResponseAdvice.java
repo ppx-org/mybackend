@@ -26,6 +26,11 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
+		
+		
+		System.out.println(">>>>>>>>>>  >>>>00:" + selectedConverterType);
+		System.out.println(">>>>>>>>>>  >>>>01:" + body.getClass());
+		
 		if (body instanceof Response) {
 			return body;
 		}
