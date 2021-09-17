@@ -10,20 +10,19 @@
 function test() {
 	let token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ";
 	axios.interceptors.request.use(
-	  config => {
-	    if (token) {
-	      config.headers.Authorization = `Bearer ${token}`;
-	    }
-	    return config;
-	  },
-	  err => {
-		return Promise.reject(err);
-	  }
+		config => {
+		    if (token) {
+		      config.headers.Authorization = `Bearer ${token}`;
+		    }
+		    return config;
+	  	},
+	  	err => {
+			return Promise.reject(err);
+	  	}
 	);
 	
-	
 	axios.get([[@{/testapi/get}]]).then(function (response) {
-		console.log(response);
+		console.log(response);	
 		document.getElementById("result").value = JSON.stringify(response.data);
 	}).catch(function (error) {
 		$("#result").val(error);
@@ -50,8 +49,4 @@ function test() {
 
 </body>
 </html>
-
-
-
-
 
