@@ -46,7 +46,7 @@ public class RunApplication {
     	JwtTokenUtil.getUserNameFromToken(token);
     	
     	
-        return "Hello 333World!--008:";
+        return "Hello 333World!--008:" + token;
     }
 
     public static void main(String[] args) {

@@ -62,6 +62,7 @@ public class JwtTokenUtil {
  
     public static String getUserNameFromToken(String token) {
     	try {
+    		System.out.println("xxxxxxxxtoken:" + token);
     		JWSVerifier jwsVerifier = new MACVerifier(tokenSignKey.getBytes());
     		SignedJWT sjwt = SignedJWT.parse(token);
     		boolean b = sjwt.verify(jwsVerifier);

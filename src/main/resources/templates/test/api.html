@@ -3,13 +3,30 @@
 <head>
 <title></title>
 <script type="text/javascript" th:src="@{/static/axios/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
 
 function test() {
+	let token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ";
+	axios.interceptors.request.use(
+	  config => {
+	    if (token) {
+	      config.headers.Authorization = `Bearer ${token}`;
+	    }
+	    return config;
+	  },
+	  err => {
+		return Promise.reject(err);
+	  }
+	);
+	
+	
 	axios.get([[@{/testapi/get}]]).then(function (response) {
 		console.log(response);
+		document.getElementById("result").value = JSON.stringify(response.data);
 	}).catch(function (error) {
+		$("#result").val(error);
 		console.log(error);
 	});
 }
@@ -20,10 +37,16 @@ function test() {
 
 <body>
 
-test-api001
+<div>
+<input type="text" id="token" style="width:1000px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
+<br>
+<input type="text" id="url" style="width:300px" value="/testapi/get">
+<button onclick="test()" style="width:60px">go</button>
+</div>
 
-<button onclick="test()">go</button>
-
+<div style="margin-top:10px">
+<textarea id="result" rows="5" cols="60" ></textarea>
+</div>
 
 </body>
 </html>
