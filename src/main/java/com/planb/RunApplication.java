@@ -23,6 +23,7 @@ import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
+import com.planb.common.conf.ModuleConfig;
 import com.planb.security.jwt.JwtTokenUtil;
 
 
@@ -35,8 +36,10 @@ public class RunApplication {
     String home() {
         return "Hello 333World!--home011:";
     }
+	
+	public final static String TEST = "xx";
 
-    @RequestMapping("/")
+    @RequestMapping(ModuleConfig.TEST + "/xxx3")
     String index() {
     	
     	Map<String, Object> claimMap = new HashMap<String, Object>();
