@@ -6,6 +6,7 @@ create database planb owner planb;
 grant all on database planb to planb;
 
 
+-- planb用户
 create table test_example (
     example_id serial not null,
     example_name varchar(16) not null,
@@ -15,6 +16,7 @@ create table test_example (
     primary key(example_id)
 );
 comment on table test_example is 'test_example';
+comment on column test_example.example_type is '类型';
 
 create table test_example_sub (
     example_id int not null,
