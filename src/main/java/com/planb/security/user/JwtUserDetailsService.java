@@ -1,4 +1,4 @@
-package com.planb.security;
+package com.planb.security.user;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * 通过用户名来加载用户 。这个方法主要用于从系统数据中查询并加载具体的用户(UserDetails)到Spring Security中。
+ * @author mark
+ *
+ */
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
 	/*

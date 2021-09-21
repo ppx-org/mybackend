@@ -1,4 +1,4 @@
-package com.planb.security;
+package com.planb.security.user;
 
 import java.util.Collection;
 
@@ -7,9 +7,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
+/**
+ * UserDetails 默认提供了用户的权限集， 默认需要添加ROLE_ 前缀
+ * 用户的加密后的密码， 不加密会使用{noop}前缀、应用内唯一的用户名、账户是否过期、账户是否锁定、凭证是否过期、用户是否可用
+ * 如果以上的信息满足不了你使用，你可以自行实现扩展以存储更多的用户信息SysUser
+ * @author mark
+ *
+ */
 public class SecurityUserDetails extends SysUser implements UserDetails {
 
-    private Collection<? extends GrantedAuthority> authorities;
+	private static final long serialVersionUID = 1L;
+	
+	private Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

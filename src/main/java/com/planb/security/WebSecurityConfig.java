@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.planb.security.user.JwtUserDetailsService;
+
 // https://www.cnblogs.com/pjjlt/p/10960690.html
 @Configuration
 @EnableWebSecurity
@@ -47,10 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    	
-    	
-    	
-    	
     	
         auth.inMemoryAuthentication()
         	.withUser("user").password("password").roles("USER");

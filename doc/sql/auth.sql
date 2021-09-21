@@ -1,24 +1,6 @@
 
--- 缓存
-create table auth_cache_user_jwt {
-	user_id int not null,
-	jwt_version int not null
-	primary key(user_id)
-}
-comment on table auth_cache_user_jwt is 'jwt缓存,放redis';
-comment on column auth_cache_user_jwt.jwt_version is '修改密码、作废、修改角色等，需要换token';
 
-create table auth_cache_version {
-	auth_key varchar(32) not null,
-	auth_version int not null,
-	primary key(auth_key)
-}
-comment on table auth_cache_version is '权限版本,放redis';
-comment on column auth_cache_version.auth_version is '修改权限时，需要刷新内存';
-
-
-
--- >>>>>>>>>>>> 权限
+-- >>>>>>>>>>>>>>>>>> 权限
 create table auth_user (
 	user_id serial not null,
 	user_name varchar(32) not null,
@@ -64,12 +46,26 @@ comment on table auth_uri is 'URI(path)';
 create table auth_res_uri (
 	res_id int not null,
 	uri_id int not null,
-	primary(res_id, uri_id)
+	primary key(res_id, uri_id)
 );
 comment on table auth_res_uri is '资源拥有的URI';
 
 
+-- >>>>>>>>>>>>>>>>>> 缓存
+create table auth_cache_user_jwt (
+	user_id int not null,
+	jwt_version int not null,
+	primary key(user_id)
+);
+comment on table auth_cache_user_jwt is 'jwt缓存,放redis';
+comment on column auth_cache_user_jwt.jwt_version is '修改密码、作废、修改角色等，需要换token';
 
-
+create table auth_cache_version (
+	auth_key varchar(32) not null,
+	auth_version int not null,
+	primary key(auth_key)
+);
+comment on table auth_cache_version is '权限版本,放redis';
+comment on column auth_cache_version.auth_version is '修改权限时，需要刷新内存';
 
 

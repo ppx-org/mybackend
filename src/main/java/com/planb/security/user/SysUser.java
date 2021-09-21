@@ -1,9 +1,14 @@
-package com.planb.security;
+package com.planb.security.user;
 
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 
+/**
+ * 
+ * @author mark
+ *
+ */
 public class SysUser {
 	private String userName;
 	private String password;

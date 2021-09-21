@@ -13,7 +13,6 @@ public class TestApiController {
    
     @RequestMapping("/home")
     ModelAndView api() {
-    	System.out.println("xxxxxxxxxx001");
     	ModelAndView mv = new ModelAndView("test/api");
     	return mv;
     }

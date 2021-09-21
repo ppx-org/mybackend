@@ -17,21 +17,21 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.planb.common.conf.DateConfig;
 
+/**
+ * Header.Payload.Signature 不要在JWT的payload或header中放置敏感信息，除非它们是加密的。
+ * Base64({'alg': "HS256",'typ': "JWT"}) Base64({exp})
+ * header >>> Authorization: Bearerheader >>> Authorization: Bearer
+ * 如果token是在授权头（Authorization header）中发送的，那么跨源资源共享(CORS)将不会成为问题，因为它不使用cookie
+ * @author mark
+ *
+ */
 @Component
 public class JwtTokenUtil {
 	private static long tokenExpiration = 24 * 60 * 60 * 1000;
     private static String tokenSignKey = "012345678901234567890123456789AB";
     private static String userRoleKey = "userRole";
- 
+    
     public static String createToken(Map<String, Object> claimMap) {
-    	//  Header.Payload.Signature  不要在JWT的payload或header中放置敏感信息，除非它们是加密的。
-    	// Base64({'alg': "HS256",'typ': "JWT"})
-    	// Base64({exp})
-    	// HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret)
-    	/*
-    	 header >>> Authorization: Bearer
-    	 如果token是在授权头（Authorization header）中发送的，那么跨源资源共享(CORS)将不会成为问题，因为它不使用cookie。
-    	 */
     	Jwt jwt = Jwt.withTokenValue("token").header("typ", "JWT")
     			.claims(map -> {
     				map.putAll(claimMap);
