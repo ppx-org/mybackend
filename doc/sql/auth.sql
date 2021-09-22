@@ -22,7 +22,7 @@ create table auth_user_role (
 	role_id int not null,
 	primary key(user_id, role_id)
 );
-comment on table auth_user_in_role is '用户所属角色';
+comment on table auth_user_role is '用户所属角色';
 
 create table auth_res (
 	res_id serial not null,
@@ -33,7 +33,7 @@ create table auth_res (
 	primary key(res_id)
 );
 comment on table auth_res is '权限资源';
-comment on column auth_role.res_type is '类型:目录、菜单、操作';
+comment on column auth_res.res_type is '类型:目录、菜单、操作';
 
 create table auth_uri (
 	uri_id serial not null,

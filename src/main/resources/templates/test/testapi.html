@@ -105,30 +105,29 @@ a:visited {color: blue;}
 <div>
 <input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
 <br>
-<input type="text" id="url" style="width:300px" value="test/testapi/submit">
+<input type="text" id="url" style="width:300px" value="security/login/login">
 
 <input type="radio" id="get" name="method"><label for="get">GET</label>
 <input type="radio" id="post" name="method" checked="checked"><label for="post">POST</label>
-
 
 <button type="button" id="reqButton" onclick="test()" style="width:60px">go</button>
 <span>用时(ms):</span><span id="spend"></span>
 </div>
 
 <div>
-<textarea id="param" rows="3" style="width:1024px"></textarea>
+<textarea id="param" rows="3" style="width:1024px">{"userName":"admin", "userPassword":"admin"}</textarea>
 </div>
 
 <table border="1" id="myTable">
 <tr>
-	<td><a onclick="clickTd(this)" method="get">test/testapi/get</a></td>
-	<td><a onclick="clickTd(this)" method="post">test/testapi/post</a></td>
-	<td><a onclick="clickTd(this)" method="post" param='{"id":123, "name":"myname"}'>test/testapi/submit</a></td>
+	<td><a onclick="clickTd(this)" method="get">test/testapi/get?id=100</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"id":100}'>test/testapi/post</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"id":100, "name":"myname", "date":"2021-09-22", "dateTime":"2021-09-22 19:08:30"}'>test/testapi/submit</a></td>
 </tr>
 <tr>
 	<td><a onclick="clickTd(this)">test/test/hello</a></td>
 	<td><a onclick="clickTd(this)">test/test/sleep</a></td>
-	<td><a onclick="clickTd(this)">test/test/businessException</a></td>
+	<td><a onclick="clickTd(this)" method="post">test/test/businessException</a></td>
 </tr>
 <tr>
 	<td><a onclick="clickTd(this)">test/test/error</a></td>

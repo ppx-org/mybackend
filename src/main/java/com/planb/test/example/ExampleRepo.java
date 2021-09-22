@@ -7,7 +7,6 @@ import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.planb.common.jdbc.page.MyCriteria;
-import com.planb.test.TestExample;
 
 
 interface ExampleRepo extends PagingAndSortingRepository<Example, Integer> {

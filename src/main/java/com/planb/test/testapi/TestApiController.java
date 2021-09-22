@@ -21,19 +21,18 @@ public class TestApiController {
     }
     
     @GetMapping("get") @ResponseBody
-    String get() {
-    	return "testApiGet";
+    String get(Integer id) {
+    	return "testApiGet:" + id;
     }
     
     @PostMapping("post") @ResponseBody
-    String post() {
-    	return "testApiPost";
+    String post(Integer id) {
+    	return "testApiPost:" + id;
     }
     
     @PostMapping("submit") @ResponseBody
-    String submit(Integer id, String name) {
-    	
-    	return "submit:" + id + "|" + name;
+    String submit(TestBean bean) {
+    	return "submit:" + bean.getId() + "|" + bean.getName() + "|" + bean.getDate() + "|" + bean.getDateTime();
     }
     
 

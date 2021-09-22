@@ -5,7 +5,7 @@ public class ModuleConfig {
 	
 	public final static String TESTAPI = "testapi";
 	
-	public final static String ADMIN = "admin";
+	public final static String SECURITY = "security";
 	
 
 }

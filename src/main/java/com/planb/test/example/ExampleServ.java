@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.planb.common.controller.MyContext;
 import com.planb.common.jdbc.MyDaoSupport;
 import com.planb.common.jdbc.page.MyCriteria;
-import com.planb.test.TestExample;
 
 @Service
 public class ExampleServ extends MyDaoSupport {
