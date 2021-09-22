@@ -1,4 +1,4 @@
-package com.planb.example;
+package com.planb.test.example;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

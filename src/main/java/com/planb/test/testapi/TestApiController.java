@@ -1,4 +1,4 @@
-package com.planb.test.api;
+package com.planb.test.testapi;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,9 +6,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.planb.common.conf.ModuleConfig;
+
 
 @Controller
-@RequestMapping("/testapi")
+@RequestMapping(ModuleConfig.TEST + "/testapi")
 public class TestApiController {
    
     @RequestMapping("/home")

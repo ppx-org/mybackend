@@ -6,6 +6,7 @@
 <script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
+
 let inReq = false;
 
 function test() {
@@ -18,6 +19,7 @@ function test() {
 	$("#result").css("color", "");
 	$("#reqButton").attr("disabled", true);
 	$("#reqButton").text("......");
+	$("#spend").text("");
 	
 	let token = $("#token").val();
 	axios.interceptors.request.use(
@@ -33,19 +35,19 @@ function test() {
 	);
 	
 	let url = [[@{/}]] + $("#url").val();
+	let t_begin = new Date().getTime();
 	axios.get(url).then(function(response) {
-		
-		console.log(response);	
+		console.log(response);
 		document.getElementById("result").value = JSON.stringify(response.data);
 	}).catch(function (error) {
 		$("#result").css("color", "red");
-		
 		let data = JSON.stringify(error.response.data);
 		$("#result").val(error + "\n" + data);
 	}).finally(()=>{
 		$("#reqButton").removeAttr("disabled");
 		$("#reqButton").text("go");
 		inReq = false;
+		$("#spend").text(new Date().getTime() - t_begin);
 	})
 }
 
@@ -55,13 +57,13 @@ $(document).keyup(function(event) {
 	}
 });
 
-function clickTable(obj) {
+function clickTd(obj) {
 	$("#url").val($(obj).text());
 	test();
 }
 </script>
 <style type="text/css">
-a:visited  { color:blue; }
+a:visited {color:blue;}
 </style>
 </head>
 
@@ -71,14 +73,15 @@ a:visited  { color:blue; }
 <div>
 <input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
 <br>
-<input type="text" id="url" style="width:300px" value="testapi/get">
-<button id="reqButton" onclick="test()" style="width:60px">go</button>
+<input type="text" id="url" style="width:300px" value="test/testapi/get">
+<button type="button" id="reqButton" onclick="test()" style="width:60px">go</button>
+<span>用时(ms):</span><span id="spend"></span>
 </div>
 
 <table border="1">
 <tr>
-<td><a href="#this" onclick="clickTable(this)">test/test</a></td>
-<td><a href="#this" onclick="clickTable(this)">example/page</a></td>
+<td><a href="#this" onclick="clickTd(this)">test/test/test</a></td>
+<td><a href="#this" onclick="clickTd(this)">test/example/page</a></td>
 </tr>
 </table>
 

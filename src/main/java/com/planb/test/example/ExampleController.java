@@ -1,4 +1,4 @@
-package com.planb.example;
+package com.planb.test.example;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.planb.common.conf.ModuleConfig;
 import com.planb.common.exception.MyExceptionHandler;
 import com.planb.test.TestExample;
 
 
 @RestController
-@RequestMapping("example")
+@RequestMapping(ModuleConfig.TEST + "/example")
 public class ExampleController {
 	
 	Logger logger = LoggerFactory.getLogger(ExampleController.class);

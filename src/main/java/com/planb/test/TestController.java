@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.planb.common.conf.ModuleConfig;
 import com.planb.common.controller.MyContext;
 
 
 @RestController
-@RequestMapping("test")
+@RequestMapping(ModuleConfig.TEST + "/test")
 public class TestController {
 	@Autowired
     TestServ testServ;

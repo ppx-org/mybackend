@@ -1,5 +1,5 @@
 
-package com.planb.example;
+package com.planb.test.example;
 
 
 import java.time.LocalDate;
