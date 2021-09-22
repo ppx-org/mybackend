@@ -6,8 +6,6 @@
 <script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
-
-
 let inReq = false;
 
 function test() {
@@ -21,7 +19,7 @@ function test() {
 	$("#reqButton").attr("disabled", true);
 	$("#reqButton").text("......");
 	
-	let token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ";
+	let token = $("#token").val();
 	axios.interceptors.request.use(
 		config => {
 		    if (token) {
@@ -83,8 +81,6 @@ a:visited  { color:blue; }
 <td><a href="#this" onclick="clickTable(this)">example/page</a></td>
 </tr>
 </table>
-
-
 
 <div style="margin-top:10px">
 <textarea id="result" rows="8" style="width:1024px"></textarea>
