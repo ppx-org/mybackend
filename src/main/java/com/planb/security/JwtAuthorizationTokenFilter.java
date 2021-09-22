@@ -1,6 +1,7 @@
 package com.planb.security;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,50 +17,49 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.planb.security.jwt.JwtTokenUtil;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.planb.security.jwt.JwtTokenUtils;
+
+import net.sf.jsqlparser.statement.alter.AlterSystemOperation;
 
 @Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 
 	private final UserDetailsService userDetailsService;
-	private final JwtTokenUtil jwtTokenUtil;
 	private final String tokenHeader;
 
 	public JwtAuthorizationTokenFilter(@Qualifier("jwtUserDetailsService") UserDetailsService userDetailsService,
-			JwtTokenUtil jwtTokenUtil, @Value("${jwt.token}") String tokenHeader) {
+			@Value("${jwt.token}") String tokenHeader) {
 		this.userDetailsService = userDetailsService;
-		this.jwtTokenUtil = jwtTokenUtil;
 		this.tokenHeader = tokenHeader;
 	}
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-			throws ServletException, IOException {
-		System.out.println("99999999999:" + this.tokenHeader);
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
+			throws IOException, ServletException {
 		// Authorization: Bearer <token>
 		final String requestHeader = request.getHeader(this.tokenHeader);
-		String username = null;
-		String authToken = null;
+		String userId = null;
 		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-			authToken = requestHeader.substring(7);
-//			try {
-				username = jwtTokenUtil.getUserNameFromToken(authToken);
-//			} catch (ExpiredJwtException e) {
-//			}
-		}
-
-		// if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-			System.out.println("cccccc1:" + userDetails);
-			System.out.println("cccccc3:" + jwtTokenUtil.validateToken(authToken, userDetails));
-			if (jwtTokenUtil.validateToken(authToken, userDetails)) {
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+			String authToken = requestHeader.substring(7);
+			try {
+				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
+				userId = claimsSet.getStringClaim("userId");
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-		// }
+			if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
+				
+				
+				if (JwtTokenUtils.validateToken(authToken, userDetails)) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			}
+		}
 		chain.doFilter(request, response);
 	}
 }

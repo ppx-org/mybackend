@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.planb.common.conf.ErrorCodeConfig;
 
 
 @RestControllerAdvice
@@ -31,21 +32,16 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
 		final Response<Object> result = new Response<>();
-		
-		System.out.println(">>>>>>>>>>  >>>>00:" + selectedConverterType);
-		System.out.println(">>>>>>>>>>  >>>>01:" + body.getClass());
-		// 404
+		// 404 401
 		if (LinkedHashMap.class.equals(body.getClass())) {
 			Map<String, Object> bodyMap = (Map)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
-				result.setCode(4040);
+				result.setCode(ErrorCodeConfig.NOT_FOUND);
 				result.setMsg("Not Found:" + bodyMap.get("path"));
 				response.setStatusCode(HttpStatus.OK);
 				return result;
 			}
 		}
-		
-		
 		
 		if (body instanceof Response) {
 			return body;

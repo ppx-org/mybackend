@@ -29,9 +29,10 @@ public class SecurityUserDetails extends SysUser implements UserDetails {
     // 验证：boolean matches = encoder.matches(pass, passHash);
     
 
-    public SecurityUserDetails(String userName, Collection<? extends GrantedAuthority> authorities){
+    public SecurityUserDetails(String userId, Collection<? extends GrantedAuthority> authorities){
         this.authorities = authorities;
-        this.setUserName(userName);
+        this.setUserId(Integer.parseInt(userId));
+        this.setUserName(userId);
         String encode = new BCryptPasswordEncoder(5).encode("123456");
         this.setPassword(encode);
         this.setAuthorities(authorities);

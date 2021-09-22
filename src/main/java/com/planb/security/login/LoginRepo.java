@@ -12,8 +12,8 @@ import com.planb.security.user.SysUser;
 interface LoginRepo extends CrudRepository<AuthUser, Integer> {
 	
 	@Query("""
-	       select user_id, user_name user_password from auth_user where user_name = :userName 
+	       select user_id, user_name, user_password from auth_user where user_name = :userName 
 	    """)
-	Optional<SysUser> getUserPassword(String userName);
+	Optional<AuthUser> getAuthUser(String userName);
 	
 }

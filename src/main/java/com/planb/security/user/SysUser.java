@@ -10,9 +10,18 @@ import org.springframework.security.core.GrantedAuthority;
  *
  */
 public class SysUser {
+	private Integer userId;
 	private String userName;
 	private String password;
 	private Collection<? extends GrantedAuthority> authorities;
+	
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
 
 	public String getUserName() {
 		return userName;

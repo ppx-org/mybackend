@@ -1,5 +1,6 @@
 package com.planb.security.jwt;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
@@ -14,6 +16,7 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.planb.common.conf.DateConfig;
 
@@ -26,60 +29,47 @@ import com.planb.common.conf.DateConfig;
  *
  */
 @Component
-public class JwtTokenUtil {
-	private static long tokenExpiration = 24 * 60 * 60 * 1000;
-    private static String tokenSignKey = "012345678901234567890123456789AB";
-    private static String userRoleKey = "userRole";
+public class JwtTokenUtils {
+	private static long TOKEN_EXPIRES_SECORDS = 60 * 5;
+    private static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
+    // private static String USER_ROLE_KEY = "userRole";
     
     public static String createToken(Map<String, Object> claimMap) {
     	Jwt jwt = Jwt.withTokenValue("token").header("typ", "JWT")
     			.claims(map -> {
     				map.putAll(claimMap);
     			})
-    			.expiresAt(Instant.now().plusSeconds(60*5))
+    			.expiresAt(Instant.now().plusSeconds(TOKEN_EXPIRES_SECORDS))
     			.build();
     	String token;
     	try {
         	String payLoadJson = DateConfig.instantObjectMapper().writeValueAsString(jwt.getClaims());
     		JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256), new Payload(payLoadJson));
-    		jwsObject.sign(new MACSigner(tokenSignKey.getBytes()));
+    		jwsObject.sign(new MACSigner(TOKEN_SIGN_KEY.getBytes()));
             token =  jwsObject.serialize();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
     	
-    	
         return token;
     }
     
-    
- 
-    public static String createToken(String userName, String role) {
-    	//  .claim(userRoleKey, role)
-        String token = null;
-        return token;
-    }
- 
-    public static String getUserNameFromToken(String token) {
-    	try {
-    		System.out.println("xxxxxxxxtoken:" + token);
-    		JWSVerifier jwsVerifier = new MACVerifier(tokenSignKey.getBytes());
-    		SignedJWT sjwt = SignedJWT.parse(token);
-    		boolean b = sjwt.verify(jwsVerifier);
-    		System.out.println(">>>>>>>>>>verity::" + b);
-    		System.out.println(">>>>>>>set::" + sjwt.getJWTClaimsSet());
-    		System.out.println(">>>>>>>expTime:" + sjwt.getJWTClaimsSet().getExpirationTime());
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-        return "";
-    }
- 
-    public static String getUserRoleFromToken(String token) {
-        return "";
+    public static JWTClaimsSet getClaimsFromToken(String token) throws ParseException {
+		SignedJWT sjwt = SignedJWT.parse(token);
+		return sjwt.getJWTClaimsSet();
     }
     
     public static boolean validateToken(String token, UserDetails userDetails) {
+    	try {
+    		JWSVerifier jwsVerifier = new MACVerifier(TOKEN_SIGN_KEY.getBytes());
+    		SignedJWT sjwt = SignedJWT.parse(token);
+    		boolean verify = sjwt.verify(jwsVerifier);
+    		if (verify == false) {
+    			return false;
+    		}
+		} catch (Exception e) {
+			return false;
+		}
     	return true;
     }
 }

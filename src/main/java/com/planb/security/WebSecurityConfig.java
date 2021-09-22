@@ -30,7 +30,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     	
 	    
     	http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-    		.and().authorizeRequests().antMatchers("/", "/home", "/testapi/**", "/static/**").permitAll()
+    		.and().authorizeRequests().antMatchers("/security/login/login", "/", "/home", "/test/testapi/**", "/static/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

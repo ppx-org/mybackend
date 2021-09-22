@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.planb.common.conf.ErrorCodeConfig;
 import com.planb.common.controller.ResponseUtils;
 
 @Component
@@ -19,9 +20,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			org.springframework.security.core.AuthenticationException authException)
 			throws IOException, ServletException {
-		System.out.println("JwtAuthenticationEntryPoint:" + authException.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "没有凭证");
-        // response.sendRedirect("/login");
-        ResponseUtils.returnJson(response, 4030, "没有凭证");
+        ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "没有凭证");
 	}
 }

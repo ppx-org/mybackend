@@ -28,6 +28,7 @@ function test() {
 	$("#spend").text("");
 	
 	let token = $("#token").val();
+	/*
 	axios.interceptors.request.use(
 		config => {
 		    if (token) {
@@ -38,7 +39,7 @@ function test() {
 	  	err => {
 			return Promise.reject(err);
 	  	}
-	);
+	);*/
 	
 	let url = [[@{/}]] + $("#url").val();
 	let t_begin = new Date().getTime();
@@ -57,6 +58,7 @@ function test() {
 	}
 	
 	axios({
+		headers: {"Authorization": "Bearer " + token},
 		method: method,
 		url: url,
 		data: param
@@ -103,7 +105,7 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
+<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6ImFkbWluIiwidXNlcklkIjoiMSIsImV4cCI6MTYzMjMyMTg0OX0.T3NOnH1D0dnMHCIu6JY3SKmWjJpBf3NPEEINdVmoN34">
 <br>
 <input type="text" id="url" style="width:300px" value="security/login/login">
 

@@ -31,13 +31,3 @@ INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (4, 5);
 
 
 
-
-
-
-
-
-
-
-
-
-
