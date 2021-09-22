@@ -4,11 +4,17 @@
 <title></title>
 <script type="text/javascript" th:src="@{/static/axios/axios.min.js}"></script>
 <script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/qs.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
 
 let inReq = false;
 
+function resetReq() {
+	$("#reqButton").removeAttr("disabled");
+	$("#reqButton").text("go");
+	inReq = false;
+}
 function test() {
 	if (inReq) {
 		alert("请求中...")
@@ -36,7 +42,25 @@ function test() {
 	
 	let url = [[@{/}]] + $("#url").val();
 	let t_begin = new Date().getTime();
-	axios.get(url).then(function(response) {
+	let method = $("#post").prop("checked") ? "post" : "get";
+	let param = "";
+	if ($.trim($("#param").val()) != "") {
+		try {
+			let paramJson = JSON.parse($("#param").val());
+			param = Qs.stringify(paramJson);
+		}
+		catch(e) {
+			alert("参数出错:" + e);
+			resetReq();
+			return;
+		}
+	}
+	
+	axios({
+		method: method,
+		url: url,
+		data: param
+	}).then(function(response) {
 		console.log(response);
 		document.getElementById("result").value = JSON.stringify(response.data);
 	}).catch(function (error) {
@@ -44,11 +68,10 @@ function test() {
 		let data = JSON.stringify(error.response.data);
 		$("#result").val(error + "\n" + data);
 	}).finally(()=>{
-		$("#reqButton").removeAttr("disabled");
-		$("#reqButton").text("go");
-		inReq = false;
 		$("#spend").text(new Date().getTime() - t_begin);
+		resetReq();
 	})
+
 }
 
 $(document).keyup(function(event) {
@@ -59,6 +82,13 @@ $(document).keyup(function(event) {
 
 function clickTd(obj) {
 	$("#url").val($(obj).text());
+	if ($(obj).attr("method") == "post") {
+		$("#post").prop("checked", true);
+	}
+	else {
+		$("#get").prop("checked", true);
+	}
+	$("#param").val($(obj).attr("param"))
 	test();
 }
 </script>
@@ -75,12 +105,26 @@ a:visited {color: blue;}
 <div>
 <input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
 <br>
-<input type="text" id="url" style="width:300px" value="test/testapi/get">
+<input type="text" id="url" style="width:300px" value="test/testapi/submit">
+
+<input type="radio" id="get" name="method"><label for="get">GET</label>
+<input type="radio" id="post" name="method" checked="checked"><label for="post">POST</label>
+
+
 <button type="button" id="reqButton" onclick="test()" style="width:60px">go</button>
 <span>用时(ms):</span><span id="spend"></span>
 </div>
 
+<div>
+<textarea id="param" rows="3" style="width:1024px"></textarea>
+</div>
+
 <table border="1" id="myTable">
+<tr>
+	<td><a onclick="clickTd(this)" method="get">test/testapi/get</a></td>
+	<td><a onclick="clickTd(this)" method="post">test/testapi/post</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"id":123, "name":"myname"}'>test/testapi/submit</a></td>
+</tr>
 <tr>
 	<td><a onclick="clickTd(this)">test/test/hello</a></td>
 	<td><a onclick="clickTd(this)">test/test/sleep</a></td>

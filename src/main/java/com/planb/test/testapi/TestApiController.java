@@ -1,9 +1,10 @@
 package com.planb.test.testapi;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.planb.common.conf.ModuleConfig;
@@ -13,17 +14,27 @@ import com.planb.common.conf.ModuleConfig;
 @RequestMapping(ModuleConfig.TEST + "/testapi")
 public class TestApiController {
    
-    @RequestMapping("/home")
-    ModelAndView api() {
+	@GetMapping("home")
+    ModelAndView home() {
     	ModelAndView mv = new ModelAndView("test/testapi");
     	return mv;
     }
     
-    @RequestMapping("/get")
-    @ResponseBody
+    @GetMapping("get") @ResponseBody
     String get() {
-    	System.out.println("------get");
-    	return "getMyName";
+    	return "testApiGet";
     }
+    
+    @PostMapping("post") @ResponseBody
+    String post() {
+    	return "testApiPost";
+    }
+    
+    @PostMapping("submit") @ResponseBody
+    String submit(Integer id, String name) {
+    	
+    	return "submit:" + id + "|" + name;
+    }
+    
 
 }
