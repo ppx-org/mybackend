@@ -20,7 +20,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 			org.springframework.security.core.AuthenticationException authException)
 			throws IOException, ServletException {
 		System.out.println("JwtAuthenticationEntryPoint:" + authException.getMessage());
-        // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "没有凭证");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "没有凭证");
         // response.sendRedirect("/login");
         ResponseUtils.returnJson(response, 4030, "没有凭证");
 	}

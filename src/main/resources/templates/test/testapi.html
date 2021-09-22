@@ -63,7 +63,9 @@ function clickTd(obj) {
 }
 </script>
 <style type="text/css">
-a:visited {color:blue;}
+a:visited {color: blue;}
+
+#myTable a {text-decoration: underline; color: blue; cursor: pointer;}
 </style>
 </head>
 
@@ -78,10 +80,19 @@ a:visited {color:blue;}
 <span>用时(ms):</span><span id="spend"></span>
 </div>
 
-<table border="1">
+<table border="1" id="myTable">
 <tr>
-<td><a href="#this" onclick="clickTd(this)">test/test/test</a></td>
-<td><a href="#this" onclick="clickTd(this)">test/example/page</a></td>
+	<td><a onclick="clickTd(this)">test/test/hello</a></td>
+	<td><a onclick="clickTd(this)">test/test/sleep</a></td>
+	<td><a onclick="clickTd(this)">test/test/businessException</a></td>
+</tr>
+<tr>
+	<td><a onclick="clickTd(this)">test/test/error</a></td>
+	<td><a onclick="clickTd(this)">test/test/error?id=ABC</a></td>
+</tr>
+
+<tr>
+<td><a onclick="clickTd(this)">test/example/page</a></td>
 </tr>
 </table>
 

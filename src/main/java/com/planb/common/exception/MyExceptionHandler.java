@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.planb.common.conf.ErrorCodeConfig;
 import com.planb.common.controller.Response;
 import com.planb.common.controller.ResponseUtils;
 
@@ -30,7 +31,7 @@ public class MyExceptionHandler implements HandlerExceptionResolver {
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object,
 			Exception exception) {
 		
-		long t = ResponseUtils.returnJson(response, 5000, exception.getMessage());
+		long t = ResponseUtils.returnJson(response, ErrorCodeConfig.ERROR, exception.getMessage());
 		logger.error("ERROR-" + t, exception);
 		
 		return null;

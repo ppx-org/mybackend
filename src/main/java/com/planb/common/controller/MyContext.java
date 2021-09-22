@@ -1,5 +1,8 @@
 package com.planb.common.controller;
 
+import java.util.Optional;
+
+import com.planb.common.conf.ErrorCodeConfig;
 
 /**
  * 分配权限上下文
@@ -28,9 +31,10 @@ public class MyContext {
 	}
 	
 	// 业务异常
-	public static void setBusinessException(String msg) {
-		MyContext.getResponseCode().set(4000);
+	public static String setBusinessException(String msg) {
+		MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
 		MyContext.getResponseMsg().set(msg);
+		return "";
 	}
 
 	
