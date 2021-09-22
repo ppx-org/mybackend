@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title></title>
+<script type="text/javascript" th:src="@{/static/axios/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+
+let inReq = false;
+
+function test() {
+	if (inReq) {
+		alert("请求中...")
+		return;
+	}
+	inReq = true;
+	$("#result").val("");
+	$("#result").css("color", "");
+	$("#reqButton").attr("disabled", true);
+	$("#reqButton").text("......");
+	
+	let token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ";
+	axios.interceptors.request.use(
+		config => {
+		    if (token) {
+		      config.headers.Authorization = `Bearer ${token}`;
+		    }
+		    return config;
+	  	},
+	  	err => {
+			return Promise.reject(err);
+	  	}
+	);
+	
+	let url = [[@{/}]] + $("#url").val();
+	axios.get(url).then(function(response) {
+		
+		console.log(response);	
+		document.getElementById("result").value = JSON.stringify(response.data);
+	}).catch(function (error) {
+		$("#result").css("color", "red");
+		
+		let data = JSON.stringify(error.response.data);
+		$("#result").val(error + "\n" + data);
+	}).finally(()=>{
+		$("#reqButton").removeAttr("disabled");
+		$("#reqButton").text("go");
+		inReq = false;
+	})
+}
+
+$(document).keyup(function(event) {
+	if (event.keyCode == 13) {
+	  test();
+	}
+});
+
+function clickTable(obj) {
+	$("#url").val($(obj).text());
+	test();
+}
+</script>
+<style type="text/css">
+a:visited  { color:blue; }
+</style>
+</head>
+
+
+<body>
+
+<div>
+<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiIxMjMiLCJleHAiOjE2MzE4NzMwMjZ9.fZTCvgFl7Q8wYuSdHLC1h9km-jg_ciSoMyVJbGhAXtQ">
+<br>
+<input type="text" id="url" style="width:300px" value="testapi/get">
+<button id="reqButton" onclick="test()" style="width:60px">go</button>
+</div>
+
+<table border="1">
+<tr>
+<td><a href="#this" onclick="clickTable(this)">test/test</a></td>
+<td><a href="#this" onclick="clickTable(this)">example/page</a></td>
+</tr>
+</table>
+
+
+
+<div style="margin-top:10px">
+<textarea id="result" rows="8" style="width:1024px"></textarea>
+</div>
+
+</body>
+</html>
+

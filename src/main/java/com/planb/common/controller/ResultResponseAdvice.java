@@ -1,7 +1,11 @@
 package com.planb.common.controller;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -26,16 +30,28 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
-		
+		final Response<Object> result = new Response<>();
 		
 		System.out.println(">>>>>>>>>>  >>>>00:" + selectedConverterType);
 		System.out.println(">>>>>>>>>>  >>>>01:" + body.getClass());
+		// 404
+		if (LinkedHashMap.class.equals(body.getClass())) {
+			Map<String, Object> bodyMap = (Map)body;
+			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
+				result.setCode(4040);
+				result.setMsg("Not Found:" + bodyMap.get("path"));
+				response.setStatusCode(HttpStatus.OK);
+				return result;
+			}
+		}
+		
+		
 		
 		if (body instanceof Response) {
 			return body;
 		}
 		
-		final Response<Object> result = new Response<>();
+		
 		result.setCode(MyContext.getResponseCode().get());
 		result.setMsg(MyContext.getResponseMsg().get());
 		result.setContent(body);

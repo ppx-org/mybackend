@@ -16,13 +16,20 @@ import com.planb.common.controller.MyContext;
 
 
 @RestController
+@RequestMapping("test")
 public class TestController {
+	@Autowired
     TestServ testServ;
-
-    @Autowired
-    public TestController(TestServ testServ) {
-        this.testServ = testServ;
-    }
+    
+	@RequestMapping("test")
+    String test(Integer arg) {
+		try {
+			Thread.sleep(3000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return "test";
+	}
     
     @RequestMapping("/test001")
     String test001() {
@@ -53,8 +60,8 @@ alter sequence test_example_example_id_seq restart with 300;
      * @param pageable
      * @return
      */
-    @RequestMapping("/test")
-    Page<TestExample> test(Pageable pageable) {
+    @RequestMapping("/page")
+    Page<TestExample> page(Pageable pageable) {
     	
     	ObjectMapper objectMapper = new ObjectMapper();
         

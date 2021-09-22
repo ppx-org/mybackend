@@ -22,6 +22,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		System.out.println("JwtAuthenticationEntryPoint:" + authException.getMessage());
         // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "没有凭证");
         // response.sendRedirect("/login");
-        ResponseUtils.returnJson(response, 4000, "没有凭证");
+        ResponseUtils.returnJson(response, 4030, "没有凭证");
 	}
 }

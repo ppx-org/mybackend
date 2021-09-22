@@ -19,7 +19,7 @@ import com.planb.test.TestExample;
 
 
 @RestController
-@RequestMapping("/example")
+@RequestMapping("example")
 public class ExampleController {
 	
 	Logger logger = LoggerFactory.getLogger(ExampleController.class);
@@ -27,7 +27,7 @@ public class ExampleController {
 	@Autowired
     ExampleServ serv;
 	
-	@RequestMapping("/page")
+	@RequestMapping("page")
     Page<Example> page(Example entity, Pageable pageable) {
     	return serv.page(entity, pageable);
     }

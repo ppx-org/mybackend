@@ -13,7 +13,7 @@ public class TestApiController {
    
     @RequestMapping("/home")
     ModelAndView api() {
-    	ModelAndView mv = new ModelAndView("test/api");
+    	ModelAndView mv = new ModelAndView("test/testapi");
     	return mv;
     }
     

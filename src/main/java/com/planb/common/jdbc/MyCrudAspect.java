@@ -39,22 +39,8 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 
 @Aspect
 @Component
-public class MyAspect extends MyDaoSupport {
-	
-	private String getCountSql(String sql) {
-		try {
-			Select stmt = (Select) CCJSqlParserUtil.parse(sql);
-	        List<SelectItem> list = new ArrayList<SelectItem>();
-	        SelectItem selectItem = new SelectExpressionItem(new Column("count(*) as c"));
-	        list.add(selectItem);
-	        ((PlainSelect)stmt.getSelectBody()).setSelectItems(list);
-			return ((PlainSelect)stmt.getSelectBody()).toString();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	
+public class MyCrudAspect extends MyDaoSupport {
+
 	@Around("this(org.springframework.data.repository.CrudRepository)")
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
 		
@@ -121,5 +107,18 @@ public class MyAspect extends MyDaoSupport {
 		
 		Page<?> page = new PageImpl(list, pageable, c);
 		return page;
+	}
+	
+	private String getCountSql(String sql) {
+		try {
+			Select stmt = (Select) CCJSqlParserUtil.parse(sql);
+	        List<SelectItem> list = new ArrayList<SelectItem>();
+	        SelectItem selectItem = new SelectExpressionItem(new Column("count(*) as c"));
+	        list.add(selectItem);
+	        ((PlainSelect)stmt.getSelectBody()).setSelectItems(list);
+			return ((PlainSelect)stmt.getSelectBody()).toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
