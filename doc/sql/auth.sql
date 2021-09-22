@@ -24,7 +24,6 @@ create table auth_user_role (
 );
 comment on table auth_user_in_role is '用户所属角色';
 
-
 create table auth_res (
 	res_id serial not null,
 	res_name varchar(32) not null,
