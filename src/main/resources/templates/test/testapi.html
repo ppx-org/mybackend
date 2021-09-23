@@ -16,6 +16,10 @@ function resetReq() {
 	inReq = false;
 }
 
+$(function(){ 
+	$("#token").val(localStorage.getItem("my_token"));
+})
+
 // axios config
 axios.interceptors.request.use(
 	config => {
@@ -123,7 +127,7 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QiLCJ1c2VyUm9sZSI6WzEsMl0sInVzZXJJZCI6MiwidmVyc2lvbiI6MywiZXhwIjoxNjMyMzkzMzQzfQ.rPmVK228JBfipXJeGQInjbvRuEnr_eTaNzut_GTaOcc">
+<input type="text" id="token" style="width:1024px" value="">
 <button onclick="saveToken()">save</button>
 <br>
 <input type="text" id="url" style="width:300px" value="security/login/login">
