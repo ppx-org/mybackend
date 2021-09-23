@@ -49,6 +49,13 @@ create table auth_res_uri (
 );
 comment on table auth_res_uri is '资源拥有的URI';
 
+create table auth_role_res (
+	role_id int not null,
+	res_id int not null,
+	primary key(role_id, res_id)
+);
+comment on table auth_role_res is '角色拥有的资源';
+
 
 -- >>>>>>>>>>>>>>>>>> 缓存
 create table auth_cache_user_jwt (

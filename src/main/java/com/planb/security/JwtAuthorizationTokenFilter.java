@@ -67,7 +67,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 				boolean validateToken = JwtTokenUtils.validateToken(authToken, userDetails);
 				boolean uriPermission = true;
 				if (validateToken) {
-					uriPermission = permissionService.uriPermission(userId, roleIdList);
+					uriPermission = permissionService.uriPermission(request.getRequestURI(), userId, roleIdList);
 					request.setAttribute("uriPermission", uriPermission);
 				}
 				

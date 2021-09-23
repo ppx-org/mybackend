@@ -40,6 +40,10 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 @Aspect
 @Component
 public class MyCrudAspect extends MyDaoSupport {
+	
+	enum QueryType { 
+	    DEFAULT, PAGE, LIST_MAP;
+	} 
 
 	@Around("this(org.springframework.data.repository.CrudRepository)")
 	public Object aroundAdvice(ProceedingJoinPoint jp) throws Throwable {
@@ -49,24 +53,19 @@ public class MyCrudAspect extends MyDaoSupport {
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
         
+        System.out.println("cccccccccc:" + ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0]);
         
-        if ("java.util.List<java.util.Map<java.lang.String, java.lang.Object>>".equals(method.getGenericReturnType().toString())) {
-        	System.out.println("xxxxxxxx=========6666");
-        	
-        	// 加上参数
-        	String querySql = method.getAnnotationsByType(Query.class)[0].value();
-        	var paramMap = new HashMap<String, Object>();
-        	NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
-    		List<Map<String, Object>> list = nameTemplate.queryForList(querySql, paramMap);
-    		return list;
+        // 根据returnType分类
+        Enum<?> queryType = QueryType.DEFAULT;
+        if (returnClass.equals(Page.class)) {
+        	queryType = QueryType.PAGE;
         }
-        
-        
-        if (!returnClass.equals(Page.class)) {
+        else if ("java.util.List<java.util.Map<java.lang.String, java.lang.Object>>".equals(method.getGenericReturnType().toString())) {
+        	queryType = QueryType.LIST_MAP;
+        }
+        else {
         	return jp.proceed();
-        }
-        
-        
+        }        
         
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
@@ -84,45 +83,54 @@ public class MyCrudAspect extends MyDaoSupport {
         	paramMap.put(p.getName(), jp.getArgs()[i]);
 		}
         
-        String cSql = myCriteria.toString();
-        paramMap.putAll(myCriteria.getParamMap());
-		String querySql = method.getAnnotationsByType(Query.class)[0].value();
-		
-		
-        String preWhere = myCriteria.isBeginWhere() ? "WHERE " : "AND ";
-    	if (cSql.startsWith(" AND ")) {
-    		cSql = preWhere + cSql.replaceFirst(" AND ", "");
-    	}
-    	else if (Strings.isNotEmpty(cSql)) {
-    		cSql = preWhere + cSql;
-    	}
-    	
-    	List<String> orderList = new ArrayList<String>();
-    	pageable.getSort().toList().forEach(m -> {
-    		orderList.add(m.getProperty() + " " + m.getDirection());
-    	});
-    	
-    	querySql = querySql.replace("${c}", cSql);
+        String querySql = method.getAnnotationsByType(Query.class)[0].value();
+        List<String> orderList = new ArrayList<String>();
+        if (myCriteria != null) {
+        	String cSql = myCriteria.toString();
+            paramMap.putAll(myCriteria.getParamMap());
+    		
+            String preWhere = myCriteria.isBeginWhere() ? "WHERE " : "AND ";
+        	if (cSql.startsWith(" AND ")) {
+        		cSql = preWhere + cSql.replaceFirst(" AND ", "");
+        	}
+        	else if (Strings.isNotEmpty(cSql)) {
+        		cSql = preWhere + cSql;
+        	}
+        	pageable.getSort().toList().forEach(m -> {
+        		orderList.add(m.getProperty() + " " + m.getDirection());
+        	});
+        	
+        	querySql = querySql.replace("${c}", cSql);
+        }
+        
     	
     	NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
-    	String countSql = getCountSql(querySql.trim());
-    	int c = nameTemplate.queryForObject(countSql, paramMap, Integer.class);
-    	if (c == 0) {
-    		return new PageImpl<Object>(new ArrayList<>(), pageable, c);
-    	}
     	
-    	if (!pageable.getSort().isEmpty()) {
-    		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
+    	if (queryType == QueryType.PAGE) {
+    		String countSql = getCountSql(querySql.trim());
+        	int c = nameTemplate.queryForObject(countSql, paramMap, Integer.class);
+        	if (c == 0) {
+        		return new PageImpl<Object>(new ArrayList<>(), pageable, c);
+        	}
+        	
+        	if (!pageable.getSort().isEmpty()) {
+        		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
+        	}
+        	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
+        	
+    		
+    		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
+    		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
+    		
+    		
+    		Page<?> page = new PageImpl(list, pageable, c);
+    		return page;
     	}
-    	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
-    	
-		
-		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
-		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
-		
-		
-		Page<?> page = new PageImpl(list, pageable, c);
-		return page;
+    	else if (queryType == QueryType.LIST_MAP) {
+    		List<Map<String, Object>> list = nameTemplate.queryForList(querySql, paramMap);
+    		return list;
+    	}
+    	return null;
 	}
 	
 	private String getCountSql(String sql) {

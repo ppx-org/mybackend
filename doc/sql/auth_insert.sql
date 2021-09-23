@@ -12,11 +12,12 @@ INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (2, 2);
 INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (3, 2);
 
 
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (1, 'example/*');
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (2, 'example/test/*');
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (3, 'example/test/page');
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (4, 'example/test/insert');
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (5, 'example/test/update');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (1, '/test/*');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (2, '/test/example/*');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (3, '/test/example/page');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (4, '/test/example/insert');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (5, '/test/example/update');
+
 
 INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (1, '测试目录', 0, 'd', NULL);
 INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (2, '测试菜单', 1, 'm', NULL);

@@ -13,7 +13,14 @@ interface PermissionRepo extends CrudRepository<AuthUri, Integer> {
 	
 	@Query("""
 	       select uri_id, uri_path from auth_uri
-	    """)
+	""")
 	List<Map<String, Object>> listUri();
 	
+	
+
+	
+	@Query("""
+			select role_id, array_to_string(ARRAY(SELECT unnest(array_agg(res_id))),',') res_ids from auth_role_res group by role_id
+	""")
+	List<Map<String, Object>> listRoleRes();
 }

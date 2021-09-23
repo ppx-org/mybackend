@@ -39,22 +39,22 @@ alter sequence test_example_example_id_seq restart with 300;
     	return serv.page(entity, pageable);
     }
     
-	@RequestMapping("/insert")
+	@RequestMapping("insert")
     void insert(Example entity) {
 		serv.insert(entity);
     }
 	
-	@RequestMapping("/update")
+	@RequestMapping("update")
     void update(Example entity) {
 		serv.update(entity);
     }
 	
-	@RequestMapping("/get")
+	@RequestMapping("get")
 	Example get(Integer id) {
     	return serv.get(id);
     }
 	
-	@RequestMapping("/delete")
+	@RequestMapping("delete")
     void delete(Integer id) {
 		serv.delete(id);
     }
