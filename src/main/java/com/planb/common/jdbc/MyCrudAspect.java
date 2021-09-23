@@ -53,7 +53,7 @@ public class MyCrudAspect extends MyDaoSupport {
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
         
-        System.out.println("cccccccccc:" + ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0]);
+        // System.out.println("cccccccccc:" + ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments());
         
         // 根据returnType分类
         Enum<?> queryType = QueryType.DEFAULT;

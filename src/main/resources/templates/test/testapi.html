@@ -64,12 +64,15 @@ function test() {
 		data: param
 	}).then(function(response) {
 		console.log(response);
+		if (response.headers.authorization) {
+			$("#token").val(response.headers.authorization.replace("Bearer ", ""));
+		}
 		document.getElementById("result").value = JSON.stringify(response.data);
 	}).catch(function (error) {
 		$("#result").css("color", "red");
 		let data = JSON.stringify(error.response.data);
 		$("#result").val(error + "\n" + data);
-	}).finally(()=>{
+	}).finally((response)=>{
 		$("#spend").text(new Date().getTime() - t_begin);
 		resetReq();
 	})
@@ -105,7 +108,7 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QiLCJ1c2VyUm9sZSI6WzEsMl0sInVzZXJJZCI6MiwiZXhwIjoxNjMyMzYzMzQyfQ.7aX6_kzRjL00IFiDfwu-38Q36LCUttsN07MrdRdD6nM">
+<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QiLCJ1c2VyUm9sZSI6WzEsMl0sInVzZXJJZCI6MiwidmVyc2lvbiI6MSwiZXhwIjoxNjMyMzg2MjQ2fQ.vZUG5BPCE9X3HYkM0b3N3CT7c35YJTfH6XYb8Cjm58E">
 <br>
 <input type="text" id="url" style="width:300px" value="security/login/login">
 

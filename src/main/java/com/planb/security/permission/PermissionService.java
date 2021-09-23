@@ -18,48 +18,71 @@ public class PermissionService {
 	@Autowired
 	PermissionRepo repo;
 	
-    public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList) {
-    	System.out.println(">>>>>>>>>uri:" + uri);
-    	System.out.println(">>>>>>>>>userId:" + userId);
-    	System.out.println(">>>>>>>>>roleIdList:" + roleIdList);
-    	
-    	// redis版本判断
-    	boolean authCacheVersion = true;
-    	if (authCacheVersion) {
-	    	// 加载uri
-	    	List<Map<String, Object>> uriList = repo.listUri();
-	    	PermissionCache.getUriMap().clear();
-	    	for (Map<String, Object> map : uriList) {
-	    		PermissionCache.loadUri((String)map.get("uri_path"), (Integer)map.get("uri_id"));
+	public AuthCacheVersion getAuthCacheVersionFromRedis(Integer userId) {
+		// 如果redis报错，从数据库中取
+		
+		AuthCacheVersion v = repo.getAuthCacheVersion(userId);
+		if (v.getUserJwtVersion() == null) {
+			int r = repo.initAuthCacheUserJwt(userId);
+			if (r == 1) {
+				// 更新redis
 			}
-	    	System.out.println(">>>>>>>>>>>>>>>getUriMap:" + PermissionCache.getUriMap());
-	    		    	
-	    	// role_id, array_to_string(ARRAY(SELECT unnest(array_agg(res_id))),',') res_ids
-	    	List<Map<String, Object>> roleReslist = repo.listRoleRes();
-	    	PermissionCache.getRoleBitSet().clear();
-	    	for (Map<String, Object> map : roleReslist) {
-				Integer roleId = (Integer)map.get("role_id");
-				String resIds = (String)map.get("res_ids");
-				String[] resIdArray = resIds.split(",");
-				BitSet resIdBitSet = new BitSet();
-				for (String resId : resIdArray) {
-					resIdBitSet.set(Integer.parseInt(resId));
-				}
-				PermissionCache.loadRoleRes(roleId, resIdBitSet);
+		}
+		if (v.getAuthVersion() == null) {
+			int r = repo.initAuthCacheVersion();
+			if (r == 1) {
+				// 更新redis
 			}
-	    	System.out.println(">>>>>>>>>>>>>>>betSet.....:" + PermissionCache.getRoleBitSet());
-    	}
+		}
+		
+		return v;
+	}
+	
+    public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
+    	synchronized(this) {
+    		// 权限变量时，重新加载
+    		if (PermissionCache.authCacheVersion != redisAuthCacheVersion) {
+    	    	// 加载uri
+    			PermissionCache.getUriMap().clear();
+    	    	List<Map<String, Object>> uriList = repo.listUri();
+    	    	for (Map<String, Object> map : uriList) {
+    	    		PermissionCache.loadUri((String)map.get("uri_path"), (Integer)map.get("uri_id"));
+    			}
+    	    	
+    	    	PermissionCache.getRoleBitSet().clear();
+    	    	List<Map<String, Object>> roleReslist = repo.listRoleRes();
+    	    	for (Map<String, Object> map : roleReslist) {
+    				Integer roleId = (Integer)map.get("role_id");
+    				String resIds = (String)map.get("res_ids");
+    				String[] resIdArray = resIds.split(",");
+    				BitSet resIdBitSet = new BitSet();
+    				for (String resId : resIdArray) {
+    					resIdBitSet.set(Integer.parseInt(resId));
+    				}
+    				PermissionCache.loadRoleRes(roleId, resIdBitSet);
+    			}
+    	    	PermissionCache.authCacheVersion = redisAuthCacheVersion;
+        	}
+		}
     	
-    	Integer uriId = PermissionCache.getUriMap().get(uri);
-    	if (uriId == null) {
+    	// uri = /test/example/page /test/examle/* /test/** /**
+    	String[] uriItem = uri.split("/");
+    	if (uriItem.length != 4) {
     		return false;
     	}
-    	for (Integer roleId : roleIdList) {
-    		if (PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
-    			return true;
+    	List<String> checkUriList = List.of(uri, "/" + uriItem[1] + "/" + uriItem[2] + "/*", "/" + uriItem[1] + "/**", "/**");
+    	for (String checkUri : checkUriList) {
+    		Integer uriId = PermissionCache.getUriMap().get(checkUri);
+    		if (uriId == null) {
+    			continue;
+    		}
+    		for (Integer roleId : roleIdList) {
+    			if (PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
+    				System.out.println(">>>>>>>>>>permission:" + roleId + "|" + checkUri);
+        			return true;
+        		}
     		}
     	}
-    	
     	return false;
     }
     

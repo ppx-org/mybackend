@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class PermissionCache {
 	
+	public static int authCacheVersion = 0;
+	
 	private static Map<String, Integer> uriMap = new HashMap<String, Integer>();
 	
 	private static Map<Integer, BitSet> roleBitSet = new HashMap<Integer, BitSet>();
