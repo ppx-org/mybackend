@@ -32,13 +32,12 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
 		final Response<Object> result = new Response<>();
-		// 404 401
+		// 404
 		if (LinkedHashMap.class.equals(body.getClass())) {
 			Map<String, Object> bodyMap = (Map)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
 				result.setCode(ErrorCodeConfig.NOT_FOUND);
 				result.setMsg("Not Found:" + bodyMap.get("path"));
-				response.setStatusCode(HttpStatus.OK);
 				return result;
 			}
 		}
