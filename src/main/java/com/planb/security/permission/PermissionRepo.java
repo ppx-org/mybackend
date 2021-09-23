@@ -26,14 +26,14 @@ interface PermissionRepo extends CrudRepository<MyEmpty, Integer> {
 	List<Map<String, Object>> listRoleUri();
 	
 	@Query("""
-		select (select user_jwt_version from auth_cache_jwt where user_id = :userId) user_jwt_version, 
+		select (select jwt_version from auth_cache_jwt where user_id = :userId) jwt_version, 
 			(select auth_version from auth_cache_version where auth_key = 'auth_cache_version') auth_version
 	""")
 	AuthCacheVersion getAuthCacheVersion(Integer userId);
 	
 	@Modifying
 	@Query("""
-		insert into auth_cache_jwt(user_id, user_jwt_version) select :userId, 0 
+		insert into auth_cache_jwt(user_id, jwt_version) select :userId, 0 
 		where not exists (select 1 from auth_cache_jwt where user_id = :userId)
 	""")
 	int initAuthCacheUserJwt(Integer userId);

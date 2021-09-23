@@ -22,7 +22,7 @@ public class PermissionService {
 		// 如果redis报错，从数据库中取
 		
 		AuthCacheVersion v = repo.getAuthCacheVersion(userId);
-		if (v.getUserJwtVersion() == null) {
+		if (v.getJwtVersion() == null) {
 			int r = repo.initAuthCacheUserJwt(userId);
 			if (r == 1) {
 				// 更新redis

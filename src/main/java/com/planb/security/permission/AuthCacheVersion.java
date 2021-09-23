@@ -1,15 +1,15 @@
 package com.planb.security.permission;
 
 public class AuthCacheVersion {
-	private Integer userJwtVersion;
+	private Integer jwtVersion;
 	private Integer authVersion;
 
-	public Integer getUserJwtVersion() {
-		return userJwtVersion;
+	public Integer getJwtVersion() {
+		return jwtVersion;
 	}
 
-	public void setUserJwtVersion(Integer userJwtVersion) {
-		this.userJwtVersion = userJwtVersion;
+	public void setJwtVersion(Integer jwtVersion) {
+		this.jwtVersion = jwtVersion;
 	}
 
 	public Integer getAuthVersion() {

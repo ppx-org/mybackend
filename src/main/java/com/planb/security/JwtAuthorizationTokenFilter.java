@@ -118,7 +118,7 @@ where role_id in (select role_id
 					
 					AuthCacheVersion redisAuthCacheVersion = permissionService.getAuthCacheVersionFromRedis(userId);
 					// 如果token版本不对，重新加载角色和重新生成token
-					if (redisAuthCacheVersion.getUserJwtVersion() != tokenVersion) {
+					if (redisAuthCacheVersion.getJwtVersion() != tokenVersion) {
 						// 返回token
 						Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
 				    	roleIdList = loginRepo.listRoleId(userId);
