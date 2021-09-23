@@ -1,6 +1,7 @@
 package com.planb.security.login;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,12 @@ public class LoginServ extends MyDaoSupport {
     	}
     	
     	// 返回token
+    	List<Integer> roleIdList = repo.listRoleId(authUser.getUserId());
     	var claimMap = new HashMap<String, Object>();
-    	claimMap.put("userId", authUser.getUserId() + "");
+    	claimMap.put("userId", authUser.getUserId());
     	claimMap.put("userName", authUser.getUserName());
+    	claimMap.put("userRole", roleIdList);
+    	
     	var token = JwtTokenUtils.createToken(claimMap);
     	return "Bearer " + token;
     }

@@ -1,12 +1,10 @@
 package com.planb.security.login;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
-
-import com.planb.security.user.SysUser;
 
 
 interface LoginRepo extends CrudRepository<AuthUser, Integer> {
@@ -15,5 +13,10 @@ interface LoginRepo extends CrudRepository<AuthUser, Integer> {
 	       select user_id, user_name, user_password from auth_user where user_name = :userName 
 	    """)
 	Optional<AuthUser> getAuthUser(String userName);
+	
+	@Query("""
+		select role_id from auth_user_role where user_id = :userId
+		    """)
+	List<Integer> listRoleId(Integer userId);
 	
 }

@@ -48,9 +48,25 @@ public class MyCrudAspect extends MyDaoSupport {
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
+        
+        
+        if ("java.util.List<java.util.Map<java.lang.String, java.lang.Object>>".equals(method.getGenericReturnType().toString())) {
+        	System.out.println("xxxxxxxx=========6666");
+        	
+        	// 加上参数
+        	String querySql = method.getAnnotationsByType(Query.class)[0].value();
+        	var paramMap = new HashMap<String, Object>();
+        	NamedParameterJdbcTemplate nameTemplate = new NamedParameterJdbcTemplate(getJdbcTemplate());
+    		List<Map<String, Object>> list = nameTemplate.queryForList(querySql, paramMap);
+    		return list;
+        }
+        
+        
         if (!returnClass.equals(Page.class)) {
         	return jp.proceed();
         }
+        
+        
         
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();

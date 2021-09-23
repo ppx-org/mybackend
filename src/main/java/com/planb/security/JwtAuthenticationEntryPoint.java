@@ -20,6 +20,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			org.springframework.security.core.AuthenticationException authException)
 			throws IOException, ServletException {
-        ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "没有凭证");
+		Boolean uriPermission = (Boolean)request.getAttribute("uriPermission");
+		if (uriPermission != null && uriPermission == false) {
+			ResponseUtils.returnJson(response, ErrorCodeConfig.FORBIDDEN, "FORBIDDEN");
+		}
+		else {
+			ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "UNAUTHORIZED");
+		} 
 	}
 }
