@@ -39,7 +39,7 @@ public class LoginServ extends MyDaoSupport {
     	claimMap.put("version", repo.getUserJwtVersion(authUser.getUserId()));
     	
     	var token = JwtTokenUtils.createToken(claimMap);
-    	return "Bearer " + token;
+    	return token;
     }
     
 }

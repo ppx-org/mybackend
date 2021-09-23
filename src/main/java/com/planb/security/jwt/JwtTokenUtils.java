@@ -30,8 +30,9 @@ import com.planb.common.conf.DateConfig;
  */
 @Component
 public class JwtTokenUtils {
-	private static long TOKEN_EXPIRES_SECORDS = 60 * 5;
-    private static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
+	public final static long TOKEN_EXPIRES_CHECK_SECORDS = 60;
+	private final static long TOKEN_EXPIRES_SECORDS = 60 * 2;
+    private final static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
     
     public static String createToken(Map<String, Object> claimMap) {
     	Jwt jwt = Jwt.withTokenValue("token").header("typ", "JWT")

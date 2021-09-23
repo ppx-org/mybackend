@@ -15,6 +15,33 @@ function resetReq() {
 	$("#reqButton").text("go");
 	inReq = false;
 }
+
+// axios config
+axios.interceptors.request.use(
+	config => {
+		let token = localStorage.getItem("my_token");
+		if (token) {
+	      config.headers.Authorization = "Bearer " + token;
+	    }
+		return config;
+  	},
+  	err => {
+		return Promise.reject(err);
+  	}
+);
+axios.interceptors.response.use(
+	response => {
+		if (response.headers.authorization) {
+			let token = response.headers.authorization;
+			localStorage.setItem("my_token", token);
+			$("#token").val(token);
+		}
+		return response;
+	},
+	error => {
+	}
+);
+
 function test() {
 	if (inReq) {
 		alert("请求中...")
@@ -28,19 +55,6 @@ function test() {
 	$("#spend").text("");
 	
 	let token = $("#token").val();
-	/*
-	axios.interceptors.request.use(
-		config => {
-		    if (token) {
-		      config.headers.Authorization = `Bearer ${token}`;
-		    }
-		    return config;
-	  	},
-	  	err => {
-			return Promise.reject(err);
-	  	}
-	);*/
-	
 	let url = [[@{/}]] + $("#url").val();
 	let t_begin = new Date().getTime();
 	let method = $("#post").prop("checked") ? "post" : "get";
@@ -58,16 +72,12 @@ function test() {
 	}
 	
 	axios({
-		headers: {"Authorization": "Bearer " + token},
 		method: method,
 		url: url,
 		data: param
 	}).then(function(response) {
 		console.log(response);
-		if (response.headers.authorization) {
-			$("#token").val(response.headers.authorization.replace("Bearer ", ""));
-		}
-		document.getElementById("result").value = JSON.stringify(response.data);
+		$("#result").val(JSON.stringify(response.data));
 	}).catch(function (error) {
 		$("#result").css("color", "red");
 		let data = JSON.stringify(error.response.data);
@@ -96,6 +106,11 @@ function clickTd(obj) {
 	$("#param").val($(obj).attr("param"))
 	test();
 }
+
+function saveToken() {
+	localStorage.setItem("my_token", $("#token").val());
+	alert("保存成功");
+}
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -108,7 +123,8 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QiLCJ1c2VyUm9sZSI6WzEsMl0sInVzZXJJZCI6MiwidmVyc2lvbiI6MSwiZXhwIjoxNjMyMzg2MjQ2fQ.vZUG5BPCE9X3HYkM0b3N3CT7c35YJTfH6XYb8Cjm58E">
+<input type="text" id="token" style="width:1024px" value="eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyTmFtZSI6InRlc3QiLCJ1c2VyUm9sZSI6WzEsMl0sInVzZXJJZCI6MiwidmVyc2lvbiI6MywiZXhwIjoxNjMyMzkzMzQzfQ.rPmVK228JBfipXJeGQInjbvRuEnr_eTaNzut_GTaOcc">
+<button onclick="saveToken()">save</button>
 <br>
 <input type="text" id="url" style="width:300px" value="security/login/login">
 

@@ -2,6 +2,7 @@ package com.planb.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +24,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.common.controller.ResponseUtils;
 import com.planb.security.jwt.JwtTokenUtils;
 import com.planb.security.login.AuthUser;
 import com.planb.security.login.LoginRepo;
@@ -49,6 +53,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
 			throws IOException, ServletException {
+		
 		// Authorization: Bearer <token>
 		final String requestHeader = request.getHeader(this.tokenHeader);
 		Integer userId = null;
@@ -60,6 +65,32 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
 				userId = claimsSet.getLongClaim("userId").intValue();
 				tokenVersion = claimsSet.getLongClaim("version").intValue();
+				
+				Date expirationTime = claimsSet.getExpirationTime();
+				System.out.println(">>>>>>>>>>>:expirationTime:" + expirationTime);
+				if (expirationTime.compareTo(new Date()) == -1) {
+					request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.TOKEN_EXPIRED);
+					chain.doFilter(request, response);
+					return;
+				}
+				
+				if (expirationTime.getTime() - new Date().getTime() < JwtTokenUtils.TOKEN_EXPIRES_CHECK_SECORDS * 1000) {
+					// 重新生成token
+					// 返回token
+					Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
+			    	roleIdList = loginRepo.listRoleId(userId);
+			    	var claimMap = new HashMap<String, Object>();
+			    	claimMap.put("userId", userId);
+			    	claimMap.put("userName", authUserOptional.get().getUserName());
+			    	claimMap.put("userRole", roleIdList);
+			    	claimMap.put("version", loginRepo.getUserJwtVersion(userId));
+			    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
+			    	System.out.println("...........new Token expire..." + newToken);
+			    	// ......
+			    	response.setHeader("authorization", newToken);
+				}
+				
+				
 				JSONArray roleArray = (JSONArray)claimsSet.getClaim("userRole");
 				if (roleArray != null) {
 					for (int i = 0; i < roleArray.size(); i++) {
@@ -90,22 +121,20 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 				    	claimMap.put("userName", authUserOptional.get().getUserName());
 				    	claimMap.put("userRole", roleIdList);
 				    	claimMap.put("version", loginRepo.getUserJwtVersion(userId));
-				    	
-				    	var newToken = JwtTokenUtils.createToken(claimMap);
-				    	newToken = "Bearer " + newToken;
-				    	
-				    	System.out.println("...........new Token..." + newToken);
-				   
+				    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
+				    	System.out.println("...........new Token version..." + newToken);
 				    	// ......
 				    	response.setHeader("authorization", newToken);
 					}
-
 					
 					uriPermission = permissionService.uriPermission(request.getRequestURI(), userId, roleIdList, redisAuthCacheVersion.getAuthVersion());
-					request.setAttribute("uriPermission", uriPermission);
+					if (uriPermission == false) {
+						request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.FORBIDDEN);
+						chain.doFilter(request, response);
+						return;
+					}
 				}
-				
-				if (validateToken && uriPermission) {
+				if (validateToken) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 							userDetails, null, userDetails.getAuthorities());
 					SecurityContextHolder.getContext().setAuthentication(authentication);
