@@ -20,9 +20,10 @@ interface PermissionRepo extends CrudRepository<MyEmpty, Integer> {
 	List<Map<String, Object>> listUri();
 	
 	@Query("""
-			select role_id, array_to_string(ARRAY(SELECT unnest(array_agg(res_id))),',') res_ids from auth_role_res group by role_id
+	select rr.role_id, array_to_string(ARRAY(SELECT unnest(array_agg(ru.uri_id))),',') uri_ids
+			from auth_role_res rr join auth_res_uri ru on rr.res_id = ru.res_id group by rr.role_id
 	""")
-	List<Map<String, Object>> listRoleRes();
+	List<Map<String, Object>> listRoleUri();
 	
 	@Query("""
 		select (select user_jwt_version from auth_cache_user_jwt where user_id = :userId) user_jwt_version, 

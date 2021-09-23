@@ -40,6 +40,8 @@ public class PermissionService {
 	
     public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
     	synchronized(this) {
+    		System.out.println("xxxxxxx1:" + PermissionCache.authCacheVersion);
+    		System.out.println("xxxxxxx2:" + redisAuthCacheVersion);
     		// 权限变量时，重新加载
     		if (PermissionCache.authCacheVersion != redisAuthCacheVersion) {
     	    	// 加载uri
@@ -50,14 +52,14 @@ public class PermissionService {
     			}
     	    	
     	    	PermissionCache.getRoleBitSet().clear();
-    	    	List<Map<String, Object>> roleReslist = repo.listRoleRes();
+    	    	List<Map<String, Object>> roleReslist = repo.listRoleUri();
     	    	for (Map<String, Object> map : roleReslist) {
     				Integer roleId = (Integer)map.get("role_id");
-    				String resIds = (String)map.get("res_ids");
-    				String[] resIdArray = resIds.split(",");
+    				String uriIds = (String)map.get("uri_ids");
+    				String[] uriIdArray = uriIds.split(",");
     				BitSet resIdBitSet = new BitSet();
-    				for (String resId : resIdArray) {
-    					resIdBitSet.set(Integer.parseInt(resId));
+    				for (String uriId : uriIdArray) {
+    					resIdBitSet.set(Integer.parseInt(uriId));
     				}
     				PermissionCache.loadRoleRes(roleId, resIdBitSet);
     			}
@@ -78,6 +80,7 @@ public class PermissionService {
     		}
     		for (Integer roleId : roleIdList) {
     			if (PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
+    				System.out.println("cccc:" + PermissionCache.getRoleBitSet().get(roleId));
     				System.out.println(">>>>>>>>>>permission:" + roleId + "|" + checkUri);
         			return true;
         		}

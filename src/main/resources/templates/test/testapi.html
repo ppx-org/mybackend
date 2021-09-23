@@ -43,6 +43,7 @@ axios.interceptors.response.use(
 		return response;
 	},
 	error => {
+		return Promise.reject(error);
 	}
 );
 
@@ -82,11 +83,12 @@ function test() {
 	}).then(function(response) {
 		console.log(response);
 		$("#result").val(JSON.stringify(response.data));
-	}).catch(function (error) {
+	}).catch(function(error) {
 		$("#result").css("color", "red");
+		console.log(error);
 		let data = JSON.stringify(error.response.data);
 		$("#result").val(error + "\n" + data);
-	}).finally((response)=>{
+	}).finally(()=>{
 		$("#spend").text(new Date().getTime() - t_begin);
 		resetReq();
 	})
@@ -144,6 +146,9 @@ a:visited {color: blue;}
 </div>
 
 <table border="1" id="myTable">
+<tr>
+	<td><a onclick="clickTd(this)" method="post" param='{"userName":"test", "userPassword":"test"}'>security/login/login</a></td>
+</tr>
 <tr>
 	<td><a onclick="clickTd(this)" method="get">test/testapi/get?id=100</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100}'>test/testapi/post</a></td>

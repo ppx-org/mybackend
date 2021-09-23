@@ -12,7 +12,7 @@ INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (2, 2);
 INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (3, 2);
 
 
-INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (1, '/test/*');
+INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (1, '/test/**');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (2, '/test/example/*');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (3, '/test/example/page');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (4, '/test/example/insert');
@@ -28,7 +28,8 @@ INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (3, 3);
 INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (4, 4);
 INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (4, 5);
 
-
-
-
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 1);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 2);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 3);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 4);
 

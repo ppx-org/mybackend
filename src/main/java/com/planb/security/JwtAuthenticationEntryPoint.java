@@ -21,14 +21,19 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 			org.springframework.security.core.AuthenticationException authException)
 			throws IOException, ServletException {
 		Integer errorCode = (Integer)request.getAttribute(ErrorCodeConfig.ERROR_CODE);
+		if (errorCode == null) {
+			ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "UNAUTHORIZED");
+			return;
+		}
+		
 		if (errorCode == ErrorCodeConfig.TOKEN_EXPIRED) {
 			ResponseUtils.returnJson(response, ErrorCodeConfig.TOKEN_EXPIRED, "TOKEN_EXPIRED");
-			return;
 		}
 		else if (errorCode == ErrorCodeConfig.FORBIDDEN) {
 			ResponseUtils.returnJson(response, ErrorCodeConfig.FORBIDDEN, "FORBIDDEN");
-			return;
 		}
-		ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "UNAUTHORIZED");
+		else {
+			ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "UNAUTHORIZED");
+		}
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class PermissionCache {
 	
-	public static int authCacheVersion = 0;
+	public static int authCacheVersion = -1;
 	
 	private static Map<String, Integer> uriMap = new HashMap<String, Integer>();
 	

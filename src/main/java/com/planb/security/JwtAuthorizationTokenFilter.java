@@ -50,6 +50,12 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 		this.loginRepo = loginRepo;
 	}
 
+	/**
+select ru.uri_id, u.uri_path from auth_role_res rr join auth_res_uri ru on rr.res_id = ru.res_id
+join auth_uri u on ru.uri_id = u.uri_id
+where role_id in (select role_id 
+	from auth_user_role where user_id = 2)
+	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) 
 			throws IOException, ServletException {
