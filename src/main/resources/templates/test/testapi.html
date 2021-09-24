@@ -59,7 +59,6 @@ function send() {
 	$("#reqButton").text("......");
 	$("#spend").text("");
 	
-	let token = $("#token").val();
 	let url = [[@{/}]] + $("#url").val();
 	let t_begin = new Date().getTime();
 	let method = $("#post").prop("checked") ? "post" : "get";
@@ -114,11 +113,6 @@ function clickTd(obj) {
 	send();
 }
 
-function saveToken() {
-	localStorage.setItem(TOKEN_NAME, $("#token").val());
-	alert("保存成功");
-}
-
 function login() {
 	localStorage.setItem(TOKEN_NAME, "");
 	var paramJson = {"userName":$("#userName").val(), "userPassword":$("#userPassword").val()};
@@ -148,7 +142,26 @@ function logout() {
 }
 
 
+function saveToken() {
+	localStorage.setItem(TOKEN_NAME, $("#token").val());
+	alert("保存成功");
+}
 
+function getToken() {
+	$("#token").val(localStorage.getItem(TOKEN_NAME));
+}
+
+function decodeToken() {
+	let token = $("#token").val();
+	let item = token.split(".");
+	if (item.length != 3) {
+		$("#decodeToken").val("出错");
+	}
+	let jsonStr = window.atob(item[1]);
+	let json = JSON.parse(jsonStr);
+	let exp = json.exp;
+	$("#decodeToken").val(jsonStr + " " + new Date(exp * 1000));
+}
 
 </script>
 <style type="text/css">
@@ -178,7 +191,7 @@ a:visited {color: blue;}
 	<textarea id="param" rows="8" style="width:1024px">{"userName":"test", "userPassword":"test"}</textarea>
 </div>
 
-<table border="1" id="myTable" style="display: none">
+<table border="1" id="myTable" style="display: ">
 <tr>
 	<td>no intercept</td>
 	<td><a onclick="clickTd(this)" method="post" param='{"userName":"test", "userPassword":"test"}'>security/login/login</a></td>
@@ -202,12 +215,18 @@ a:visited {color: blue;}
 </table>
 
 <div style="margin-top:10px">
-<textarea id="result" rows="8" style="width:1024px;" wrap="off"></textarea>
+	<textarea id="result" rows="8" style="width:1024px;" wrap="off"></textarea>
+</div>
+
+<div style="margin-top:20px">
+	<textarea rows="3" id="token" style="width:800px;"></textarea>
+	<button onclick="getToken()">get</button>
+	<button onclick="saveToken()">save</button>
+	<button onclick="decodeToken()">decode</button>
 </div>
 
 <div>
-<input type="text" id="token" style="width:1024px" value="">
-<button onclick="saveToken()">save</button>
+	<input type="text" id="decodeToken" style="width:1024px" value="">
 </div>
 
 <!-- 
@@ -215,7 +234,6 @@ window.btoa('china is so nb') // 编码
 "Y2hpbmEgaXMgc28gbmI="
 window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
 "china is so nb"
-
  -->
  
 
