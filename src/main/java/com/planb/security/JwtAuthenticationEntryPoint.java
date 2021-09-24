@@ -29,8 +29,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		if (errorCode == ErrorCodeConfig.TOKEN_EXPIRED) {
 			ResponseUtils.returnJson(response, ErrorCodeConfig.TOKEN_EXPIRED, "TOKEN_EXPIRED");
 		}
-		else if (errorCode == ErrorCodeConfig.FORBIDDEN) {
-			ResponseUtils.returnJson(response, ErrorCodeConfig.FORBIDDEN, "FORBIDDEN");
+		else if (errorCode == ErrorCodeConfig.URI_FORBIDDEN) {
+			ResponseUtils.returnJson(response, ErrorCodeConfig.URI_FORBIDDEN, "URI_FORBIDDEN");
 		}
 		else {
 			ResponseUtils.returnJson(response, ErrorCodeConfig.UNAUTHORIZED, "UNAUTHORIZED");

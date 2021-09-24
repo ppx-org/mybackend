@@ -63,14 +63,14 @@ where role_id in (select role_id
 		// Authorization: Bearer <token>
 		final String requestHeader = request.getHeader(this.tokenHeader);
 		Integer userId = null;
-		Integer tokenVersion = null;
+		String jwtVersion = null;
 		List<Integer> roleIdList = new ArrayList<Integer>();
 		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
 			String authToken = requestHeader.substring(7);
 			try {
 				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
 				userId = claimsSet.getLongClaim("userId").intValue();
-				tokenVersion = claimsSet.getLongClaim("version").intValue();
+				jwtVersion = claimsSet.getStringClaim("version");
 				
 				Date expirationTime = claimsSet.getExpirationTime();
 				System.out.println(">>>>>>>>>>>:expirationTime:" + expirationTime);
@@ -89,7 +89,7 @@ where role_id in (select role_id
 			    	claimMap.put("userId", userId);
 			    	claimMap.put("userName", authUserOptional.get().getUserName());
 			    	claimMap.put("userRole", roleIdList);
-			    	claimMap.put("version", loginRepo.getUserJwtVersion(userId));
+			    	claimMap.put("version", loginRepo.getJwtVersion(userId));
 			    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
 			    	System.out.println("...........new Token expire..." + newToken);
 			    	// ......
@@ -117,8 +117,18 @@ where role_id in (select role_id
 				if (validateToken) {
 					
 					AuthCacheVersion redisAuthCacheVersion = permissionService.getAuthCacheVersionFromRedis(userId);
-					// 如果token版本不对，重新加载角色和重新生成token
-					if (redisAuthCacheVersion.getJwtVersion() != tokenVersion) {
+					// 如果token.replace_version版本不对，重新加载角色和重新生成token
+					String[] redisVersionArray = redisAuthCacheVersion.getJwtVersion().split(".");
+					String[] jwtVersionArray = jwtVersion.split(".");
+					if (!redisVersionArray[0].equals(jwtVersionArray[0])) {
+						request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.TOKEN_FORBIDDEN);
+						chain.doFilter(request, response);
+						return;
+					}
+					
+					
+					if (!redisVersionArray[1].equals(jwtVersionArray[1])) {
+						
 						// 返回token
 						Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
 				    	roleIdList = loginRepo.listRoleId(userId);
@@ -126,7 +136,7 @@ where role_id in (select role_id
 				    	claimMap.put("userId", userId);
 				    	claimMap.put("userName", authUserOptional.get().getUserName());
 				    	claimMap.put("userRole", roleIdList);
-				    	claimMap.put("version", loginRepo.getUserJwtVersion(userId));
+				    	claimMap.put("version", loginRepo.getJwtVersion(userId));
 				    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
 				    	System.out.println("...........new Token version..." + newToken);
 				    	// ......
@@ -135,7 +145,7 @@ where role_id in (select role_id
 					
 					uriPermission = permissionService.uriPermission(request.getRequestURI(), userId, roleIdList, redisAuthCacheVersion.getAuthVersion());
 					if (uriPermission == false) {
-						request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.FORBIDDEN);
+						request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.URI_FORBIDDEN);
 						chain.doFilter(request, response);
 						return;
 					}

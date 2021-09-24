@@ -14,6 +14,8 @@ public class ErrorCodeConfig {
 	
 	public final static int TOKEN_EXPIRED = 4011;
 	
-	public final static int FORBIDDEN = 4030;
+	public final static int URI_FORBIDDEN = 4030;
+	
+	public final static int TOKEN_FORBIDDEN = 4031;
 	
 }

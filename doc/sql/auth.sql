@@ -57,14 +57,17 @@ create table auth_role_res (
 comment on table auth_role_res is '角色拥有的资源';
 
 
--- >>>>>>>>>>>>>>>>>> 缓存
+-- >>>>>>>>>>>>>>>>>> 刷新缓存
 create table auth_cache_jwt (
 	user_id int not null,
-	jwt_version int not null,
+	validate_version int not null,
+	replace_version int not null,
 	primary key(user_id)
 );
-comment on table auth_cache_user_jwt is 'jwt缓存,放redis';
-comment on column auth_cache_jwt.jwt_version is '修改密码、作废、修改角色等，需要换token';
+comment on table auth_cache_jwt is 'jwt缓存,放redis';
+comment on column auth_cache_jwt.validate_version is '修改密码、作废等，禁用该token';
+comment on column auth_cache_jwt.jwt_version is '修改用户名、角色等，需要换token';
+
 
 create table auth_cache_version (
 	auth_key varchar(32) not null,

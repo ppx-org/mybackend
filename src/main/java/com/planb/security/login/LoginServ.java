@@ -36,7 +36,7 @@ public class LoginServ extends MyDaoSupport {
     	claimMap.put("userId", authUser.getUserId());
     	claimMap.put("userName", authUser.getUserName());
     	claimMap.put("userRole", roleIdList);
-    	claimMap.put("version", repo.getUserJwtVersion(authUser.getUserId()));
+    	claimMap.put("version", repo.getJwtVersion(authUser.getUserId()));
     	
     	var token = JwtTokenUtils.createToken(claimMap);
     	return token;

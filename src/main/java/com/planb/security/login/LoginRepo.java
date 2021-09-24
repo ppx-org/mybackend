@@ -20,14 +20,13 @@ public interface LoginRepo extends CrudRepository<AuthUser, Integer> {
 	List<Integer> listRoleId(Integer userId);
 	
 	@Query("""
-		select coalesce((select jwt_version from auth_cache_jwt where user_id = :userId), 0) jwt_version
+		select coalesce((select concat_ws('.', validate_version, replace_version) from auth_cache_jwt where user_id = 3), '0.0') jwt_version
 	""")
-	Integer getUserJwtVersion(Integer userId);
+	String getJwtVersion(Integer userId);
 	
 	@Query("""
 		select user_id, user_name, user_password from auth_user where user_id = :userId
 	""")
 	Optional<AuthUser> getAuthUser(Integer userId);
-	
 	
 }

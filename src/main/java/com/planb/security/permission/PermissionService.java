@@ -23,16 +23,18 @@ public class PermissionService {
 		
 		AuthCacheVersion v = repo.getAuthCacheVersion(userId);
 		if (v.getJwtVersion() == null) {
-			int r = repo.initAuthCacheUserJwt(userId);
+			int r = repo.initAuthCacheJwt(userId);
 			if (r == 1) {
 				// 更新redis
 			}
+			v.setJwtVersion("0.0");
 		}
 		if (v.getAuthVersion() == null) {
 			int r = repo.initAuthCacheVersion();
 			if (r == 1) {
 				// 更新redis
 			}
+			v.setAuthVersion(0);
 		}
 		
 		return v;
@@ -40,8 +42,6 @@ public class PermissionService {
 	
     public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
     	synchronized(this) {
-    		System.out.println("xxxxxxx1:" + PermissionCache.authCacheVersion);
-    		System.out.println("xxxxxxx2:" + redisAuthCacheVersion);
     		// 权限变量时，重新加载
     		if (PermissionCache.authCacheVersion != redisAuthCacheVersion) {
     	    	// 加载uri
