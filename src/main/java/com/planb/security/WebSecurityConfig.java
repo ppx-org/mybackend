@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-    		.and().authorizeRequests().antMatchers("/security/login/login", "/", "/home", "/test/testapi/**", "/static/**").permitAll()
+    		.and().authorizeRequests().antMatchers("/", "/security/login/login", "/test/testapi/**", "/static/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -46,15 +46,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    	
         auth.inMemoryAuthentication()
         	.withUser("user").password("password").roles("USER");
-        
     }
     
     @Override
     public void configure(WebSecurity web) throws Exception {
-    
     	// 配置哪些请求不拦截
 //        web.ignoring().antMatchers("/security/login/login");
     }

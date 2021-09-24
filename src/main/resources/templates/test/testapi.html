@@ -147,9 +147,8 @@ a:visited {color: blue;}
 
 <table border="1" id="myTable">
 <tr>
+	<td>no intercept</td>
 	<td><a onclick="clickTd(this)" method="post" param='{"userName":"test", "userPassword":"test"}'>security/login/login</a></td>
-</tr>
-<tr>
 	<td><a onclick="clickTd(this)" method="get">test/testapi/get?id=100</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100}'>test/testapi/post</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100, "name":"myname", "date":"2021-09-22", "dateTime":"2021-09-22 19:08:30"}'>test/testapi/submit</a></td>
@@ -172,6 +171,14 @@ a:visited {color: blue;}
 <div style="margin-top:10px">
 <textarea id="result" rows="8" style="width:1024px"></textarea>
 </div>
+
+<!-- 
+window.btoa('china is so nb') // 编码
+"Y2hpbmEgaXMgc28gbmI="
+window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
+"china is so nb"
+
+ -->
 
 </body>
 </html>

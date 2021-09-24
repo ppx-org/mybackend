@@ -79,7 +79,8 @@ public class PermissionService {
     			continue;
     		}
     		for (Integer roleId : roleIdList) {
-    			if (PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
+    			if (PermissionCache.getRoleBitSet().get(roleId) != null &&
+    					PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
     				System.out.println("cccc:" + PermissionCache.getRoleBitSet().get(roleId));
     				System.out.println(">>>>>>>>>>permission:" + roleId + "|" + checkUri);
         			return true;

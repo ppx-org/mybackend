@@ -12,6 +12,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,11 +33,14 @@ import com.planb.security.login.AuthUser;
 import com.planb.security.login.LoginRepo;
 import com.planb.security.permission.AuthCacheVersion;
 import com.planb.security.permission.PermissionService;
+import com.planb.test.example.ExampleController;
 
 import net.sf.jsqlparser.statement.alter.AlterSystemOperation;
 
 @Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
+	
+	Logger logger = LoggerFactory.getLogger(JwtAuthorizationTokenFilter.class);
 
 	private final UserDetailsService userDetailsService;
 	private final String tokenHeader;
@@ -105,8 +110,9 @@ where role_id in (select role_id
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				userId = null;
+				logger.error("TOKEN-ERROR:" + e.getMessage());
+				chain.doFilter(request, response);
+				return;
 			}
 			
 			if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -118,8 +124,10 @@ where role_id in (select role_id
 					
 					AuthCacheVersion redisAuthCacheVersion = permissionService.getAuthCacheVersionFromRedis(userId);
 					// 如果token.replace_version版本不对，重新加载角色和重新生成token
-					String[] redisVersionArray = redisAuthCacheVersion.getJwtVersion().split(".");
-					String[] jwtVersionArray = jwtVersion.split(".");
+					System.out.println(">>>>999redisVersion:" + redisAuthCacheVersion.getJwtVersion());
+					System.out.println(">>>>999jwtVersion:" + jwtVersion);
+					String[] redisVersionArray = redisAuthCacheVersion.getJwtVersion().split("\\.");
+					String[] jwtVersionArray = jwtVersion.split("\\.");
 					if (!redisVersionArray[0].equals(jwtVersionArray[0])) {
 						request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.TOKEN_FORBIDDEN);
 						chain.doFilter(request, response);

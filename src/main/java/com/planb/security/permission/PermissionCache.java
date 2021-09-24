@@ -13,7 +13,6 @@ public class PermissionCache {
 	private static Map<Integer, BitSet> roleBitSet = new HashMap<Integer, BitSet>();
 	
 	
-	
 	public static Map<String, Integer> getUriMap() {
 		return uriMap;
 	}
