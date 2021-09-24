@@ -31,7 +31,7 @@ public class TestController {
 		return "sleep";
 	}
     
-    @RequestMapping("error")
+	@PostMapping("error")
     String error(Integer id) throws Exception {
 		int i = 1 / 0;
 		return "error" + i;
