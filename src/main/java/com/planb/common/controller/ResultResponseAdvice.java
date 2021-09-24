@@ -32,6 +32,16 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
 		final Response<Object> result = new Response<>();
+		result.setCode(MyContext.getResponseCode().get());
+		result.setMsg(MyContext.getResponseMsg().get());
+		if (body == null) {
+			return result;
+		}
+		else if (body instanceof Response) {
+			return body;
+		}
+		result.setContent(body);
+		
 		// 404 500
 		if (LinkedHashMap.class.equals(body.getClass())) {
 			Map<String, Object> bodyMap = (Map)body;
@@ -46,15 +56,6 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 				return result;
 			}
 		}
-		
-		if (body instanceof Response) {
-			return body;
-		}
-		
-		
-		result.setCode(MyContext.getResponseCode().get());
-		result.setMsg(MyContext.getResponseMsg().get());
-		result.setContent(body);
 		
 		if (returnType.getGenericParameterType().equals(String.class)) {
 			ObjectMapper objectMapper = new ObjectMapper();

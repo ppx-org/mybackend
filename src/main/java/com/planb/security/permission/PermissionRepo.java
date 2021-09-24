@@ -3,13 +3,12 @@ package com.planb.security.permission;
 import java.util.List;
 import java.util.Map;
 
-import javax.print.attribute.HashAttributeSet;
-
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.planb.common.jdbc.MyEmpty;
+import com.planb.security.cache.AuthCacheVersion;
 
 
 interface PermissionRepo extends CrudRepository<MyEmpty, Integer> {
@@ -25,23 +24,6 @@ interface PermissionRepo extends CrudRepository<MyEmpty, Integer> {
 	""")
 	List<Map<String, Object>> listRoleUri();
 	
-	@Query("""
-		select (select concat_ws('.', validate_version, replace_version) from auth_cache_jwt where user_id = :userId) jwt_version, 
-			(select auth_version from auth_cache_version where auth_key = 'auth_cache_version') auth_version
-	""")
-	AuthCacheVersion getAuthCacheVersion(Integer userId);
+
 	
-	@Modifying
-	@Query("""
-		insert into auth_cache_jwt(user_id, validate_version, replace_version) select :userId, 0, 0
-		where not exists (select 1 from auth_cache_jwt where user_id = :userId)
-	""")
-	int initAuthCacheJwt(Integer userId);
-	
-	@Modifying
-	@Query("""
-		insert into auth_cache_version(auth_key, auth_version) select 'auth_cache_version', 0 
-		where not exists (select 1 from auth_cache_version where auth_key = 'auth_cache_version')
-	""")
-	int initAuthCacheVersion();
 }

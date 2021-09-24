@@ -3,9 +3,14 @@ package com.planb.security.permission;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.expression.Sets;
+
+import com.planb.security.cache.AuthCacheService;
+import com.planb.security.cache.AuthCacheVersion;
 
 /**
  * 通过用户名来加载用户 。这个方法主要用于从系统数据中查询并加载具体的用户(UserDetails)到Spring Security中。
@@ -18,29 +23,23 @@ public class PermissionService {
 	@Autowired
 	PermissionRepo repo;
 	
+	@Autowired
+	AuthCacheService authCacheService;
+	
 	public AuthCacheVersion getAuthCacheVersionFromRedis(Integer userId) {
-		// 如果redis报错，从数据库中取
-		
-		AuthCacheVersion v = repo.getAuthCacheVersion(userId);
-		if (v.getJwtVersion() == null) {
-			int r = repo.initAuthCacheJwt(userId);
-			if (r == 1) {
-				// 更新redis
-			}
-			v.setJwtVersion("0.0");
-		}
-		if (v.getAuthVersion() == null) {
-			int r = repo.initAuthCacheVersion();
-			if (r == 1) {
-				// 更新redis
-			}
-			v.setAuthVersion(0);
-		}
-		
+		AuthCacheVersion v = authCacheService.getCacheJwtVersion(userId);
 		return v;
 	}
 	
     public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
+    	
+    	// 登录后不拦截的URI
+    	var permissionUriSet = Set.of("/security/login/logout");
+    	if (permissionUriSet.contains(uri)) {
+    		return true;
+    	}
+    	
+    	
     	synchronized(this) {
     		// 权限变量时，重新加载
     		if (PermissionCache.authCacheVersion != redisAuthCacheVersion) {

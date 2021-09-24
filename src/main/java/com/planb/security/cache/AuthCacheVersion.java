@@ -1,4 +1,4 @@
-package com.planb.security.permission;
+package com.planb.security.cache;
 
 public class AuthCacheVersion {
 	private String jwtVersion;

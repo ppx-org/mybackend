@@ -26,10 +26,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.security.cache.AuthCacheVersion;
 import com.planb.security.jwt.JwtTokenUtils;
 import com.planb.security.login.AuthUser;
 import com.planb.security.login.LoginRepo;
-import com.planb.security.permission.AuthCacheVersion;
 import com.planb.security.permission.PermissionService;
 
 @Component

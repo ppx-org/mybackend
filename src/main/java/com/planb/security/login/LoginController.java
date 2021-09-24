@@ -22,5 +22,10 @@ public class LoginController {
     String login(@RequestParam(required = true)String userName, @RequestParam(required = true)String userPassword) {
 		return serv.login(userName, userPassword);
 	}
+	
+	@PostMapping("logout")
+    void logout() {
+		serv.logout();
+	}
     
 }

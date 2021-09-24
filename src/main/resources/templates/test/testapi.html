@@ -7,22 +7,23 @@
 <script type="text/javascript" th:src="@{/static/js/qs.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
+let TOKEN_NAME = "my_auth_token";
 let inReq = false;
 
 function resetReq() {
 	$("#reqButton").removeAttr("disabled");
-	$("#reqButton").text("go");
+	$("#reqButton").text("send");
 	inReq = false;
 }
 
 $(function(){ 
-	$("#token").val(localStorage.getItem("my_token"));
+	$("#token").val(localStorage.getItem(TOKEN_NAME));
 })
 
 // axios config
 axios.interceptors.request.use(
 	config => {
-		let token = localStorage.getItem("my_token");
+		let token = localStorage.getItem(TOKEN_NAME);
 		if (token) {
 	      config.headers.Authorization = "Bearer " + token;
 	    }
@@ -36,7 +37,7 @@ axios.interceptors.response.use(
 	response => {
 		if (response.headers.authorization) {
 			let token = response.headers.authorization;
-			localStorage.setItem("my_token", token);
+			localStorage.setItem(TOKEN_NAME, token);
 			$("#token").val(token);
 		}
 		return response;
@@ -46,7 +47,7 @@ axios.interceptors.response.use(
 	}
 );
 
-function test() {
+function send() {
 	if (inReq) {
 		alert("请求中...")
 		return;
@@ -67,6 +68,7 @@ function test() {
 		try {
 			let paramJson = JSON.parse($("#param").val());
 			param = Qs.stringify(paramJson);
+			$("#param").val(JSON.stringify(paramJson, null, 4))
 		}
 		catch(e) {
 			alert("参数出错:" + e);
@@ -81,7 +83,7 @@ function test() {
 		data: param
 	}).then(function(response) {
 		console.log(response);
-		$("#result").val(JSON.stringify(response.data));
+		$("#result").val(JSON.stringify(response.data, null, 4));
 	}).catch(function(error) {
 		$("#result").css("color", "red");
 		console.log(error);
@@ -96,7 +98,7 @@ function test() {
 
 $(document).keyup(function(event) {
 	if (event.keyCode == 13) {
-	  test();
+		send();
 	}
 });
 
@@ -109,22 +111,21 @@ function clickTd(obj) {
 		$("#get").prop("checked", true);
 	}
 	$("#param").val($(obj).attr("param"))
-	test();
+	send();
 }
 
 function saveToken() {
-	localStorage.setItem("my_token", $("#token").val());
+	localStorage.setItem(TOKEN_NAME, $("#token").val());
 	alert("保存成功");
 }
 
 function login() {
-	localStorage.setItem("my_token", "");
+	localStorage.setItem(TOKEN_NAME, "");
 	var paramJson = {"userName":$("#userName").val(), "userPassword":$("#userPassword").val()};
-	axios.post([[@{/security/login/login}]], Qs.stringify(paramJson))
-	.then(res=> {
+	axios.post([[@{/security/login/login}]], Qs.stringify(paramJson)).then(res=> {
 		if (res.data.code == 0) {
 			let token = res.data.content;
-			localStorage.setItem("my_token", token);
+			localStorage.setItem(TOKEN_NAME, token);
 			alert("登录成功");
 		}
 		else {
@@ -132,6 +133,23 @@ function login() {
 		}
 	})
 }
+
+function logout() {
+	axios.post([[@{/security/login/logout}]]).then(res=> {
+		if (res.data.code == 0) {
+			let token = res.data.content;
+			localStorage.setItem(TOKEN_NAME, "");
+			alert("退出成功");
+		}
+		else {
+			alert(res.data.msg);
+		}
+	})
+}
+
+
+
+
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -144,25 +162,20 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="userName" placeholder="用户名" value="test" style="width:80px">
-<input type="text" id="userPassword" placeholder="密码" value="test" style="width:80px">
-<button type="button" onclick="login()">login</button>
-
-
-<input type="text" id="token" style="width:1024px" value="">
-<button onclick="saveToken()">save</button>
-<br>
-<input type="text" id="url" style="width:300px" value="security/login/login">
-
-<input type="radio" id="get" name="method"><label for="get">GET</label>
-<input type="radio" id="post" name="method" checked="checked"><label for="post">POST</label>
-
-<button type="button" id="reqButton" onclick="test()" style="width:60px">go</button>
-<span>用时(ms):</span><span id="spend"></span>
+	<input type="text" id="userName" placeholder="用户名" value="test" style="width:80px">
+	<input type="text" id="userPassword" placeholder="密码" value="test" style="width:80px">
+	<button type="button" onclick="login()">login</button>
+	<button type="button" onclick="logout()">logout</button>
+	
+	<input type="text" id="url" style="width:300px;margin-left:20px" value="security/login/login">
+	<input type="radio" id="get" name="method"><label for="get">GET</label>
+	<input type="radio" id="post" name="method" checked="checked"><label for="post">POST</label>
+	<button type="button" id="reqButton" onclick="send()" style="width:60px">send</button>
+	<span>用时(ms):</span><span id="spend"></span>
 </div>
 
-<div>
-<textarea id="param" rows="3" style="width:1024px">{"userName":"test", "userPassword":"test"}</textarea>
+<div style="margin-top: 10px">
+	<textarea id="param" rows="8" style="width:1024px">{"userName":"test", "userPassword":"test"}</textarea>
 </div>
 
 <table border="1" id="myTable" style="display: none">
@@ -189,7 +202,12 @@ a:visited {color: blue;}
 </table>
 
 <div style="margin-top:10px">
-<textarea id="result" rows="8" style="width:1024px"></textarea>
+<textarea id="result" rows="8" style="width:1024px;" wrap="off"></textarea>
+</div>
+
+<div>
+<input type="text" id="token" style="width:1024px" value="">
+<button onclick="saveToken()">save</button>
 </div>
 
 <!-- 
@@ -199,6 +217,9 @@ window.atob("Y2hpbmEgaXMgc28gbmI=") // 解码
 "china is so nb"
 
  -->
+ 
+
+
 
 </body>
 </html>
