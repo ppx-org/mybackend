@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,15 +26,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.planb.common.conf.ErrorCodeConfig;
-import com.planb.common.controller.ResponseUtils;
 import com.planb.security.jwt.JwtTokenUtils;
 import com.planb.security.login.AuthUser;
 import com.planb.security.login.LoginRepo;
 import com.planb.security.permission.AuthCacheVersion;
 import com.planb.security.permission.PermissionService;
-import com.planb.test.example.ExampleController;
-
-import net.sf.jsqlparser.statement.alter.AlterSystemOperation;
 
 @Component
 public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
@@ -110,7 +105,7 @@ where role_id in (select role_id
 					}
 				}
 			} catch (Exception e) {
-				logger.error("TOKEN-ERROR:" + e.getMessage());
+				logger.error("ERROR-TOKEN:" + e.getMessage());
 				chain.doFilter(request, response);
 				return;
 			}

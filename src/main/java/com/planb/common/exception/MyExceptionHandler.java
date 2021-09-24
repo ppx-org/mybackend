@@ -31,7 +31,6 @@ public class MyExceptionHandler implements HandlerExceptionResolver {
 	@ExceptionHandler(value = Exception.class)
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object,
 			Exception exception) {
-		
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		long t = ResponseUtils.returnJson(response, ErrorCodeConfig.ERROR, exception.getMessage());
 		logger.error("ERROR-" + t, exception);

@@ -7,6 +7,7 @@
 <script type="text/javascript" th:src="@{/static/js/qs.js}"></script>
 
 <script type="text/javascript" th:inline="javascript">
+
 let inReq = false;
 
 function resetReq() {
@@ -116,22 +117,6 @@ function saveToken() {
 	localStorage.setItem("my_token", $("#token").val());
 	alert("保存成功");
 }
-
-function login() {
-	localStorage.setItem("my_token", "");
-	var paramJson = {"userName":$("#userName").val(), "userPassword":$("#userPassword").val()};
-	axios.post([[@{/security/login/login}]], Qs.stringify(paramJson))
-	.then(res=> {
-		if (res.data.code == 0) {
-			let token = res.data.content;
-			localStorage.setItem("my_token", token);
-			alert("登录成功");
-		}
-		else {
-			alert(res.data.msg);
-		}
-	})
-}
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -144,11 +129,6 @@ a:visited {color: blue;}
 <body>
 
 <div>
-<input type="text" id="userName" placeholder="用户名" value="test" style="width:80px">
-<input type="text" id="userPassword" placeholder="密码" value="test" style="width:80px">
-<button type="button" onclick="login()">login</button>
-
-
 <input type="text" id="token" style="width:1024px" value="">
 <button onclick="saveToken()">save</button>
 <br>
@@ -165,7 +145,7 @@ a:visited {color: blue;}
 <textarea id="param" rows="3" style="width:1024px">{"userName":"test", "userPassword":"test"}</textarea>
 </div>
 
-<table border="1" id="myTable" style="display: none">
+<table border="1" id="myTable">
 <tr>
 	<td>no intercept</td>
 	<td><a onclick="clickTd(this)" method="post" param='{"userName":"test", "userPassword":"test"}'>security/login/login</a></td>
