@@ -49,7 +49,7 @@ public class LoginServ extends MyDaoSupport {
     }
     
     public void logout() {
-    	SecurityUserDetails u = (SecurityUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    	SecurityUserDetails u = MyContext.getUser();
     	authCacheService.updateJwtValidateVersion(u.getUserId());
     }
     

@@ -32,6 +32,8 @@ public class PermissionService {
 	}
 	
     public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
+    	return true;
+    	/*
     	
     	// 登录后不拦截的URI
     	var permissionUriSet = Set.of("/security/login/logout");
@@ -87,6 +89,7 @@ public class PermissionService {
     		}
     	}
     	return false;
+    	*/
     }
     
     

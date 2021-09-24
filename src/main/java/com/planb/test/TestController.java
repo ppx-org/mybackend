@@ -18,11 +18,8 @@ public class TestController {
     
 	@GetMapping("hello")
     String hello() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		SecurityUserDetails u = (SecurityUserDetails)auth.getPrincipal();
-		System.out.println("xxxxxxx:" + u.getUserName());
-		
-		return "Hello World";
+		SecurityUserDetails u = MyContext.getUser();
+		return "Hello World:userName:" + u.getUserName();
 	}
 	
 	@GetMapping("sleep")

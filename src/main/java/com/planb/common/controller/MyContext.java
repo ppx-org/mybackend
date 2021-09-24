@@ -1,8 +1,10 @@
 package com.planb.common.controller;
 
-import java.util.Optional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.security.user.SecurityUserDetails;
 
 /**
  * 分配权限上下文
@@ -35,6 +37,12 @@ public class MyContext {
 		MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
 		MyContext.getResponseMsg().set(msg);
 		return "";
+	}
+	
+	public static SecurityUserDetails getUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		SecurityUserDetails user = (SecurityUserDetails)auth.getPrincipal();
+		return user;
 	}
 
 	

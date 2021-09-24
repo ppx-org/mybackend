@@ -70,17 +70,13 @@ function send() {
 			$("#param").val(JSON.stringify(paramJson, null, 4))
 		}
 		catch(e) {
-			alert("参数出错:" + e);
+			alert("JSON参数出错:" + e);
 			resetReq();
 			return;
 		}
 	}
 	
-	axios({
-		method: method,
-		url: url,
-		data: param
-	}).then(function(response) {
+	axios({method:method, url:url, data:param}).then(function(response) {
 		console.log(response);
 		$("#result").val(JSON.stringify(response.data, null, 4));
 	}).catch(function(error) {
@@ -92,7 +88,6 @@ function send() {
 		$("#spend").text(new Date().getTime() - t_begin);
 		resetReq();
 	})
-
 }
 
 $(document).keyup(function(event) {
@@ -140,7 +135,6 @@ function logout() {
 		}
 	})
 }
-
 
 function saveToken() {
 	localStorage.setItem(TOKEN_NAME, $("#token").val());
