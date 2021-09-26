@@ -1,5 +1,7 @@
 package com.planb.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,16 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.planb.common.conf.ModuleConfig;
 import com.planb.common.controller.MyContext;
+import com.planb.security.JwtAuthorizationTokenFilter;
 import com.planb.security.user.SecurityUserDetails;
 
 
 @RestController
 @RequestMapping(ModuleConfig.TEST + "/test")
 public class TestController {
+	
+	Logger logger = LoggerFactory.getLogger(TestController.class);
     
 	@GetMapping("hello")
     String hello() {
 		SecurityUserDetails u = MyContext.getUser();
+		logger.info("--------hello---------");
 		return "Hello World:userName:" + u.getUsername();
 	}
 	

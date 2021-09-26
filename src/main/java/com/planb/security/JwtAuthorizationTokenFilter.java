@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.security.cache.AuthCacheService;
 import com.planb.security.cache.AuthCacheVersion;
 import com.planb.security.jwt.JwtTokenUtils;
 import com.planb.security.login.AuthUser;
@@ -35,18 +36,17 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
 	
 	Logger logger = LoggerFactory.getLogger(JwtAuthorizationTokenFilter.class);
 
-	private final JwtUserDetailsService userDetailsService;
-	private final PermissionService permissionService;
-	private final LoginRepo loginRepo;
-
-	public JwtAuthorizationTokenFilter(@Qualifier("jwtUserDetailsService") JwtUserDetailsService userDetailsService,
-			PermissionService permissionService, LoginRepo loginRepo) {
-		this.userDetailsService = userDetailsService;
-		this.permissionService = permissionService;
-		this.loginRepo = loginRepo;
-	}
-
+	@Autowired
+	private JwtUserDetailsService userDetailsService;
+	@Autowired
+	private PermissionService permissionService;
+	@Autowired
+	private LoginRepo loginRepo;
+	@Autowired
+	private AuthCacheService authCacheService;
+	
 	/**
+-- 用户URI权限
 select ru.uri_id, u.uri_path from auth_role_res rr join auth_res_uri ru on rr.res_id = ru.res_id
 	join auth_uri u on ru.uri_id = u.uri_id
 	where role_id in (select role_id 
@@ -60,13 +60,13 @@ from auth_user_role where user_id = 2)
 		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
 			Integer userId = null;
 			String username = null;
-			String jwtVersion = null;
+			String version = null;
 			List<Integer> roleIdList = new ArrayList<Integer>();
 			String authToken = requestHeader.substring(7);
 			try {
 				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
 				userId = claimsSet.getLongClaim("id").intValue();
-				jwtVersion = claimsSet.getStringClaim("version");
+				version = claimsSet.getStringClaim("version");
 				username = claimsSet.getStringClaim("username");
 				
 				Date expirationTime = claimsSet.getExpirationTime();
@@ -78,10 +78,11 @@ from auth_user_role where user_id = 2)
 				}
 				
 				if (JwtTokenUtils.needRefreshToken(expirationTime)) {
-					// 最后一定时间需要重新生成token
+					// 最后一定的时间需要重新生成token
 					Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
-			    	roleIdList = loginRepo.listRoleId(userId);
-			    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, loginRepo.getJwtVersion(userId));
+					roleIdList = loginRepo.listRoleId(userId);
+					String newVersion = loginRepo.getJwtVersion(userId);
+			    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, newVersion);
 			    	response.setHeader("authorization", newToken);
 				}
 				
@@ -106,10 +107,10 @@ from auth_user_role where user_id = 2)
 					return;
 				}
 									
-				AuthCacheVersion redisAuthCacheVersion = permissionService.getAuthCacheVersionFromRedis(userId);
+				AuthCacheVersion redisAuthCacheVersion = authCacheService.getCacheJwtVersionFromRedis(userId);
 				// 如果token.validate_version版本不对，禁止
 				String[] redisVersionArray = redisAuthCacheVersion.getJwtVersion().split("\\.");
-				String[] jwtVersionArray = jwtVersion.split("\\.");
+				String[] jwtVersionArray = version.split("\\.");
 				if (!redisVersionArray[0].equals(jwtVersionArray[0])) {
 					request.setAttribute(ErrorCodeConfig.ERROR_CODE, ErrorCodeConfig.TOKEN_FORBIDDEN);
 					chain.doFilter(request, response);
@@ -121,9 +122,8 @@ from auth_user_role where user_id = 2)
 					// 返回token
 					Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
 			    	roleIdList = loginRepo.listRoleId(userId);
-			    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, loginRepo.getJwtVersion(userId));				    	
-			    	System.out.println("...........new Token version..." + newToken);
-			    	// ......
+			    	String newVersion = loginRepo.getJwtVersion(userId);
+			    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, newVersion);
 			    	response.setHeader("authorization", newToken);
 				}
 				

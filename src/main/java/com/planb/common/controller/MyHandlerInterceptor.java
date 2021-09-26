@@ -3,7 +3,6 @@ package com.planb.common.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,9 +14,6 @@ public class MyHandlerInterceptor implements HandlerInterceptor {
 			throws Exception {
 		MyContext.getResponseCode().set(0);
 		MyContext.getResponseMsg().set("OK");
-		
-		
-		
 		
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -24,27 +23,28 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-		return !returnType.getGenericParameterType().equals(Response.class);
+		return !returnType.getGenericParameterType().equals(MyResponse.class);
 	}
 	
 	@Override
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
-		final Response<Object> result = new Response<>();
+		final MyResponse<Object> result = new MyResponse<>();
 		result.setCode(MyContext.getResponseCode().get());
 		result.setMsg(MyContext.getResponseMsg().get());
 		if (body == null) {
 			return result;
 		}
-		else if (body instanceof Response) {
+		else if (body instanceof MyResponse) {
 			return body;
 		}
 		result.setContent(body);
 		
 		// 404 500
 		if (LinkedHashMap.class.equals(body.getClass())) {
-			Map<String, Object> bodyMap = (Map)body;
+			@SuppressWarnings("unchecked")
+			Map<String, Object> bodyMap = (Map<String, Object>)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
 				result.setCode(ErrorCodeConfig.NOT_FOUND);
 				result.setMsg("Not Found:" + bodyMap.get("path"));

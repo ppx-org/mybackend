@@ -12,7 +12,7 @@ import com.planb.common.controller.MyContext;
 
 
 @RestController
-@RequestMapping(ModuleConfig.SECURITY + "/login")
+@RequestMapping(ModuleConfig.SECURITY + "login")
 public class LoginController {
 	
 	@Autowired

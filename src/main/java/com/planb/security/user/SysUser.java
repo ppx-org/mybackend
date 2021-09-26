@@ -11,13 +11,12 @@ import org.springframework.security.core.GrantedAuthority;
  *
  */
 public class SysUser {
-	
 	private Integer userId;
 	private String username;
 	private String password;
 	private List<Integer> roleIdList;
 	private Collection<? extends GrantedAuthority> authorities;
-	
+
 	public Integer getUserId() {
 		return userId;
 	}

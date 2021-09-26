@@ -44,7 +44,7 @@ public class AuthCacheService {
 	}
 	
 	// 一次性取回两个值
-	public AuthCacheVersion getCacheJwtVersion(Integer userId) {
+	public AuthCacheVersion getCacheJwtVersionFromRedis(Integer userId) {
 		// 如果redis报错，从数据库中取
 		String tmp_jwt_version = "0.0";
 		Integer tmp_auth_version = 0;

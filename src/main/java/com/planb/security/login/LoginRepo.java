@@ -25,7 +25,7 @@ public interface LoginRepo extends CrudRepository<AuthUser, Integer> {
 	String getJwtVersion(Integer userId);
 	
 	@Query("""
-		select user_id, user_name, user_password from auth_user where user_id = :userId
+		select user_id, username, password from auth_user where user_id = :userId
 	""")
 	Optional<AuthUser> getAuthUser(Integer userId);
 	

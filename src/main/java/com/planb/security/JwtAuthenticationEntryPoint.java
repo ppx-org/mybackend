@@ -2,7 +2,6 @@ package com.planb.security;
 
 import java.io.IOException;
 
-import javax.security.sasl.AuthenticationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

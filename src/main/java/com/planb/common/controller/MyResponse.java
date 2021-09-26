@@ -2,7 +2,7 @@ package com.planb.common.controller;
 
 import org.springframework.data.domain.Pageable;
 
-public class Response<T> {
+public class MyResponse<T> {
 	
 	private Integer code;
 	
@@ -15,8 +15,6 @@ public class Response<T> {
 	private Long totalElements;
 	
 	private Long time;
-	
-	
 
 	public Long getTotalElements() {
 		return totalElements;

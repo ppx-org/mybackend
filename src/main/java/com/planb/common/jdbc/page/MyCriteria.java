@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
-import org.springframework.data.relational.core.query.CriteriaDefinition.Combinator;
-import org.springframework.data.relational.core.query.CriteriaDefinition.Comparator;
 import org.springframework.data.relational.core.sql.IdentifierProcessing;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.data.util.Pair;
@@ -507,6 +505,7 @@ public class MyCriteria implements CriteriaDefinition {
 		switch (criteria.getComparator()) {
 			case BETWEEN:
 			case NOT_BETWEEN:
+				@SuppressWarnings("unchecked") 
 				Pair<Object, Object> pair = (Pair<Object, Object>) criteria.getValue();
 				stringBuilder.append(' ').append(pair.getFirst()).append(" AND ").append(pair.getSecond());
 				break;
@@ -529,6 +528,7 @@ public class MyCriteria implements CriteriaDefinition {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private static String renderValue(@Nullable Object value) {
 		return "?";
 

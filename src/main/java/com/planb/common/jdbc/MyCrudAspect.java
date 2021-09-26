@@ -16,7 +16,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -26,15 +25,12 @@ import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.page.MyCriteria;
 
-import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
-
-//import com.planb.test.TestExample;
 
 
 @Aspect
@@ -53,7 +49,7 @@ public class MyCrudAspect extends MyDaoSupport {
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
         
-        // System.out.println("cccccccccc:" + ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments());
+        // ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments());
         
         // 根据returnType分类
         Enum<?> queryType = QueryType.DEFAULT;
@@ -123,7 +119,8 @@ public class MyCrudAspect extends MyDaoSupport {
     		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
     		
     		
-    		Page<?> page = new PageImpl(list, pageable, c);
+    		@SuppressWarnings("unchecked")
+			Page<?> page = new PageImpl<Object>((List<Object>) list, pageable, c);
     		return page;
     	}
     	else if (queryType == QueryType.LIST_MAP) {

@@ -12,11 +12,10 @@ public class ResponseUtils {
 	
 	public static long returnJson(HttpServletResponse response, Integer code, String msg) {
 		long t = System.currentTimeMillis();
-		
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json");
 		
-		Response<?> r = new Response<>();
+		MyResponse<?> r = new MyResponse<>();
 		r.setCode(code);
 		r.setMsg(msg);
 		r.setTime(t);
@@ -30,4 +29,5 @@ public class ResponseUtils {
 		}
 		return t;
 	}
+	
 }
