@@ -2,6 +2,8 @@ package com.planb.security.jwt;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,7 +36,17 @@ public class JwtTokenUtils {
 	private final static long TOKEN_EXPIRES_SECORDS = 60 * 30;
     private final static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
     
-    public static String createToken(Map<String, Object> claimMap) {
+    public static String createToken(Integer id, String name, List<Integer> role, String version) {
+    	var claimMap = new HashMap<String, Object>();
+    	claimMap.put("id", id);
+    	claimMap.put("name", name);
+    	claimMap.put("role", role);
+    	claimMap.put("version", version);
+    	String token = createTokenByClaim(claimMap);
+    	return token;
+    }
+    
+    private static String createTokenByClaim(Map<String, Object> claimMap) {
     	Jwt jwt = Jwt.withTokenValue("token").header("typ", "JWT")
     			.claims(map -> {
     				map.putAll(claimMap);

@@ -43,6 +43,11 @@ axios.interceptors.response.use(
 		return response;
 	},
 	error => {
+		// 统一异常处理
+		$("#result").css("color", "red");
+		console.log(error);
+		let data = JSON.stringify(error.response.data);
+		$("#result").val(error + "\n" + data);
 		return Promise.reject(error);
 	}
 );
@@ -80,10 +85,7 @@ function send() {
 		console.log(response);
 		$("#result").val(JSON.stringify(response.data, null, 4));
 	}).catch(function(error) {
-		$("#result").css("color", "red");
-		console.log(error);
-		let data = JSON.stringify(error.response.data);
-		$("#result").val(error + "\n" + data);
+		// 由axios.interceptors.response.use处理
 	}).finally(()=>{
 		$("#spend").text(new Date().getTime() - t_begin);
 		resetReq();

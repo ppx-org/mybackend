@@ -3,10 +3,11 @@
 -- >>>>>>>>>>>>>>>>>> 权限
 create table auth_user (
 	user_id serial not null,
-	user_name varchar(32) not null,
-	user_password varchar(60) not null,
+	username varchar(32) not null,
+	password varchar(60) not null,
+	enable boolean not null default true, 
 	primary key(user_id),
-	unique(user_name)
+	unique(username)
 );
 comment on table auth_user is '用户';
 

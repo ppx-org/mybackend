@@ -1,8 +1,8 @@
 
 
-INSERT INTO "public"."auth_user"("user_id", "user_name", "user_password") VALUES (1, 'admin', '$2a$05$W53Pt8ga6lrQh4D7lrx9V.E0cXS0smuhDAW6x8VyjAOYJDyZntvWi');
-INSERT INTO "public"."auth_user"("user_id", "user_name", "user_password") VALUES (2, 'test', '$2a$05$gKhEcrHpyE1v6wKeNX/GFeymVPuI6aSrqJfU/cUPqTffmBiqRFlJC');
-INSERT INTO "public"."auth_user"("user_id", "user_name", "user_password") VALUES (3, 'test_a', '$2a$05$SCOhxjeVdeEh27Zxfo4mW.RJrqc0eE9NB8bYEmchC6lpOs/MJ8Jti');
+INSERT INTO "public"."auth_user"("user_id", "username", "password") VALUES (1, 'admin', '$2a$05$W53Pt8ga6lrQh4D7lrx9V.E0cXS0smuhDAW6x8VyjAOYJDyZntvWi');
+INSERT INTO "public"."auth_user"("user_id", "username", "password") VALUES (2, 'test', '$2a$05$gKhEcrHpyE1v6wKeNX/GFeymVPuI6aSrqJfU/cUPqTffmBiqRFlJC');
+INSERT INTO "public"."auth_user"("user_id", "username", "password") VALUES (3, 'test_a', '$2a$05$SCOhxjeVdeEh27Zxfo4mW.RJrqc0eE9NB8bYEmchC6lpOs/MJ8Jti');
 
 INSERT INTO "public"."auth_role"("role_id", "role_name") VALUES (1, 'role_admin');
 INSERT INTO "public"."auth_role"("role_id", "role_name") VALUES (2, 'role_test');

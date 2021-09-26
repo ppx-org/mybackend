@@ -10,9 +10,9 @@ import org.springframework.data.repository.CrudRepository;
 public interface LoginRepo extends CrudRepository<AuthUser, Integer> {
 	
 	@Query("""
-	       select user_id, user_name, user_password from auth_user where user_name = :userName 
+	       select user_id, username, password, enable from auth_user where username = :username 
 	""")
-	Optional<AuthUser> getAuthUser(String userName);
+	Optional<AuthUser> getAuthUser(String username);
 	
 	@Query("""
 		select role_id from auth_user_role where user_id = :userId

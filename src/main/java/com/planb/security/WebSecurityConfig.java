@@ -41,19 +41,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable() // 禁用 Spring Security 自带的跨域处理
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 禁用session
        http.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-       
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-        	.withUser("user").password("password").roles("USER");
+        // auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
     }
     
     @Override
     public void configure(WebSecurity web) throws Exception {
     	// 配置哪些请求不拦截
-//        web.ignoring().antMatchers("/security/login/login");
+    	// web.ignoring().antMatchers("/security/login/login");
     }
     
 

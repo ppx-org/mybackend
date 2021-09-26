@@ -6,8 +6,12 @@ import org.springframework.data.domain.Persistable;
 public class AuthUser {
 	@Id
 	private Integer userId;
-	private String userName;
-	private String userPassword;
+	
+	private String username;
+	
+	private String password;
+	
+	private Boolean enable;
 
 	public Integer getUserId() {
 		return userId;
@@ -17,20 +21,29 @@ public class AuthUser {
 		this.userId = userId;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getUserPassword() {
-		return userPassword;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setUserPassword(String userPassword) {
-		this.userPassword = userPassword;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
+	public Boolean getEnable() {
+		return enable;
+	}
+
+	public void setEnable(Boolean enable) {
+		this.enable = enable;
+	}
+	
+	
 }

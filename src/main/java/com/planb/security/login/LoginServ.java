@@ -24,27 +24,25 @@ public class LoginServ extends MyDaoSupport {
 	@Autowired
 	AuthCacheService authCacheService;
 	
-    public String login(String userName, String userPassword) {
-    	Optional<AuthUser> authUserOptional = repo.getAuthUser(userName);
+    public String login(String username, String password) {
+    	Optional<AuthUser> authUserOptional = repo.getAuthUser(username);
     	final String msg = "用户名或密码错误";
     	if (authUserOptional.isEmpty()) {
     		return MyContext.setBusinessException(msg);
     	}
-    	AuthUser authUser = authUserOptional.get();
-    	boolean matches = new BCryptPasswordEncoder().matches(userPassword, authUser.getUserPassword());
+    	AuthUser u = authUserOptional.get();
+    	if (!u.getEnable() == false) {
+    		return MyContext.setBusinessException("该用户被禁止");
+    	}
+    	boolean matches = new BCryptPasswordEncoder().matches(password, u.getPassword());
     	if (matches == false) {
     		return MyContext.setBusinessException(msg);
     	}
     	
     	// 返回token
-    	List<Integer> roleIdList = repo.listRoleId(authUser.getUserId());
-    	var claimMap = new HashMap<String, Object>();
-    	claimMap.put("userId", authUser.getUserId());
-    	claimMap.put("userName", authUser.getUserName());
-    	claimMap.put("userRole", roleIdList);
-    	claimMap.put("version", repo.getJwtVersion(authUser.getUserId()));
-    	
-    	var token = JwtTokenUtils.createToken(claimMap);
+    	List<Integer> roleIdList = repo.listRoleId(u.getUserId());
+    	String version = repo.getJwtVersion(u.getUserId());
+    	var token = JwtTokenUtils.createToken(u.getUserId(), u.getUsername(), roleIdList, version);
     	return token;
     }
     

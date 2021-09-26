@@ -69,7 +69,7 @@ where role_id in (select role_id
 			String authToken = requestHeader.substring(7);
 			try {
 				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
-				userId = claimsSet.getLongClaim("userId").intValue();
+				userId = claimsSet.getLongClaim("id").intValue();
 				jwtVersion = claimsSet.getStringClaim("version");
 				
 				Date expirationTime = claimsSet.getExpirationTime();
@@ -82,15 +82,9 @@ where role_id in (select role_id
 				
 				if (expirationTime.getTime() - new Date().getTime() < JwtTokenUtils.TOKEN_EXPIRES_CHECK_SECORDS * 1000) {
 					// 重新生成token
-					// 返回token
 					Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
 			    	roleIdList = loginRepo.listRoleId(userId);
-			    	var claimMap = new HashMap<String, Object>();
-			    	claimMap.put("userId", userId);
-			    	claimMap.put("userName", authUserOptional.get().getUserName());
-			    	claimMap.put("userRole", roleIdList);
-			    	claimMap.put("version", loginRepo.getJwtVersion(userId));
-			    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
+			    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, loginRepo.getJwtVersion(userId));				    	
 			    	System.out.println("...........new Token expire..." + newToken);
 			    	// ......
 			    	response.setHeader("authorization", newToken);
@@ -135,12 +129,7 @@ where role_id in (select role_id
 						// 返回token
 						Optional<AuthUser> authUserOptional = loginRepo.getAuthUser(userId);
 				    	roleIdList = loginRepo.listRoleId(userId);
-				    	var claimMap = new HashMap<String, Object>();
-				    	claimMap.put("userId", userId);
-				    	claimMap.put("userName", authUserOptional.get().getUserName());
-				    	claimMap.put("userRole", roleIdList);
-				    	claimMap.put("version", loginRepo.getJwtVersion(userId));
-				    	var newToken = JwtTokenUtils.createToken(claimMap);				    	
+				    	var newToken = JwtTokenUtils.createToken(userId, authUserOptional.get().getUsername(), roleIdList, loginRepo.getJwtVersion(userId));				    	
 				    	System.out.println("...........new Token version..." + newToken);
 				    	// ......
 				    	response.setHeader("authorization", newToken);
