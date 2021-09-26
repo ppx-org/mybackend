@@ -1,4 +1,4 @@
-package com.planb.security.login;
+package com.planb.security.auth.login;
 
 import java.util.List;
 import java.util.Optional;

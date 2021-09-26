@@ -1,4 +1,6 @@
-package com.planb.security.login;
+package com.planb.security.auth.menu;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,20 +12,15 @@ import com.planb.common.conf.ModuleConfig;
 
 
 @RestController
-@RequestMapping(ModuleConfig.SECURITY + "login")
-public class LoginController {
+@RequestMapping(ModuleConfig.SECURITY + "menu")
+public class MenuController {
 	
 	@Autowired
-	LoginServ serv;
+	MenuServ serv;
     
-	@PostMapping("login")
-    String login(@RequestParam(required = true)String userName, @RequestParam(required = true)String userPassword) {
-		return serv.login(userName, userPassword);
+	@PostMapping("list")
+    List<Menu> list(@RequestParam(required = true)Integer userId) {
+		return serv.listUserMenu(userId);
 	}
 	
-	@PostMapping("logout")
-    void logout() {
-		serv.logout();
-	}
-    
 }
