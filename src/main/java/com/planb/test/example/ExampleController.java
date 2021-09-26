@@ -12,7 +12,7 @@ import com.planb.common.conf.ModuleConfig;
 
 
 @RestController
-@RequestMapping(ModuleConfig.TEST + "/example")
+@RequestMapping(ModuleConfig.TEST + "example")
 public class ExampleController {
 	
 	Logger logger = LoggerFactory.getLogger(ExampleController.class);

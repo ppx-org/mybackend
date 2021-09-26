@@ -14,7 +14,7 @@ import com.planb.test.TestController;
 
 
 @Controller
-@RequestMapping(ModuleConfig.TEST + "/testapi")
+@RequestMapping(ModuleConfig.TEST + "testapi")
 public class TestApiController {
 	Logger logger = LoggerFactory.getLogger(TestController.class);
    

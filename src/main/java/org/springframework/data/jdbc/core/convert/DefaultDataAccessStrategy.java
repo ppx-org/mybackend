@@ -452,6 +452,7 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 
 				Object value = propertyAccessor.getProperty(property);
 				RelationalPersistentEntity<?> embeddedEntity = context.getPersistentEntity(property.getType());
+				@SuppressWarnings("unchecked")
 				SqlIdentifierParameterSource additionalParameters = getParameterSource((T) value,
 						(RelationalPersistentEntity<T>) embeddedEntity, prefix + property.getEmbeddedPrefix(), skipProperty,
 						identifierProcessing);
@@ -637,8 +638,10 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 	 */
 	static class NoValuePropertyAccessor<T> implements PersistentPropertyAccessor<T> {
 
+		@SuppressWarnings("rawtypes")
 		private static final NoValuePropertyAccessor INSTANCE = new NoValuePropertyAccessor();
 
+		@SuppressWarnings("unchecked")
 		static <T> NoValuePropertyAccessor<T> instance() {
 			return INSTANCE;
 		}

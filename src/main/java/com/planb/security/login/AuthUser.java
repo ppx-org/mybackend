@@ -1,7 +1,6 @@
 package com.planb.security.login;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.domain.Persistable;
 
 public class AuthUser {
 	@Id

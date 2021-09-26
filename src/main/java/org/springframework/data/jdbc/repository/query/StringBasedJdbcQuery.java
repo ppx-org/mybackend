@@ -140,6 +140,7 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private String determineQuery() {
 
 		String query = queryMethod.getDeclaredQuery();
@@ -152,7 +153,7 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 	}
 
 	@Nullable
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked", "deprecation" })
 	ResultSetExtractor<Object> determineResultSetExtractor(@Nullable RowMapper<Object> rowMapper) {
 
 		String resultSetExtractorRef = queryMethod.getResultSetExtractorRef();
@@ -180,7 +181,7 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 		return BeanUtils.instantiateClass(resultSetExtractorClass);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Nullable
 	RowMapper<Object> determineRowMapper(@Nullable RowMapper<?> defaultMapper) {
 
