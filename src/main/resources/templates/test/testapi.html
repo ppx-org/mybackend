@@ -46,8 +46,13 @@ axios.interceptors.response.use(
 		// 统一异常处理
 		$("#result").css("color", "red");
 		console.log(error);
-		let data = JSON.stringify(error.response.data);
-		$("#result").val(error + "\n" + data);
+		if (error.isAxiosError && error.message == "Network Error") {
+			$("#result").val("网络异常,URL:" + error.config.url);
+		}
+		else {
+			let data = JSON.stringify(error.response.data);
+			$("#result").val(error + "\n" + data);
+		}
 		return Promise.reject(error);
 	}
 );
