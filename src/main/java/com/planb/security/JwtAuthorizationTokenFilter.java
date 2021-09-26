@@ -67,7 +67,7 @@ from auth_user_role where user_id = 2)
 				JWTClaimsSet claimsSet = JwtTokenUtils.getClaimsFromToken(authToken);
 				userId = claimsSet.getLongClaim("id").intValue();
 				version = claimsSet.getStringClaim("version");
-				username = claimsSet.getStringClaim("username");
+				username = claimsSet.getStringClaim("name");
 				
 				Date expirationTime = claimsSet.getExpirationTime();
 				if (expirationTime.compareTo(new Date()) == -1) {

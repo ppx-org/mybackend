@@ -8,17 +8,17 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.planb.security.cache.AuthCacheService;
 
-/**
- * 通过用户名来加载用户 。这个方法主要用于从系统数据中查询并加载具体的用户(UserDetails)到Spring Security中。
- * @author mark
- *
- */
+
 @Service
 public class PermissionService {
+	
+	@Value("${my.uri.forbidden}")
+	private boolean MY_URI_FORBIDDEN = true;
 	
 	Logger logger = LoggerFactory.getLogger(PermissionService.class);
 	
@@ -29,6 +29,9 @@ public class PermissionService {
 	AuthCacheService authCacheService;
 	
     public boolean uriPermission(String uri, Integer userId, List<Integer> roleIdList, int redisAuthCacheVersion) {
+    	if (MY_URI_FORBIDDEN == false) {
+    		return true;
+    	}
     	    	
     	// 登录后不拦截的URI
     	var permissionUriSet = Set.of("/security/login/logout");

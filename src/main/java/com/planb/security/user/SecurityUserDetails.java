@@ -75,7 +75,6 @@ public class SecurityUserDetails extends SysUser implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.getUsername();
 	}
 }

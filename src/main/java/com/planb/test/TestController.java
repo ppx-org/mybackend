@@ -21,7 +21,10 @@ public class TestController {
 	@GetMapping("hello")
     String hello() {
 		SecurityUserDetails u = MyContext.getUser();
-		logger.info("--------hello---------");
+		logger.debug("--------hello---------");
+		logger.debug(">>>:" + u.getUserId());
+		logger.debug(">>>:" + u.getUsername());
+		logger.debug(">>>:" + u.getRoleIdList());
 		return "Hello World:userName:" + u.getUsername();
 	}
 	
