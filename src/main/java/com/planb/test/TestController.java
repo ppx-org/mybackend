@@ -19,7 +19,7 @@ public class TestController {
 	@GetMapping("hello")
     String hello() {
 		SecurityUserDetails u = MyContext.getUser();
-		return "Hello World:userName:" + u.getUserName();
+		return "Hello World:userName:" + u.getUsername();
 	}
 	
 	@GetMapping("sleep")

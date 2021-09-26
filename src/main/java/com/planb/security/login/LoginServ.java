@@ -39,7 +39,7 @@ public class LoginServ extends MyDaoSupport {
     		return MyContext.setBusinessException(msg);
     	}
     	
-    	// 返回token
+    	// 返回JWT token
     	List<Integer> roleIdList = repo.listRoleId(u.getUserId());
     	String version = repo.getJwtVersion(u.getUserId());
     	var token = JwtTokenUtils.createToken(u.getUserId(), u.getUsername(), roleIdList, version);

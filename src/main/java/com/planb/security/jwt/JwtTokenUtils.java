@@ -2,15 +2,14 @@ package com.planb.security.jwt;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.stereotype.Component;
 
-import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
@@ -30,11 +29,26 @@ import com.planb.common.conf.DateConfig;
  * @author mark
  *
  */
-@Component
 public class JwtTokenUtils {
-	public final static long TOKEN_EXPIRES_CHECK_SECORDS = 60 * 15;
+	// JWT token超时时间
 	private final static long TOKEN_EXPIRES_SECORDS = 60 * 30;
+	
+	// JWT token最后需要刷新的时间
+	private final static long TOKEN_EXPIRES_CHECK_SECORDS = 60 * 15;
+	
+	// JWT token签名
     private final static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
+    
+    // The content of the header should look like the following: Authorization: Bearer <token>
+    private final static String JWT_TOKEN = "Authorization";
+    
+    public static String getJwtTokenName() {
+    	return JWT_TOKEN;
+    }
+    
+    public static boolean needRefreshToken(Date expirationTime) {
+    	return expirationTime.getTime() - new Date().getTime() < JwtTokenUtils.TOKEN_EXPIRES_CHECK_SECORDS * 1000;
+    }
     
     public static String createToken(Integer id, String name, List<Integer> role, String version) {
     	var claimMap = new HashMap<String, Object>();
@@ -61,8 +75,7 @@ public class JwtTokenUtils {
             token =  jwsObject.serialize();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-    	
+		}	
         return token;
     }
     

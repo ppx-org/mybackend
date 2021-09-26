@@ -24,11 +24,16 @@ public class JwtUserDetailsService implements UserDetailsService {
 	 2. 权限授权：设置和使用时，名称保持一至即可
 	 */
     @Override
-    // TODO userId改成token, 在这里解析
     public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
-        return new SecurityUserDetails(userId, authorityList);
+        return null;
     }
-
+    
+    public UserDetails loadUserByToken(Integer userId, String username, List<Integer> roleIdList) {
+    	List<GrantedAuthority> authorityList = new ArrayList<>();
+        authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return new SecurityUserDetails(userId, username, roleIdList, authorityList);
+    }
 }
+
+
+

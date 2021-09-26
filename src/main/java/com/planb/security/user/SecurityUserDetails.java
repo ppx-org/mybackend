@@ -1,6 +1,7 @@
 package com.planb.security.user;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,30 +26,17 @@ public class SecurityUserDetails extends SysUser implements UserDetails {
         return authorities;
     }
     
-    // 加密  String encode = new BCryptPasswordEncoder().encode("123456");
-    // 验证：boolean matches = encoder.matches(pass, passHash);
-    
-
-    public SecurityUserDetails(String userId, Collection<? extends GrantedAuthority> authorities){
+    public SecurityUserDetails(Integer userId, String username, List<Integer> roleIdList, Collection<? extends GrantedAuthority> authorities){
         this.authorities = authorities;
-        this.setUserId(Integer.parseInt(userId));
-        this.setUserName(userId);
-        String encode = new BCryptPasswordEncoder(5).encode("123456");
-        this.setPassword(encode);
+        this.setUserId(userId);
+        this.setUsername(username);
+        this.setRoleIdList(roleIdList);
         this.setAuthorities(authorities);
     }
     
-    public static void main(String[] args) {
-    	long t = System.currentTimeMillis();
-    	String encode = new BCryptPasswordEncoder(5).encode("test_a");
-		System.out.println("99991:" + encode);
-		System.out.println("99992:" + (System.currentTimeMillis() - t));
-		
-		long t1 = System.currentTimeMillis();
-		boolean matches = new BCryptPasswordEncoder().matches("test", "$2a$05$gOLYHkQfZ.sKJFUfAZPgsOwBAWFPNnLNRfJiZz5kmFKJ83mwM7naa");
-		System.out.println("99991:" + matches);
-		System.out.println("99992:" + (System.currentTimeMillis() - t1));
-	}
+    public static void test() {
+    	
+    }
 
     /**
      * 账户是否过期
