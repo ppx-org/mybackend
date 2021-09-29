@@ -17,8 +17,8 @@ public class LoginController {
 	LoginServ serv;
     
 	@PostMapping("login")
-    String login(@RequestParam(required = true)String userName, @RequestParam(required = true)String userPassword) {
-		return serv.login(userName, userPassword);
+    String login(@RequestParam(required = true)String username, @RequestParam(required = true)String password) {
+		return serv.login(username, password);
 	}
 	
 	@PostMapping("logout")
