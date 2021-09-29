@@ -1,7 +1,7 @@
 # mybackend
 mybackend
 
-test-V0.2.3
+test-V0.2.4
 ### technology stack
 * 后端 jdk17 + Spring Boot 2.5.5 + Spring Security + Spring Data JDBC
 * 数据库 PostgreSql13
