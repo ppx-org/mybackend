@@ -27,6 +27,7 @@ axios.interceptors.request.use(
 		if (token) {
 	      config.headers.Authorization = "Bearer " + token;
 	    }
+		config.data = Qs.stringify(config.data)
 		return config;
   	},
   	err => {
@@ -76,7 +77,8 @@ function send() {
 	if ($.trim($("#param").val()) != "") {
 		try {
 			let paramJson = JSON.parse($("#param").val());
-			param = Qs.stringify(paramJson);
+			// param = Qs.stringify(paramJson);
+			param = paramJson;
 			$("#param").val(JSON.stringify(paramJson, null, 4))
 		}
 		catch(e) {
@@ -118,7 +120,7 @@ function clickTd(obj) {
 function login() {
 	localStorage.setItem(TOKEN_NAME, "");
 	var paramJson = {"username":$("#username").val(), "password":$("#username").val()};
-	axios.post([[@{/security/login/login}]], Qs.stringify(paramJson)).then(res=> {
+	axios.post([[@{/security/login/login}]], paramJson).then(res=> {
 		if (res.data.code == 0) {
 			let token = res.data.content;
 			localStorage.setItem(TOKEN_NAME, token);
