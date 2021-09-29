@@ -11,18 +11,20 @@ INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (1, 1);
 INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (2, 2);
 INSERT INTO "public"."auth_user_role"("user_id", "role_id") VALUES (3, 2);
 
-
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (1, '/test/**');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (2, '/test/example/*');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (3, '/test/example/page');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (4, '/test/example/insert');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (5, '/test/example/update');
 
-
-INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (1, '测试目录', 0, 'd', NULL);
-INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (2, '测试菜单', 1, 'm', NULL);
-INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (3, '查询操作', 2, 'o', NULL);
-INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (4, '变更操作', 2, 'o', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (1, '测试目录01', 0, 'd', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (2, '测试菜单11', 1, 'm', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (3, '测试菜单12', 1, 'm', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (4, '查询操作', 2, 'o', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (5, '变更操作', 2, 'o', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (6, '测试目录02', 0, 'd', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (7, '测试菜单21', 6, 'm', NULL);
+INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_menu_uri_id") VALUES (8, '测试菜单22', 6, 'm', NULL);
 
 INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (3, 3);
 INSERT INTO "public"."auth_res_uri"("res_id", "uri_id") VALUES (4, 4);
@@ -32,4 +34,10 @@ INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 1);
 INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 2);
 INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 3);
 INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 4);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 5);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 6);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 7);
+INSERT INTO "public"."auth_role_res"("role_id", "res_id") VALUES (2, 8);
+
+
 

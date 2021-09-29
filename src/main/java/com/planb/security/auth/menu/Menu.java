@@ -4,9 +4,9 @@ public class Menu {
 	
 	private Integer id;
 	private String title;
-	private String pid;
+	private Integer pid;
 	private String t;
-
+	
 	public Integer getId() {
 		return id;
 	}
@@ -23,11 +23,11 @@ public class Menu {
 		this.title = title;
 	}
 
-	public String getPid() {
+	public Integer getPid() {
 		return pid;
 	}
 
-	public void setPid(String pid) {
+	public void setPid(Integer pid) {
 		this.pid = pid;
 	}
 
@@ -38,5 +38,4 @@ public class Menu {
 	public void setT(String t) {
 		this.t = t;
 	}
-
 }
