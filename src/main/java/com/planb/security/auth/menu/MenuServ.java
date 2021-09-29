@@ -62,6 +62,9 @@ public class MenuServ extends MyDaoSupport {
     	if (hasSub) {
     		tmpMap.put("sub", new ArrayList<Map<String, Object>>());
     	}
+    	else {
+    		tmpMap.put("path", m.getPath());
+    	}
     	return tmpMap;
     }
 }

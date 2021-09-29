@@ -6,6 +6,7 @@ public class Menu {
 	private String title;
 	private Integer pid;
 	private String t;
+	private String path;
 	
 	public Integer getId() {
 		return id;
@@ -38,4 +39,13 @@ public class Menu {
 	public void setT(String t) {
 		this.t = t;
 	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+	
 }
