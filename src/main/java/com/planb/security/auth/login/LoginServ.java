@@ -29,7 +29,7 @@ public class LoginServ extends MyDaoSupport {
     		return MyContext.setBusinessException(msg);
     	}
     	AuthUser u = authUserOptional.get();
-    	if (!u.getEnable() == false) {
+    	if (u.getEnable() == false) {
     		return MyContext.setBusinessException("该用户被禁止");
     	}
     	boolean matches = new BCryptPasswordEncoder().matches(password, u.getPassword());

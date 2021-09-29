@@ -31,10 +31,10 @@ import com.planb.common.conf.DateConfig;
  */
 public class JwtTokenUtils {
 	// JWT token超时时间
-	private final static long TOKEN_EXPIRES_SECORDS = 60 * 30;
+	private final static long TOKEN_EXPIRES_SECORDS = 60 * 120;
 	
 	// JWT token最后需要刷新的时间
-	private final static long TOKEN_EXPIRES_CHECK_SECORDS = 60 * 15;
+	private final static long TOKEN_EXPIRES_CHECK_SECORDS = 60 * 30;
 	
 	// JWT token签名
     private final static String TOKEN_SIGN_KEY = "XY0123456789abcdefghij0123456789";
