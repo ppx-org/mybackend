@@ -117,7 +117,7 @@ function clickTd(obj) {
 
 function login() {
 	localStorage.setItem(TOKEN_NAME, "");
-	var paramJson = {"userName":$("#userName").val(), "userPassword":$("#userPassword").val()};
+	var paramJson = {"username":$("#username").val(), "password":$("#username").val()};
 	axios.post([[@{/security/login/login}]], Qs.stringify(paramJson)).then(res=> {
 		if (res.data.code == 0) {
 			let token = res.data.content;
@@ -173,8 +173,8 @@ a:visited {color: blue;}
 
 <body>
 <div>
-	<input type="text" id="userName" placeholder="用户名" value="test" style="width:80px">
-	<input type="text" id="userPassword" placeholder="密码" value="test" style="width:80px">
+	<input type="text" id="username" placeholder="用户名" value="test" style="width:80px">
+	<input type="text" id="password" placeholder="密码" value="test" style="width:80px">
 	<button type="button" onclick="login()">login</button>
 	<button type="button" onclick="logout()">logout</button>
 	
@@ -186,13 +186,13 @@ a:visited {color: blue;}
 </div>
 
 <div style="margin-top: 10px">
-	<textarea id="param" rows="8" style="width:1024px">{"userName":"test", "userPassword":"test"}</textarea>
+	<textarea id="param" rows="8" style="width:1024px">{"username":"test", "password":"test"}</textarea>
 </div>
 
 <table border="1" id="myTable" style="display: ">
 <tr>
 	<td>no intercept</td>
-	<td><a onclick="clickTd(this)" method="post" param='{"userName":"test", "userPassword":"test"}'>security/login/login</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"username":"test", "password":"test"}'>security/login/login</a></td>
 	<td><a onclick="clickTd(this)" method="get">test/testapi/get?id=100</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100}'>test/testapi/post</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100, "name":"myname", "date":"2021-09-22", "dateTime":"2021-09-22 19:08:30"}'>test/testapi/submit</a></td>
