@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.relational.core.query.CriteriaDefinition;
 import org.springframework.data.relational.core.sql.IdentifierProcessing;
 import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.data.util.Pair;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Central class for creating queries. It follows a fluent API style so that you can easily chain together multiple
@@ -58,6 +60,9 @@ public class MyCriteria implements CriteriaDefinition {
 	
 	// dengxz
 	private Map<String, Object> paramMap = new HashMap<String, Object>();
+	
+	// dengxz
+	private Sort defaultSort;
 
 	public Map<String, Object> getParamMap() {
 		return paramMap;
@@ -67,6 +72,14 @@ public class MyCriteria implements CriteriaDefinition {
 		this.paramMap = paramMap;
 	}
 	
+	public Sort getDefaultSort() {
+		return defaultSort;
+	}
+
+	public void setDefaultSort(Sort defaultSort) {
+		this.defaultSort = defaultSort;
+	}
+
 	private boolean beginWhere = true;
 
 	public boolean getBeginWhere() {

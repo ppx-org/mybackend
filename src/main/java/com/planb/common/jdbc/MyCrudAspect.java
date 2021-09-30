@@ -14,6 +14,7 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -92,9 +93,21 @@ public class MyCrudAspect extends MyDaoSupport {
         	else if (Strings.isNotEmpty(cSql)) {
         		cSql = preWhere + cSql;
         	}
-        	pageable.getSort().toList().forEach(m -> {
-        		orderList.add(m.getProperty() + " " + m.getDirection());
-        	});
+        	
+        	if (pageable.getSort().isSorted()) {
+	        	pageable.getSort().toList().forEach(m -> {        		
+	        		orderList.add(underscoreName(m.getProperty()) + " " + m.getDirection());
+	        	});
+        	}
+        	else {
+        		// 默认排序
+            	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
+            		myCriteria.getDefaultSort().toList().forEach(m -> {        		
+    	        		orderList.add(underscoreName(m.getProperty()) + " " + m.getDirection());
+    	        	});
+            	}
+            	System.out.println("xxx001orderList::" + orderList);
+        	}
         	
         	querySql = querySql.replace("${c}", cSql);
         }
@@ -110,7 +123,7 @@ public class MyCrudAspect extends MyDaoSupport {
         		return new PageImpl<Object>(new ArrayList<>(), pageable, c);
         	}
         	
-        	if (!pageable.getSort().isEmpty()) {
+        	if (!orderList.isEmpty()) {
         		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
         	}  
         	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();        	
@@ -141,5 +154,29 @@ public class MyCrudAspect extends MyDaoSupport {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Convert a name in camelCase to an underscored name in lower case. Any upper
+	 * case letters are converted to lower case with a preceding underscore.
+	 * 
+	 * @param name the original name
+	 * @return the converted name
+	 */
+	private String underscoreName(String name) {
+		if (!StringUtils.hasLength(name)) {
+			return "";
+		}
+		StringBuilder result = new StringBuilder(name.substring(0, 1).toLowerCase());
+		for (int i = 1; i < name.length(); i++) {
+			String s = name.substring(i, i + 1);
+			String slc = s.toLowerCase();
+			if (!s.equals(slc)) {
+				result.append("_").append(slc);
+			} else {
+				result.append(s);
+			}
+		}
+		return result.toString();
 	}
 }
