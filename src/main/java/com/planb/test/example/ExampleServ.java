@@ -21,9 +21,9 @@ public class ExampleServ extends MyDaoSupport {
 		// MyCriteria.where("e.example_id")
 		// MyCriteria.empty().and("e.example_id")
 		MyCriteria c = MyCriteria.where("e.example_name").like(entity.getExampleName())
-        		.and("e.exampleType").is(entity.getExampleType());
+        		.and("e.example_type").is(entity.getExampleType());
 		
-		c.setDefaultSort(Sort.by(Direction.DESC, "e.exampleId"));
+		c.setDefaultSort(Sort.by(Direction.DESC, "e.example_id"));
 				
 		return repo.page(c, pageable);
 	}
