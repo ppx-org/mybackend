@@ -863,7 +863,8 @@ public class MyCriteria implements CriteriaDefinition {
 
 			Assert.notNull(value, "Value must not be null!");
 
-			return createCriteria(Comparator.LIKE, value);
+			// dengxz
+			return createCriteria(Comparator.LIKE, "%" + value + "%");
 		}
 
 		/*

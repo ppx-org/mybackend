@@ -105,22 +105,23 @@ public class MyCrudAspect extends MyDaoSupport {
     	if (queryType == QueryType.PAGE) {
     		String countSql = getCountSql(querySql.trim());
         	int c = nameTemplate.queryForObject(countSql, paramMap, Integer.class);
+        	
         	if (c == 0) {
         		return new PageImpl<Object>(new ArrayList<>(), pageable, c);
         	}
         	
         	if (!pageable.getSort().isEmpty()) {
         		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
-        	}
-        	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();
-        	
+        	}  
+        	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();        	
     		
     		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
     		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
     		
-    		
+    		System.out.println("xxxxxxx:" + list);
     		@SuppressWarnings("unchecked")
 			Page<?> page = new PageImpl<Object>((List<Object>) list, pageable, c);
+    		
     		return page;
     	}
     	else if (queryType == QueryType.LIST_MAP) {

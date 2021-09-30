@@ -18,11 +18,8 @@ public class ExampleServ extends MyDaoSupport {
 	public Page<Example> page(Example entity, Pageable pageable) {
 		// MyCriteria.where("e.example_id")
 		// MyCriteria.empty().and("e.example_id")
-		MyCriteria c = MyCriteria.empty().and("e.example_id").is(null)
-        		.and("e.example_id").is(null)
-        		.and("e.example_date").like(null)
-        		.and("e.example_name").like(null).and("e.example_date").like(null)
-        		.and("e.example_name").like("%name%");
+		MyCriteria c = MyCriteria.where("e.example_name").like(entity.getExampleName())
+        		.and("e.example_type").is(entity.getExampleType());
 		
 		return repo.page(c, pageable);
 	}
