@@ -118,7 +118,6 @@ public class MyCrudAspect extends MyDaoSupport {
     		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
     		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
     		
-    		System.out.println("xxxxxxx:" + list);
     		@SuppressWarnings("unchecked")
 			Page<?> page = new PageImpl<Object>((List<Object>) list, pageable, c);
     		
