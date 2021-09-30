@@ -166,6 +166,17 @@ function decodeToken() {
 	$("#decodeToken").val(jsonStr + " " + new Date(exp * 1000));
 }
 
+function ehrTest() {
+	var getParams = {a:123, b:''}
+	var returnObj = {}
+	for (let key in getParams) {
+        if (getParams[key] != null && getParams[key] != '') {
+        	returnObj[key] = getParams[key];  
+        }
+    }
+	console.log(returnObj);
+}
+
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -174,6 +185,9 @@ a:visited {color: blue;}
 </head>
 
 <body>
+
+<button type="button" id="reqButton" onclick="ehrTest()" style="width:200px">EHR测试</button>
+
 <div>
 	<input type="text" id="username" placeholder="用户名" value="test" style="width:80px">
 	<input type="text" id="password" placeholder="密码" value="test" style="width:80px">
