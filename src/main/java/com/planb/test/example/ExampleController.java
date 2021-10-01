@@ -58,8 +58,8 @@ alter sequence test_example_example_id_seq restart with 300;
     	return serv.get(id);
     }
 	
-	@RequestMapping("delete")
-    void delete(Integer id) {
-		serv.delete(id);
+	@RequestMapping("del")
+    void del(Integer id) {
+		serv.del(id);
     }
 }

@@ -29,17 +29,7 @@ public class ExampleServ extends MyDaoSupport {
 	}
 	
     public void insert(Example entity) {
-    	int r = repo.insert("lock01", "t");
-    	if (r == 0) {
-    		MyContext.setBusinessException("名称已经存在");
-    		return;
-    	}
-    }
-    
-    public void update(Example entity) {
-    	entity.setExampleId(311);
-    	entity.setExampleName("updateName001");
-    	entity.setExampleType("p");
+    	entity.setNew(true);
     	repo.save(entity);
     }
     
@@ -47,7 +37,11 @@ public class ExampleServ extends MyDaoSupport {
     	return repo.get(id);
     }
     
-    public void delete(Integer id) {
+    public void update(Example entity) {
+    	repo.save(entity);
+    }
+    
+    public void del(Integer id) {
     	repo.deleteById(id);
     }
 }
