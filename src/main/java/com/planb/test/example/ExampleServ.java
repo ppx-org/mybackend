@@ -34,6 +34,11 @@ public class ExampleServ extends MyDaoSupport {
     }
     
     public Example get(Integer id) {
+    	try {
+			Thread.sleep(1200);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
     	return repo.get(id);
     }
     
