@@ -1,6 +1,18 @@
 package com.planb.security.auth.res;
 
-public class Res {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.ReadOnlyProperty;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Table("auth_res")
+public class Res implements Persistable<Integer> {
+	@ReadOnlyProperty
+	private boolean isNew;
+	 
+	@Id
 	private Integer resId;
 
 	private String resName;
@@ -49,6 +61,21 @@ public class Res {
 
 	public void setMenuPath(String menuPath) {
 		this.menuPath = menuPath;
+	}
+	
+	@Override
+	@JsonIgnore
+	public boolean isNew() {
+		return isNew;
+	}
+	
+	public void setNew(Boolean isNew) {
+		this.isNew = isNew;
+	}
+	
+	@Override
+	public Integer getId() {
+		return resId;
 	}
 
 }
