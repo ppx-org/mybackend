@@ -30,7 +30,10 @@ public class ExampleServ extends MyDaoSupport {
 	
     public void insert(Example entity) {
     	entity.setNew(true);
-    	repo.save(entity);
+    	Example r = repo.save(entity);
+    	int id = r.getId();
+    	System.out.println("ccccccccc:id:" + id);
+    	
     }
     
     public Example get(Integer id) {
@@ -43,7 +46,9 @@ public class ExampleServ extends MyDaoSupport {
     }
     
     public void update(Example entity) {
-    	repo.save(entity);
+    	Example r = repo.save(entity);
+    	int id = r.getId();
+    	System.out.println("cccccccccvvvvvvvvv01:id:" + id);
     }
     
     public void del(Integer id) {

@@ -567,7 +567,7 @@ class SqlGenerator {
 	}
 
 	private String createInsertSql(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
-
+	
 		Table table = getTable();
 
 		Set<SqlIdentifier> columnNamesForInsert = new TreeSet<>(Comparator.comparing(SqlIdentifier::getReference));
@@ -605,7 +605,8 @@ class SqlGenerator {
 	
 	// dengxz
 	public String createUpdateSqlNew(SqlIdentifierParameterSource parameterSource) {
-		return render(createBaseUpdateNew(parameterSource).build());
+		String sql = render(createBaseUpdateNew(parameterSource).build());
+		return sql;
 	}
 
 	private String createUpdateWithVersionSql() {

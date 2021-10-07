@@ -20,6 +20,7 @@ import static org.springframework.data.jdbc.core.convert.SqlGenerator.ID_SQL_PAR
 import static org.springframework.data.jdbc.core.convert.SqlGenerator.ROOT_ID_PARAMETER;
 import static org.springframework.data.jdbc.core.convert.SqlGenerator.VERSION_SQL_PARAMETER;
 
+import java.lang.reflect.Field;
 import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -176,11 +177,33 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 	 */
 	@Override
 	public <S> boolean update(S instance, Class<S> domainType) {
-		// dengxz
+		// dengxz 001
 		RelationalPersistentEntity<S> persistentEntity = getRequiredPersistentEntity(domainType);
 		SqlIdentifierParameterSource parameterSource = getParameterSource(instance, persistentEntity, "", Predicates.includeAll(), getIdentifierProcessing());
-		return operations.update(sql(domainType).createUpdateSqlNew(parameterSource),
-				parameterSource) != 0;
+		
+		Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
+		String updateSql = sql(domainType).createUpdateSqlNew(parameterSource);
+		
+		if (conflict != null) {
+			updateSql = updateSql + " and NOT EXISTS (select 1 from " + persistentEntity.getTableName() 
+				+ " where " + conflict.value() + " = :" + conflict.value()+ ")";
+		}
+		
+		boolean b = operations.update(updateSql, parameterSource) != 0;
+		
+		if (conflict != null) {
+			try {
+				Field ff = persistentEntity.getIdProperty().getField();
+				ff.setAccessible(true);
+				ff.set(instance, 0);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return true;
+		}
+		else {
+			return b;
+		}	
 	}
 
 	/*
