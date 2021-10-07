@@ -13,7 +13,8 @@ create table test_example (
     example_type char(1),
     example_date date,
     example_time timestamp default now() not null,
-    primary key(example_id)
+    primary key(example_id),
+    unique(example_name)
 );
 comment on table test_example is 'test_example';
 comment on column test_example.example_type is '类型';

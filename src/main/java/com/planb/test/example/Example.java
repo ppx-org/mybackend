@@ -11,9 +11,12 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.planb.common.jdbc.annotation.Conflict;
 
 
 @Table("test_example")
+@Conflict("example_name")
+@org.springframework.data.annotation.TypeAlias("dddd")
 public class Example implements Persistable<Integer> {
     @Id
     private Integer exampleId;

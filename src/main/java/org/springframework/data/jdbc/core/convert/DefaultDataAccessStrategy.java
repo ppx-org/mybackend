@@ -15,7 +15,10 @@
  */
 package org.springframework.data.jdbc.core.convert;
 
-import static org.springframework.data.jdbc.core.convert.SqlGenerator.*;
+import static org.springframework.data.jdbc.core.convert.SqlGenerator.IDS_SQL_PARAMETER;
+import static org.springframework.data.jdbc.core.convert.SqlGenerator.ID_SQL_PARAMETER;
+import static org.springframework.data.jdbc.core.convert.SqlGenerator.ROOT_ID_PARAMETER;
+import static org.springframework.data.jdbc.core.convert.SqlGenerator.VERSION_SQL_PARAMETER;
 
 import java.sql.JDBCType;
 import java.sql.ResultSet;
@@ -52,6 +55,8 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import com.planb.common.jdbc.annotation.Conflict;
 
 /**
  * The default {@link DataAccessStrategy} is to generate SQL statements based on meta data from the entity.
@@ -122,11 +127,21 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 			addConvertedPropertyValue(parameterSource, idProperty, idValue, idProperty.getColumnName());
 		}
 
-		// dengxz
+		// dengxz 去null
 		String insertSql = sqlGenerator.getInsert(new HashSet<>(parameterSource.getIdentifiers()), parameterSource);
 
 		if (idValue == null) {
-			return executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
+			Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
+			if (conflict != null) {
+				insertSql += " on conflict (" + conflict.value() + ") do nothing";
+			}
+			Object returnObj = executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
+			// dengxz
+			if (returnObj == null) {
+				return 0;
+			}
+			return returnObj;
+			
 		} else {
 			operations.update(insertSql, parameterSource);
 			return null;
