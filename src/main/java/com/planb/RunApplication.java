@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableAutoConfiguration
 @ComponentScan({"com.planb"})
 public class RunApplication {
+	
+	 // spring的上下文 启动时初始化
+    public static ConfigurableApplicationContext context;
 
 	@GetMapping("/")
     void home(HttpServletResponse response) throws Exception {
@@ -20,7 +24,7 @@ public class RunApplication {
 	}
 	
     public static void main(String[] args) {
-        SpringApplication.run(RunApplication.class, args);
+    	RunApplication.context = SpringApplication.run(RunApplication.class, args);
     }
 
 }

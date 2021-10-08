@@ -237,7 +237,15 @@ a:visited {color: blue;}
 	<td>temporary</td>
 	<td><a onclick="clickTd(this)" method="get" param='{"id":2}'>security/res/get</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"resId":2, "resName":"test001"}'>security/res/update</a></td>
+	<td><a onclick="clickTd(this)" method="get" param='{"modulePath":"/test/"}'>security/res/listSystemUri</a></td>
 </tr>
+<tr>
+	<td>temporary</td>
+	<td><a onclick="clickTd(this)" method="post" param='{"resId":1, "uriPath":"/test/**"}'>security/res/resAddUri</a></td>
+	<td><a onclick="clickTd(this)" method="get" param='{"resId":1}'>security/res/listResUriPath</a></td>
+	listResUriPath
+</tr>
+
 
 
 </table>

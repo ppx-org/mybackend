@@ -20,7 +20,7 @@ public class ResServ extends MyDaoSupport {
 	ResRepo repo;
 
 	@SuppressWarnings("unchecked")
-	public List<Map<String, Object>> listAllRes() {
+	List<Map<String, Object>> listAllRes() {
 
 		List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
 
@@ -67,7 +67,7 @@ public class ResServ extends MyDaoSupport {
     	return tmpMap;
     }
 
-	public void insert(Res entity) {
+	void insert(Res entity) {
     	entity.setNew(true);
     	Res r = repo.save(entity);
     	int id = r.getId();
@@ -75,17 +75,36 @@ public class ResServ extends MyDaoSupport {
 
 	}
 
-	public Res get(Integer id) {
+	Res get(Integer id) {
 		return repo.get(id);
 	}
 
-	public void update(Res entity) {
+	void update(Res entity) {
 		Res r = repo.save(entity);
 		int id = r.getId();
 		System.out.println("cccccccccvvvvvvvvv01:id:" + id);
 	}
 
-	public void del(Integer id) {
+	void del(Integer id) {
 		repo.deleteById(id);
 	}
+	
+	
+	// >>>>>>>>>>>>> URI
+	List<String> listResUriPath(Integer resId) {
+		List<String> list = repo.listResUriPath(resId);
+		return list;
+	}
+	
+	void resAddUri(Integer resId, String uriPath) {
+		repo.insertUri(uriPath);
+		Integer uriId = repo.getUriId(uriPath);
+		repo.insertResUri(resId, uriId);
+	}
+	
+	void delResUri(Integer resId, Integer uriId) {
+		repo.delResUri(resId, uriId);
+	}
+	
+	
 }

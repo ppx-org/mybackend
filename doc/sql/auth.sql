@@ -39,7 +39,8 @@ comment on column auth_res.res_type is '类型:目录、菜单、操作';
 create table auth_uri (
 	uri_id serial not null,
 	uri_path varchar(64) not null,
-	primary key(uri_id)
+	primary key(uri_id),
+	unique(uri_path)
 );
 comment on table auth_uri is 'URI(path)';
 

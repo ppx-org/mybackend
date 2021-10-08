@@ -2,6 +2,7 @@ package com.planb.security.auth.res;
 
 import java.util.List;
 
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -21,6 +22,34 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 	Res get(Integer id);
 	
 	
+	// URI >>>>>>>>>>>>
+	@Query("""
+			select u.uri_path from auth_res_uri ru join auth_uri u on ru.uri_id = u.uri_id where res_id = :resId
+			""")
+	List<String> listResUriPath(Integer resId);
+	
+	@Query("""
+			select uri_id from auth_uri where uri_path = :uriPath
+			""")
+	Integer getUriId(String uriPath);
+	
+	@Modifying
+	@Query("""
+			insert into auth_uri(uri_path) values(:uriPath) on conflict (uri_path) do nothing
+			""")
+	int insertUri(String uriPath);
+	
+	@Modifying
+	@Query("""
+			insert into auth_res_uri(res_id, uri_id) values(:resId, :uriId)
+			""")
+	int insertResUri(Integer resId, Integer uriId);
+	
+	@Modifying
+	@Query("""
+			delete from auth_res_uri where res_id = :resId and uri_id = :uriId
+			""")
+	int delResUri(Integer resId, Integer uriId);
 	
 	
 }
