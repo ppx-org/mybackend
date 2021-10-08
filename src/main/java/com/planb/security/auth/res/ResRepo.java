@@ -21,6 +21,16 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 				""")
 	Res get(Integer id);
 	
+	@Modifying
+	@Query("""
+	WITH RECURSIVE t(res_id, res_name, res_parent_id) AS (
+			SELECT res_id, res_name, res_parent_id from auth_res where res_id = :resId
+			UNION ALL SELECT tt.res_id, tt.res_name, tt.res_parent_id from auth_res tt join t on tt.res_parent_id = t.res_id
+	)
+	delete from auth_res where res_id in (select res_id from t)
+			""")
+	int delResAndChildren(Integer resId);
+	
 	
 	// URI >>>>>>>>>>>>
 	@Query("""

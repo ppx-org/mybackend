@@ -86,7 +86,7 @@ public class ResServ extends MyDaoSupport {
 	}
 
 	void del(Integer id) {
-		repo.deleteById(id);
+		repo.delResAndChildren(id);
 	}
 	
 	
@@ -105,6 +105,8 @@ public class ResServ extends MyDaoSupport {
 	void delResUri(Integer resId, Integer uriId) {
 		repo.delResUri(resId, uriId);
 	}
+	
+	
 	
 	
 }
