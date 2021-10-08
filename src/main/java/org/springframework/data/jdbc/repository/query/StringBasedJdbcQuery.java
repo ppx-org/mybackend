@@ -78,7 +78,7 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 					"Slice queries are not supported using string-based queries. Offending method: " + queryMethod);
 		}
 
-		// dengxz
+		// dengxz 返回Page<T> + @Query会报以下错误，去掉
 //		if (queryMethod.isPageQuery()) {
 //			throw new UnsupportedOperationException(
 //					"Page queries are not supported using string-based queries. Offending method: " + queryMethod);

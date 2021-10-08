@@ -280,7 +280,7 @@ class SqlGenerator {
 	 *
 	 * @return the statement as a {@link String}. Guaranteed to be not {@literal null}.
 	 */
-	// dengxz
+	// dengxz 添加一个参数SqlIdentifierParameterSource parameterSource
 	String getInsert(Set<SqlIdentifier> additionalColumns, SqlIdentifierParameterSource parameterSource) {
 		return createInsertSql(additionalColumns, parameterSource);
 	}
@@ -573,7 +573,7 @@ class SqlGenerator {
 		Set<SqlIdentifier> columnNamesForInsert = new TreeSet<>(Comparator.comparing(SqlIdentifier::getReference));
 //		columnNamesForInsert.addAll(columns.getInsertableColumns());
 // 		columnNamesForInsert.addAll(additionalColumns);
-		// dengxz
+		// dengxz 新增去掉null
 		for (SqlIdentifier sqlIdentifier : this.columns.getInsertableColumns()) {
             if (parameterSource.getValue(sqlIdentifier.getReference()) != null) {
                 columnNamesForInsert.add(sqlIdentifier);
@@ -603,7 +603,6 @@ class SqlGenerator {
 		return render(createBaseUpdate().build());
 	}
 	
-	// dengxz
 	public String createUpdateSqlNew(SqlIdentifierParameterSource parameterSource) {
 		String sql = render(createBaseUpdateNew(parameterSource).build());
 		return sql;
@@ -618,7 +617,7 @@ class SqlGenerator {
 		return render(update);
 	}
 	
-	// dengxz
+	// dengxz 新增去掉null
 	private UpdateBuilder.UpdateWhereAndOr createBaseUpdateNew(SqlIdentifierParameterSource parameterSource) {
 		Table table = getTable();		
 		

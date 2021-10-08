@@ -128,16 +128,16 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 			addConvertedPropertyValue(parameterSource, idProperty, idValue, idProperty.getColumnName());
 		}
 
-		// dengxz 去null
+		// dengxz 新增去掉null, 加一个参数parameterSource
 		String insertSql = sqlGenerator.getInsert(new HashSet<>(parameterSource.getIdentifiers()), parameterSource);
-
+		
 		if (idValue == null) {
+			// dengxz 唯一值重复返回0
 			Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
 			if (conflict != null) {
 				insertSql += " on conflict (" + conflict.value() + ") do nothing";
 			}
 			Object returnObj = executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
-			// dengxz
 			if (returnObj == null) {
 				return 0;
 			}
@@ -177,20 +177,18 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 	 */
 	@Override
 	public <S> boolean update(S instance, Class<S> domainType) {
-		// dengxz 001
 		RelationalPersistentEntity<S> persistentEntity = getRequiredPersistentEntity(domainType);
 		SqlIdentifierParameterSource parameterSource = getParameterSource(instance, persistentEntity, "", Predicates.includeAll(), getIdentifierProcessing());
 		
 		Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
 		String updateSql = sql(domainType).createUpdateSqlNew(parameterSource);
-		
+		// dengxz 唯一值重复返回0
 		if (conflict != null) {
-			updateSql = updateSql + " and NOT EXISTS (select 1 from " + persistentEntity.getTableName() 
-				+ " where " + conflict.value() + " = :" + conflict.value()+ ")";
+			updateSql = updateSql + " and NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
+				+ " WHERE " + conflict.value() + " = :" + conflict.value()+ ")";
 		}
 		
 		boolean b = operations.update(updateSql, parameterSource) != 0;
-		
 		if (conflict != null) {
 			try {
 				Field ff = persistentEntity.getIdProperty().getField();
