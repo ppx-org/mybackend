@@ -70,9 +70,9 @@ function send() {
 	$("#reqButton").text("......");
 	$("#spend").text("");
 	
-	let url = [[@{/}]] + $("#url").val();
-	let t_begin = new Date().getTime();
-	let method = $("#post").prop("checked") ? "post" : "get";
+	const url = [[@{/}]] + $("#url").val();
+	const t_begin = new Date().getTime();
+	const method = $("#post").prop("checked") ? "post" : "get";
 	let param = "";
 	if ($.trim($("#param").val()) != "") {
 		try {
@@ -87,8 +87,11 @@ function send() {
 			return;
 		}
 	}
-	
-	axios({method:method, url:url, data:param}).then(function(response) {
+	let axiosParam = {method:method, url:url, data:param};
+	if (method == "get") {
+		axiosParam = {method:method, url:url, params:JSON.parse($("#param").val())};
+	}
+	axios(axiosParam).then(function(response) {
 		console.log(response);
 		$("#result").val(JSON.stringify(response.data, null, 4));
 	}).catch(function(error) {
@@ -232,7 +235,8 @@ a:visited {color: blue;}
 
 <tr>
 	<td>temporary</td>
-	<td><a onclick="clickTd(this)" method="get" param='{"userId":2}'>security/menu/list</a></td>
+	<td><a onclick="clickTd(this)" method="get" param='{"id":2}'>security/res/get</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"resId":2, "resName":"test001"}'>security/res/update</a></td>
 </tr>
 
 

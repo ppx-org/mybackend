@@ -75,13 +75,8 @@ public class ResServ extends MyDaoSupport {
 
 	}
 
-	public Optional<Res> get(Integer id) {
-		try {
-			Thread.sleep(1200);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return repo.findById(id);
+	public Res get(Integer id) {
+		return repo.get(id);
 	}
 
 	public void update(Res entity) {

@@ -38,7 +38,7 @@ public class ResController {
 	
 	@RequestMapping("get")
 	Res get(Integer id) {
-    	return serv.get(id).get();
+    	return serv.get(id);
     }
 	
 	@RequestMapping("del")
