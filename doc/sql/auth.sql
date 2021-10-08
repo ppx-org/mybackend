@@ -68,7 +68,7 @@ create table auth_cache_jwt (
 );
 comment on table auth_cache_jwt is 'jwt缓存,放redis';
 comment on column auth_cache_jwt.validate_version is '修改密码、作废等，禁用该token';
-comment on column auth_cache_jwt.jwt_version is '修改用户名、角色等，需要换token';
+comment on column auth_cache_jwt.replace_version is '修改用户名、角色等，需要换token';
 
 
 create table auth_cache_version (
