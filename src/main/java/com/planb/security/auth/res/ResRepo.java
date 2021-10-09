@@ -12,7 +12,6 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 
 	@Query("""
 			 	select r.res_id id, r.res_name title, r.res_parent_id pid, r.res_type t, r.menu_path path from auth_res r
-				where r.res_type in ('d', 'm')
 			""")
 	List<Menu> listAllRes();
 

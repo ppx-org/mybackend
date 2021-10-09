@@ -89,7 +89,8 @@ function send() {
 	}
 	let axiosParam = {method:method, url:url, data:param};
 	if (method == "get") {
-		axiosParam = {method:method, url:url, params:JSON.parse($("#param").val())};
+		var params = $.trim($("#param").val()) == "" ? {} : JSON.parse($("#param").val());
+		axiosParam = {method:method, url:url, params:params};
 	}
 	axios(axiosParam).then(function(response) {
 		console.log(response);
@@ -189,7 +190,7 @@ a:visited {color: blue;}
 
 <body>
 
-<button type="button" id="reqButton" onclick="ehrTest()" style="width:200px">EHR测试</button>
+<button type="button" onclick="ehrTest()" style="width:200px">EHR测试</button>
 
 <div>
 	<input type="text" id="username" placeholder="用户名" value="test" style="width:80px">
@@ -242,8 +243,7 @@ a:visited {color: blue;}
 <tr>
 	<td>temporary</td>
 	<td><a onclick="clickTd(this)" method="post" param='{"resId":1, "uriPath":"/test/**"}'>security/res/resAddUri</a></td>
-	<td><a onclick="clickTd(this)" method="get" param='{"resId":1}'>security/res/listResUriPath</a></td>
-	listResUriPath
+	<td><a onclick="clickTd(this)" method="get">security/res/listAllRes</a></td>
 </tr>
 
 

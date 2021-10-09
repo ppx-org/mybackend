@@ -21,23 +21,31 @@ public class ResServ extends MyDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	List<Map<String, Object>> listAllRes() {
-
 		List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
 
-		List<Menu> menuList = repo.listAllRes();
+		List<Menu> resList = repo.listAllRes();
 		Map<Integer, List<Menu>> idMap = new HashMap<Integer, List<Menu>>();
-		for (Menu m : menuList) {
-			String t = m.getT();
+		for (Menu res : resList) {
+			String t = res.getT();
 			if ("d".equals(t)) {
-				returnList.add(menuToMap(m, true));
+				returnList.add(menuToMap(res, true));
 			} else if ("m".equals(t)) {
-				List<Menu> subList = idMap.get(m.getPid());
-				if (subList == null) {
-					subList = new ArrayList<Menu>();
-					subList.add(m);
-					idMap.put(m.getPid(), subList);
+				List<Menu> menuList = idMap.get(res.getPid());
+				if (menuList == null) {
+					menuList = new ArrayList<Menu>();
+					menuList.add(res);
+					idMap.put(res.getPid(), menuList);
 				} else {
-					subList.add(m);
+					menuList.add(res);
+				}
+			} else if ("o".equals(t)) {
+				List<Menu> opList = idMap.get(res.getPid());
+				if (opList == null) {
+					opList = new ArrayList<Menu>();
+					opList.add(res);
+					idMap.put(res.getPid(), opList);
+				} else {
+					opList.add(res);
 				}
 			}
 		}
@@ -46,12 +54,21 @@ public class ResServ extends MyDaoSupport {
 			List<Menu> subMenuList = idMap.get(map.get("id"));
 			List<Map<String, Object>> subList = (List<Map<String, Object>>) map.get("sub");
 			for (Menu m : subMenuList) {
-				subList.add(menuToMap(m, false));
+				Map<String, Object> subMap = menuToMap(m, false);
+				List<Menu> opList = idMap.get(m.getId());
+				if (opList != null) {
+					List<Map<String, Object>> tmpOpList = new ArrayList<Map<String, Object>>();
+					for (Menu op : opList) {
+						tmpOpList.add(menuToMap(op, false));
+					}
+					subMap.put("sub", tmpOpList);
+				}
+				subList.add(subMap);
 			}
 		}
 		return returnList;
 	}
-	
+		
 	private Map<String, Object> menuToMap(Menu m, boolean hasSub) {
     	Map<String, Object> tmpMap = new LinkedHashMap<String, Object>();
     	tmpMap.put("id", m.getId());
