@@ -53,6 +53,9 @@ public class ResServ extends MyDaoSupport {
 		for (Map<String, Object> map : returnList) {
 			List<Menu> subMenuList = idMap.get(map.get("id"));
 			List<Map<String, Object>> subList = (List<Map<String, Object>>) map.get("sub");
+			if (subMenuList == null) {
+				continue;
+			}
 			for (Menu m : subMenuList) {
 				Map<String, Object> subMap = menuToMap(m, false);
 				List<Menu> opList = idMap.get(m.getId());
