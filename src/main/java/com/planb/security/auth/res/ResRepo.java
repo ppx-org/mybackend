@@ -56,9 +56,9 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 	
 	@Modifying
 	@Query("""
-			delete from auth_res_uri where res_id = :resId and uri_id = :uriId
+			delete from auth_res_uri where res_id = :resId and uri_id = (select uri_id from auth_uri where uri_path = :uriPath) 
 			""")
-	int delResUri(Integer resId, Integer uriId);
+	int resDelUri(Integer resId, String uriPath);
 	
 	
 }

@@ -119,8 +119,8 @@ public class ResServ extends MyDaoSupport {
 		repo.insertResUri(resId, uriId);
 	}
 	
-	void delResUri(Integer resId, Integer uriId) {
-		repo.delResUri(resId, uriId);
+	void resDelUri(Integer resId, String uriPath) {
+		repo.resDelUri(resId, uriPath);
 	}
 	
 	

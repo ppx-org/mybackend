@@ -112,9 +112,9 @@ public class ResController {
 		serv.resAddUri(resId, uriPath);
 	}
 	
-	@PostMapping("delResUri")
-	void delResUri(Integer resId, Integer uriId) {
-		serv.delResUri(resId, uriId);
+	@PostMapping("resDelUri")
+	void resDelUri(Integer resId, String uriPath) {
+		serv.resDelUri(resId, uriPath);
 	}
 	
 }
