@@ -24,7 +24,6 @@ public class Res implements Persistable<Integer> {
 
 	private String menuPath;
 	
-	@ReadOnlyProperty
 	private Integer resSort;
 	
 	@ReadOnlyProperty

@@ -90,11 +90,10 @@ public class ResServ extends MyDaoSupport {
     }
 
 	void insert(Res entity) {
+		int maxSort = repo.getMaxSort(entity.getResParentId());
+		entity.setResSort(maxSort + 1);
     	entity.setNew(true);
-    	Res r = repo.save(entity);
-    	int id = r.getId();
-    	System.out.println("ccccccccc:id:" + id);
-
+    	repo.save(entity);
 	}
 
 	Res get(Integer id) {
@@ -103,10 +102,11 @@ public class ResServ extends MyDaoSupport {
 	
 	@Transactional
 	void update(Res entity) {
-		repo.save(entity);
 		if (entity.getResSort() != entity.getResSortOld()) {
 			repo.resSort(entity.getResParentId(), entity.getResSort(), entity.getResSortOld());
 		}
+		entity.setResSort(null);
+		repo.save(entity);
 	}
 
 	void delResAndChildren(Integer id) {

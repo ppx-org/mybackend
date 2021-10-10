@@ -108,13 +108,15 @@ public class ResController {
 	}
 	
 	@PostMapping("resAddUri")
-	void resAddUri(Integer resId, String uriPath) {
+	List<String> resAddUri(Integer resId, String uriPath) {
 		serv.resAddUri(resId, uriPath);
+		return listResUriPath(resId);
 	}
 	
 	@PostMapping("resDelUri")
-	void resDelUri(Integer resId, String uriPath) {
+	List<String> resDelUri(Integer resId, String uriPath) {
 		serv.resDelUri(resId, uriPath);
+		return listResUriPath(resId);
 	}
 	
 }

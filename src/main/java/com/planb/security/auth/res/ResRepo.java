@@ -31,6 +31,10 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 			""")
 	int delResAndChildren(Integer resId);
 	
+	@Query("""
+			select max(res_sort) from auth_res where res_parent_id = :resParentId
+			""")
+	int getMaxSort(Integer resParentId);
 	
 	@Modifying
 	@Query("""
