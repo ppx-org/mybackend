@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,27 +41,27 @@ alter sequence test_example_example_id_seq restart with 300;
 	 * @param pageable
 	 * @return
 	 */
-	@RequestMapping("page")
+	@GetMapping("page")
     Page<Example> page(Example entity, @PageableDefault(size=3)Pageable pageable) {
     	return serv.page(entity, pageable);
     }
     
-	@RequestMapping("insert")
+	@PostMapping("insert")
     void insert(Example entity) {
 		serv.insert(entity);
     }
 	
-	@RequestMapping("update")
+	@PostMapping("update")
     void update(Example entity) {
 		serv.update(entity);
     }
 	
-	@RequestMapping("get")
+	@GetMapping("get")
 	Example get(Integer id) {
     	return serv.get(id);
     }
 	
-	@RequestMapping("del")
+	@PostMapping("del")
     void del(Integer id) {
 		serv.del(id);
     }
