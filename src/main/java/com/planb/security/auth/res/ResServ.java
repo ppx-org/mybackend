@@ -103,16 +103,10 @@ public class ResServ extends MyDaoSupport {
 	
 	@Transactional
 	void update(Res entity) {
-		System.out.println("xxxxx1:" + entity.getResSort());
-		System.out.println("xxxxx2:" + entity.getResSortOld());
-		Res r = repo.save(entity);
-		int id = r.getId();
-		System.out.println("cccccccccvvvvvvvvv01:id:" + id);
-		
+		repo.save(entity);
 		if (entity.getResSort() != entity.getResSortOld()) {
 			repo.resSort(entity.getResParentId(), entity.getResSort(), entity.getResSortOld());
 		}
-		
 	}
 
 	void delResAndChildren(Integer id) {
