@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.planb.common.jdbc.MyDaoSupport;
 import com.planb.security.auth.menu.Menu;
@@ -78,6 +79,7 @@ public class ResServ extends MyDaoSupport {
     	tmpMap.put("title", m.getTitle());
     	tmpMap.put("pid", m.getPid());
     	tmpMap.put("t", m.getT());
+    	tmpMap.put("sort", m.getSort());
     	if (hasSub) {
     		tmpMap.put("sub", new ArrayList<Map<String, Object>>());
     	}
@@ -98,14 +100,22 @@ public class ResServ extends MyDaoSupport {
 	Res get(Integer id) {
 		return repo.get(id);
 	}
-
+	
+	@Transactional
 	void update(Res entity) {
+		System.out.println("xxxxx1:" + entity.getResSort());
+		System.out.println("xxxxx2:" + entity.getResSortOld());
 		Res r = repo.save(entity);
 		int id = r.getId();
 		System.out.println("cccccccccvvvvvvvvv01:id:" + id);
+		
+		if (entity.getResSort() != entity.getResSortOld()) {
+			repo.resSort(entity.getResParentId(), entity.getResSort(), entity.getResSortOld());
+		}
+		
 	}
 
-	void del(Integer id) {
+	void delResAndChildren(Integer id) {
 		repo.delResAndChildren(id);
 	}
 	

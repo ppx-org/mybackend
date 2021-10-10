@@ -54,9 +54,9 @@ public class ResController {
 		serv.update(entity);
     }
 	
-	@PostMapping("del")
-    void del(Integer id) {
-		serv.del(id);
+	@PostMapping("delResAndChildren")
+    void delResAndChildren(Integer id) {
+		serv.delResAndChildren(id);
     }
 	
 	@RequestMapping("listSystemUri")

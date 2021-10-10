@@ -11,7 +11,8 @@ import com.planb.security.auth.menu.Menu;
 interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 
 	@Query("""
-			 	select r.res_id id, r.res_name title, r.res_parent_id pid, r.res_type t, r.menu_path path from auth_res r
+		select r.res_id id, r.res_name title, r.res_parent_id pid, r.res_type t, r.menu_path path, r.res_sort sort
+			 	 from auth_res r order by r.res_sort
 			""")
 	List<Menu> listAllRes();
 
@@ -30,6 +31,18 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 			""")
 	int delResAndChildren(Integer resId);
 	
+	
+	@Modifying
+	@Query("""
+		with ttt as (
+			select t.res_id, t.rownum, case when rownum = :resSortOld then :resSort
+			when rownum = :resSort then :resSortOld else rownum
+			end new_rownum from (
+			select row_number() over () as rownum, res_id from (select * from auth_res order by res_sort) tmp where res_parent_id = :resParentId ) t
+		)
+		update auth_res set res_sort = ttt.new_rownum from ttt where auth_res.res_id = ttt.res_id
+			""")
+	int resSort(Integer resParentId, Integer resSort, Integer resSortOld);
 	
 	// URI >>>>>>>>>>>>
 	@Query("""

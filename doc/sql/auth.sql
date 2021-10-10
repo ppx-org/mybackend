@@ -30,6 +30,7 @@ create table auth_res (
 	res_name varchar(32) not null,
 	res_parent_id int not null,
 	res_type varchar(1) not null,
+	res_sort int,
 	menu_path varchar(64),
 	primary key(res_id)
 );

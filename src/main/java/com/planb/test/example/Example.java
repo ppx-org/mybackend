@@ -16,7 +16,6 @@ import com.planb.common.jdbc.annotation.Conflict;
 
 @Table("test_example")
 @Conflict("example_name")
-@org.springframework.data.annotation.TypeAlias("dddd")
 public class Example implements Persistable<Integer> {
     @Id
     private Integer exampleId;

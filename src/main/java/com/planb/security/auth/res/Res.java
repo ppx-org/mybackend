@@ -23,6 +23,12 @@ public class Res implements Persistable<Integer> {
 	private String resType;
 
 	private String menuPath;
+	
+	@ReadOnlyProperty
+	private Integer resSort;
+	
+	@ReadOnlyProperty
+	private Integer resSortOld;
 
 	public Integer getResId() {
 		return resId;
@@ -79,4 +85,23 @@ public class Res implements Persistable<Integer> {
 		return resId;
 	}
 
+	public Integer getResSort() {
+		return resSort;
+	}
+
+	public void setResSort(Integer resSort) {
+		this.resSort = resSort;
+	}
+
+	public Integer getResSortOld() {
+		return resSortOld;
+	}
+
+	public void setResSortOld(Integer resSortOld) {
+		this.resSortOld = resSortOld;
+	}
+
+	public void setNew(boolean isNew) {
+		this.isNew = isNew;
+	}
 }
