@@ -27,7 +27,7 @@ axios.interceptors.request.use(
 		if (token) {
 	      config.headers.Authorization = "Bearer " + token;
 	    }
-		config.data = Qs.stringify(config.data)
+		config.data = Qs.stringify(config.data, {arrayFormat: 'repeat'})
 		return config;
   	},
   	err => {
@@ -244,6 +244,7 @@ a:visited {color: blue;}
 	<td>temporary</td>
 	<td><a onclick="clickTd(this)" method="post" param='{"resId":1, "uriPath":"/test/**"}'>security/res/resAddUri</a></td>
 	<td><a onclick="clickTd(this)" method="get">security/res/listAllRes</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"roleId":1, "resId":[1,2]}'>security/role/saveRoleRes</a></td>
 </tr>
 
 
