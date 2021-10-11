@@ -39,7 +39,7 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 public class MyCrudAspect extends MyDaoSupport {
 	
 	enum QueryType { 
-	    DEFAULT, PAGE, LIST_MAP;
+	    DEFAULT, PAGE, LIST_MAP, CRITERIA;
 	} 
 
 	@Around("this(org.springframework.data.repository.CrudRepository)")
@@ -61,8 +61,18 @@ public class MyCrudAspect extends MyDaoSupport {
         	queryType = QueryType.LIST_MAP;
         }
         else {
+        	Parameter[] parameters = method.getParameters();
+        	for (short i = 0; i < parameters.length; i++) {
+        		Parameter p = parameters[i];
+            	if (p.getParameterizedType().equals(MyCriteria.class)) {
+            		queryType = QueryType.CRITERIA;
+            		break;
+            	}
+        	}
+        }     
+        if (queryType == QueryType.DEFAULT) {
         	return jp.proceed();
-        }        
+        }
         
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
@@ -94,21 +104,21 @@ public class MyCrudAspect extends MyDaoSupport {
         		cSql = preWhere + cSql;
         	}
         	
-        	if (pageable.getSort().isSorted()) {
-	        	pageable.getSort().toList().forEach(m -> {        		
-	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
-	        	});
+        	if (queryType == QueryType.PAGE) {
+	        	if (pageable.getSort().isSorted()) {
+		        	pageable.getSort().toList().forEach(m -> {        		
+		        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
+		        	});
+	        	}
+	        	else {
+	        		// 默认排序
+	            	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
+	            		myCriteria.getDefaultSort().toList().forEach(m -> {        		
+	    	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
+	    	        	});
+	            	}
+	        	}
         	}
-        	else {
-        		// 默认排序
-            	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
-            		myCriteria.getDefaultSort().toList().forEach(m -> {        		
-    	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
-    	        	});
-            	}
-            	System.out.println("xxx001orderList::" + orderList);
-        	}
-        	
         	querySql = querySql.replace("${c}", cSql);
         }
         
@@ -136,7 +146,7 @@ public class MyCrudAspect extends MyDaoSupport {
     		
     		return page;
     	}
-    	else if (queryType == QueryType.LIST_MAP) {
+    	else if (queryType == QueryType.LIST_MAP || queryType == QueryType.CRITERIA) {
     		List<Map<String, Object>> list = nameTemplate.queryForList(querySql, paramMap);
     		return list;
     	}

@@ -11,7 +11,7 @@ import com.planb.common.jdbc.MyPersistable;
 @Table("auth_role")
 public class Role extends MyPersistable<Integer> {
 	
-	@Override
+	@Override @JsonIgnore
 	public Integer getId() {
 		return this.roleId;
 	}

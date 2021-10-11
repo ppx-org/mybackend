@@ -1,11 +1,15 @@
 package com.planb.security.auth.user;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.planb.common.jdbc.page.MyCriteria;
+import com.planb.security.auth.role.Role;
 
 
 interface UserRepo extends PagingAndSortingRepository<User, Integer> {
@@ -13,4 +17,22 @@ interface UserRepo extends PagingAndSortingRepository<User, Integer> {
 			select u.* from auth_user u ${c}
 	""")
     Page<User> page(MyCriteria c, Pageable p);
+	
+	@Query("""
+			select r.role_id, r.role_name from auth_user_role ur 
+				join auth_role r on ur.role_id = r.role_id 
+			where user_id = :userId
+	""")
+	List<Role> listUserRole(Integer userId);
+	
+	@Query("""
+			select r.* from auth_role r ${c}
+	""")
+	List<Role> listRole(MyCriteria c);
+	
+	@Query("""
+			insert into auth_user_role(user_id, role_id) values(:userId, :roleId)
+	""")
+	@Modifying
+	void saveUserRole(Integer userId, Integer roleId);
 }

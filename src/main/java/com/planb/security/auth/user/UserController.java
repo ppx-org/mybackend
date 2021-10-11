@@ -1,5 +1,7 @@
 package com.planb.security.auth.user;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.planb.common.conf.ModuleConfig;
 import com.planb.security.auth.res.Res;
+import com.planb.security.auth.role.Role;
 
 
 @RestController
@@ -47,5 +50,20 @@ public class UserController {
 	@PostMapping("enable")
 	void enable(Integer userId) {
 		serv.enable(userId);
+	}
+	
+	@GetMapping("listUserRole")
+	List<Role> listUserRole(Integer userId) {
+		return serv.listUserRole(userId);
+	}
+	
+	@GetMapping("listRole")
+	List<Role> listRole(String roleName) {
+		return serv.listRole(roleName);
+	}
+	
+	@PostMapping("saveUserRole")
+	void saveUserRole(Integer userId, Integer roleId) {
+		serv.saveUserRole(userId, roleId);
 	}
 }
