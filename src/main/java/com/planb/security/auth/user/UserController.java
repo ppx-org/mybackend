@@ -39,4 +39,13 @@ public class UserController {
 		serv.update(entity);
     }
 	
+	@PostMapping("disable")
+	void disable(Integer userId) {
+		serv.disable(userId);
+	}
+	
+	@PostMapping("enable")
+	void enable(Integer userId) {
+		serv.enable(userId);
+	}
 }

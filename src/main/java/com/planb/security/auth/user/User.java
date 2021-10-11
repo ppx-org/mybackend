@@ -25,7 +25,7 @@ public class User extends MyPersistable<Integer> {
 		
 	private String password;
 	
-	private String enable;
+	private Boolean enable;
 
 	public Integer getUserId() {
 		return userId;
@@ -51,11 +51,11 @@ public class User extends MyPersistable<Integer> {
 		this.password = password;
 	}
 
-	public String getEnable() {
+	public Boolean getEnable() {
 		return enable;
 	}
 
-	public void setEnable(String enable) {
+	public void setEnable(Boolean enable) {
 		this.enable = enable;
 	}
 }

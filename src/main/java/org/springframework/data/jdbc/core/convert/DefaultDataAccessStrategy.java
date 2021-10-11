@@ -183,15 +183,21 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		
 		Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
 		String updateSql = sql(domainType).createUpdateSqlNew(parameterSource);
+		
+		// dengxz 判断是否使用conflict
+		boolean userConflict = false;
+		if (conflict != null && parameterSource.getValue(conflict.value()) != null) {
+			userConflict = true;
+		}		
 		// dengxz 唯一值重复返回0
-		if (conflict != null) {
+		if (userConflict) {
 			String idColumnName = MyStringUtils.underscoreName(persistentEntity.getIdProperty().getName());
 			updateSql = updateSql + " and NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
 				+ " WHERE " + conflict.value() + " = :" + conflict.value() + " and " + idColumnName + " != :" + idColumnName + ")";
 		}
 		
 		boolean b = operations.update(updateSql, parameterSource) != 0;
-		if (conflict != null && b == false) {
+		if (userConflict && b == false) {
 			try {
 				Field ff = persistentEntity.getIdProperty().getField();
 				ff.setAccessible(true);
