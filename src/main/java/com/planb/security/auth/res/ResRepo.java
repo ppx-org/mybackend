@@ -50,9 +50,9 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 	
 	// URI >>>>>>>>>>>>
 	@Query("""
-			select u.uri_path from auth_res_uri ru join auth_uri u on ru.uri_id = u.uri_id where res_id = :resId
+			select u.uri_id, u.uri_path from auth_res_uri ru join auth_uri u on ru.uri_id = u.uri_id where res_id = :resId
 			""")
-	List<String> listResUriPath(Integer resId);
+	List<Uri> listResUri(Integer resId);
 	
 	@Query("""
 			select uri_id from auth_uri where uri_path = :uriPath

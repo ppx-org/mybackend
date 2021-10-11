@@ -60,11 +60,13 @@ public class ResController {
     }
 	
 	@RequestMapping("listSystemUri")
-	List<String> listSystemUri(String modulePath) {
+	List<Map<String, Object>> listSystemUri(String modulePath) {
 //		modulePath = "/test/";
+		 List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
+		 
 		List<String> returnList = new ArrayList<String>();
 		if (!StringUtils.hasText(modulePath)) {
-			return returnList;
+			return mapList;
 		}
 		
 		List<String> uriList = new ArrayList<String>();
@@ -98,25 +100,30 @@ public class ResController {
         
         returnList.addAll(asteriskSortSet);
         returnList.addAll(uriList);
-		return returnList;
+        
+       
+        for (String path : returnList) {
+        	mapList.add(Map.of("uriPath", path));
+		}
+		return mapList;
 	}
 	
 	//  URI >>>>>>>>>>>>>>>
-	@GetMapping("listResUriPath")
-	List<String> listResUriPath(Integer resId) {
-		return serv.listResUriPath(resId);
+	@GetMapping("listResUri")
+	List<Uri> listResUri(Integer resId) {
+		return serv.listResUri(resId);
 	}
 	
 	@PostMapping("resAddUri")
-	List<String> resAddUri(Integer resId, String uriPath) {
+	List<Uri> resAddUri(Integer resId, String uriPath) {
 		serv.resAddUri(resId, uriPath);
-		return listResUriPath(resId);
+		return listResUri(resId);
 	}
 	
 	@PostMapping("resDelUri")
-	List<String> resDelUri(Integer resId, String uriPath) {
+	List<Uri> resDelUri(Integer resId, String uriPath) {
 		serv.resDelUri(resId, uriPath);
-		return listResUriPath(resId);
+		return listResUri(resId);
 	}
 	
 }

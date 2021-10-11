@@ -114,9 +114,8 @@ public class ResServ extends MyDaoSupport {
 	
 	
 	// >>>>>>>>>>>>> URI
-	List<String> listResUriPath(Integer resId) {
-		List<String> list = repo.listResUriPath(resId);
-		return list;
+	List<Uri> listResUri(Integer resId) {
+		return repo.listResUri(resId);
 	}
 	
 	void resAddUri(Integer resId, String uriPath) {
