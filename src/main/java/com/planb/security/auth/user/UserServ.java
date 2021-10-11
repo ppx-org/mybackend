@@ -39,9 +39,9 @@ public class UserServ extends MyDaoSupport {
 	@Transactional
 	String update(User entity) {
 		// 密码变量时才需要存入
-		if (!ObjectUtils.isEmpty(entity)) {
-			String newPassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
-			entity.setPassword(newPassword);
+		if (!ObjectUtils.isEmpty(entity.getPassword())) {
+			String encodePassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
+			entity.setPassword(encodePassword);
 		}
 		entity.setNew(false);
 		User r = repo.save(entity);
