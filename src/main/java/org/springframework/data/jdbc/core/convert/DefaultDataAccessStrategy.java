@@ -58,6 +58,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 import com.planb.common.jdbc.annotation.Conflict;
+import com.planb.common.util.MyStringUtils;
 
 /**
  * The default {@link DataAccessStrategy} is to generate SQL statements based on meta data from the entity.
@@ -184,12 +185,13 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		String updateSql = sql(domainType).createUpdateSqlNew(parameterSource);
 		// dengxz 唯一值重复返回0
 		if (conflict != null) {
+			String idColumnName = MyStringUtils.underscoreName(persistentEntity.getIdProperty().getName());
 			updateSql = updateSql + " and NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
-				+ " WHERE " + conflict.value() + " = :" + conflict.value()+ ")";
+				+ " WHERE " + conflict.value() + " = :" + conflict.value() + " and " + idColumnName + " != :" + idColumnName + ")";
 		}
 		
 		boolean b = operations.update(updateSql, parameterSource) != 0;
-		if (conflict != null) {
+		if (conflict != null && b == false) {
 			try {
 				Field ff = persistentEntity.getIdProperty().getField();
 				ff.setAccessible(true);

@@ -6,31 +6,21 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.planb.common.jdbc.MyPersistable;
 
 @Table("auth_role")
-public class Role implements Persistable<Integer> {
-	@ReadOnlyProperty
-	private boolean isNew;
-	 
-	@Id
-	private Integer roleId;
-
-	private String roleName;
+public class Role extends MyPersistable<Integer> {
 	
-	@Override
-	@JsonIgnore
-	public boolean isNew() {
-		return isNew;
-	}
-	
-	public void setNew(Boolean isNew) {
-		this.isNew = isNew;
-	}
-
 	@Override
 	public Integer getId() {
 		return this.roleId;
 	}
+	
+	@Id
+	private Integer roleId;
+
+	private String roleName;
+		
 
 	public Integer getRoleId() {
 		return roleId;

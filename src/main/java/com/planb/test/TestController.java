@@ -2,6 +2,7 @@ package com.planb.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.planb.common.conf.ModuleConfig;
 import com.planb.common.controller.MyContext;
 import com.planb.security.user.SecurityUserDetails;
+import com.planb.test.serv.TestServ;
 
 
 @RestController
@@ -17,6 +19,9 @@ import com.planb.security.user.SecurityUserDetails;
 public class TestController {
 	
 	Logger logger = LoggerFactory.getLogger(TestController.class);
+	
+	@Autowired
+	private TestServ testServ;
     
 	@GetMapping("hello")
     String hello() {
@@ -48,6 +53,11 @@ public class TestController {
     		return MyContext.setBusinessException("不能提交");
     	}
     	return "提交成功";
+    }
+    
+    @RequestMapping("test")
+    void test() {
+    	testServ.test();
     }
     
     public static void main(String[] args) {

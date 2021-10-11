@@ -14,7 +14,6 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.page.MyCriteria;
+import com.planb.common.util.MyStringUtils;
 
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
@@ -96,14 +96,14 @@ public class MyCrudAspect extends MyDaoSupport {
         	
         	if (pageable.getSort().isSorted()) {
 	        	pageable.getSort().toList().forEach(m -> {        		
-	        		orderList.add(underscoreName(m.getProperty()) + " " + m.getDirection());
+	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
 	        	});
         	}
         	else {
         		// 默认排序
             	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
             		myCriteria.getDefaultSort().toList().forEach(m -> {        		
-    	        		orderList.add(underscoreName(m.getProperty()) + " " + m.getDirection());
+    	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
     	        	});
             	}
             	System.out.println("xxx001orderList::" + orderList);
@@ -156,27 +156,5 @@ public class MyCrudAspect extends MyDaoSupport {
 		}
 	}
 	
-	/**
-	 * Convert a name in camelCase to an underscored name in lower case. Any upper
-	 * case letters are converted to lower case with a preceding underscore.
-	 * 
-	 * @param name the original name
-	 * @return the converted name
-	 */
-	private String underscoreName(String name) {
-		if (!StringUtils.hasLength(name)) {
-			return "";
-		}
-		StringBuilder result = new StringBuilder(name.substring(0, 1).toLowerCase());
-		for (int i = 1; i < name.length(); i++) {
-			String s = name.substring(i, i + 1);
-			String slc = s.toLowerCase();
-			if (!s.equals(slc)) {
-				result.append("_").append(slc);
-			} else {
-				result.append(s);
-			}
-		}
-		return result.toString();
-	}
+	
 }
