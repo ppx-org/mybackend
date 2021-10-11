@@ -30,7 +30,6 @@ import org.springframework.data.relational.core.sql.SqlIdentifier;
 import org.springframework.data.util.Pair;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * Central class for creating queries. It follows a fluent API style so that you can easily chain together multiple
