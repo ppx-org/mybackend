@@ -46,9 +46,11 @@ public class MenuServ extends MyDaoSupport {
     	for (Map<String, Object> map : returnList) {
     		List<Menu> subMenuList = idMap.get(map.get("id"));
     		List<Map<String, Object>> subList = (List<Map<String, Object>>)map.get("sub");
-    		for (Menu m : subMenuList) {
-    			subList.add(menuToMap(m, false));
-			}
+    		if (subMenuList != null) {
+    			for (Menu m : subMenuList) {
+        			subList.add(menuToMap(m, false));
+    			}
+    		}
     	}
     	return returnList;
     }
