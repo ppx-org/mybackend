@@ -62,6 +62,11 @@ public class UserController {
 		return serv.listRole(roleName);
 	}
 	
+	@PostMapping("userDelRole")
+	void userDelRole(Integer userId, Integer roleId) {
+		serv.userDelRole(userId, roleId);
+	}
+	
 	@PostMapping("saveUserRole")
 	void saveUserRole(Integer userId, Integer roleId) {
 		serv.saveUserRole(userId, roleId);

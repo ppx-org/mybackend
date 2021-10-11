@@ -35,4 +35,10 @@ interface UserRepo extends PagingAndSortingRepository<User, Integer> {
 	""")
 	@Modifying
 	void saveUserRole(Integer userId, Integer roleId);
+	
+	@Query("""
+			delete from auth_user_role where user_id = :userId and role_id = :roleId
+	""")
+	@Modifying
+	void userDelRole(Integer userId, Integer roleId);
 }

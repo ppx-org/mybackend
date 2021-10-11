@@ -76,4 +76,8 @@ public class UserServ extends MyDaoSupport {
 	void saveUserRole(Integer userId, Integer roleId) {
 		repo.saveUserRole(userId, roleId);
 	}
+	
+	void userDelRole(Integer userId, Integer roleId) {
+		repo.userDelRole(userId, roleId);
+	}
 }

@@ -146,8 +146,13 @@ public class MyCrudAspect extends MyDaoSupport {
     		
     		return page;
     	}
-    	else if (queryType == QueryType.LIST_MAP || queryType == QueryType.CRITERIA) {
+    	else if (queryType == QueryType.LIST_MAP) {
     		List<Map<String, Object>> list = nameTemplate.queryForList(querySql, paramMap);
+    		return list;
+    	}
+    	else if (queryType == QueryType.CRITERIA) {
+    		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];
+    		List<?> list = nameTemplate.query(querySql, paramMap, BeanPropertyRowMapper.newInstance(returnTypeClass));
     		return list;
     	}
     	return null;
