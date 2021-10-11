@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.planb.common.conf.ModuleConfig;
-import com.planb.security.auth.res.Res;
 import com.planb.security.auth.role.Role;
 
 
@@ -63,12 +62,14 @@ public class UserController {
 	}
 	
 	@PostMapping("userDelRole")
-	void userDelRole(Integer userId, Integer roleId) {
+	List<Role> userDelRole(Integer userId, Integer roleId) {
 		serv.userDelRole(userId, roleId);
+		return listUserRole(userId);
 	}
 	
 	@PostMapping("saveUserRole")
-	void saveUserRole(Integer userId, Integer roleId) {
+	List<Role> saveUserRole(Integer userId, Integer roleId) {
 		serv.saveUserRole(userId, roleId);
+		return listUserRole(userId);
 	}
 }

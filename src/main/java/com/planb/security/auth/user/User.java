@@ -1,8 +1,6 @@
 package com.planb.security.auth.user;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.ReadOnlyProperty;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,10 +11,8 @@ import com.planb.common.jdbc.annotation.Conflict;
 @Conflict("username")
 public class User extends MyPersistable<Integer> {
 	
-	@Override
-	public Integer getId() {
-		return this.userId;
-	}
+	@Override @JsonIgnore
+	public Integer getId() {return this.userId;}
 	
 	@Id
 	private Integer userId;

@@ -1,7 +1,6 @@
 package com.planb.security.auth.role;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.planb.common.controller.MyContext;
 import com.planb.common.jdbc.MyDaoSupport;
 import com.planb.common.jdbc.page.MyCriteria;
 
@@ -28,6 +28,18 @@ public class RoleServ extends MyDaoSupport {
 		MyCriteria c = MyCriteria.where("r.role_name").like(entity.getRoleName());
 		c.setDefaultSort(Sort.by(Direction.DESC, "r.role_id"));
 		return repo.page(c, pageable);
+	}
+	
+	String insert(Role entity) {
+		Role r = repo.save(entity);
+		return r.getId() == 0 ? MyContext.setBusinessException("角色名称已经存在") : "";
+	}
+	
+	@Transactional
+	String update(Role entity) {
+		entity.setNew(false);
+		Role r = repo.save(entity);
+		return r.getId() == 0 ? MyContext.setBusinessException("角色名称已经存在") : "";
 	}
 	
 	List<Integer> listResIdByRole(Integer roleId) {

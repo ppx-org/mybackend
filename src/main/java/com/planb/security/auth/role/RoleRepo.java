@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
-import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.planb.common.jdbc.page.MyCriteria;

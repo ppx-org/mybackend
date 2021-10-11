@@ -29,7 +29,17 @@ public class RoleController {
     Page<Role> page(Role entity, @PageableDefault Pageable pageable) {
     	return serv.page(entity, pageable);
     }
-    
+	
+	@PostMapping("insert")
+    void insert(Role entity) {
+		serv.insert(entity);
+    }
+	
+	@PostMapping("update")
+    void update(Role entity) {
+		serv.update(entity);
+    }
+	
 	@GetMapping("listResIdByRole")
 	List<Integer> listResIdByRole(Integer roleId) {
 		return serv.listResIdByRole(roleId);
