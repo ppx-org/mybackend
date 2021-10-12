@@ -15,7 +15,7 @@ public abstract class MyPersistable<T> implements Persistable<Integer> {
 		return isNew;
 	}
 	
-	public void setNew(Boolean isNew) {
-		this.isNew = isNew;
+	public void setUpdate() {
+		this.isNew = false;
 	}
 }

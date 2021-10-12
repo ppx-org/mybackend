@@ -37,7 +37,7 @@ public class RoleServ extends MyDaoSupport {
 	
 	@Transactional
 	String update(Role entity) {
-		entity.setNew(false);
+		entity.setUpdate();
 		Role r = repo.save(entity);
 		return r.getId() == 0 ? MyContext.setBusinessException("角色名称已经存在") : "";
 	}

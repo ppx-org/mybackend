@@ -106,7 +106,7 @@ public class ResServ extends MyDaoSupport {
 			repo.resSort(entity.getResParentId(), entity.getResSort(), entity.getResSortOld());
 		}
 		entity.setResSort(null);
-		entity.setNew(false);
+		entity.setUpdate();
 		MyContext.setBusinessException(repo.save(entity), "同级资源名称已经存在");
 	}
 	

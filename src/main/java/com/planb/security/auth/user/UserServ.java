@@ -43,7 +43,7 @@ public class UserServ extends MyDaoSupport {
 			String encodePassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
 			entity.setPassword(encodePassword);
 		}
-		entity.setNew(false);
+		entity.setUpdate();
 		User r = repo.save(entity);
 		return r.getId() == 0 ? MyContext.setBusinessException("用户名已经存在") : "";
 	}
@@ -52,7 +52,7 @@ public class UserServ extends MyDaoSupport {
 		User entity = new User();
 		entity.setUserId(userId);
 		entity.setEnable(false);
-		entity.setNew(false);
+		entity.setUpdate();
 		repo.save(entity);
 	}
 	
@@ -60,7 +60,7 @@ public class UserServ extends MyDaoSupport {
 		User entity = new User();
 		entity.setUserId(userId);
 		entity.setEnable(true);
-		entity.setNew(false);
+		entity.setUpdate();
 		repo.save(entity);
 	}
 	
