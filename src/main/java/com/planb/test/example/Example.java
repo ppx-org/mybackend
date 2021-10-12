@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.planb.common.jdbc.MyPersistable;
@@ -26,7 +25,7 @@ public class Example extends MyPersistable<Integer> {
 	private String exampleType;
 	private LocalDate exampleDate;
 	private LocalDateTime exampleTime;
-	@ReadOnlyProperty
+	
 	private String subName;
 
 	public Integer getExampleId() {
