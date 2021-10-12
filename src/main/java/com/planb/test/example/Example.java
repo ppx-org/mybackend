@@ -25,7 +25,7 @@ public class Example extends MyPersistable<Integer> {
 	private String exampleType;
 	private LocalDate exampleDate;
 	private LocalDateTime exampleTime;
-	
+
 	private String subName;
 
 	public Integer getExampleId() {

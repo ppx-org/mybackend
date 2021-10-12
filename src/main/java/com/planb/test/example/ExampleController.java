@@ -12,38 +12,37 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.planb.common.conf.ModuleConfig;
 
-
 @RestController
 @RequestMapping(ModuleConfig.TEST + "example")
 public class ExampleController {
-	
+
 	Logger logger = LoggerFactory.getLogger(ExampleController.class);
-	
+
 	@Autowired
-    ExampleServ serv;
-	
+	ExampleServ serv;
+
 	@GetMapping("page")
-    Page<Example> page(Example entity, Pageable pageable) {
-    	return serv.page(entity, pageable);
-    }
-    
+	Page<Example> page(Example entity, Pageable pageable) {
+		return serv.page(entity, pageable);
+	}
+
 	@PostMapping("insert")
-    void insert(Example entity) {
+	void insert(Example entity) {
 		serv.insert(entity);
-    }
-	
+	}
+
 	@PostMapping("update")
-    void update(Example entity) {
+	void update(Example entity) {
 		serv.update(entity);
-    }
-	
+	}
+
 	@GetMapping("get")
 	Example get(Integer id) {
-    	return serv.get(id);
-    }
-	
+		return serv.get(id);
+	}
+
 	@PostMapping("del")
-    void del(Integer id) {
+	void del(Integer id) {
 		serv.del(id);
-    }
+	}
 }
