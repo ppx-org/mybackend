@@ -68,6 +68,9 @@ public class ResController {
 		if (!StringUtils.hasText(modulePath)) {
 			return mapList;
 		}
+		if (modulePath.split("/").length != 3) {
+			return mapList;
+		}
 		
 		List<String> uriList = new ArrayList<String>();
 		
@@ -76,9 +79,13 @@ public class ResController {
         
         Set<String> asteriskSet = new HashSet<String>();
         asteriskSet.add("/**");
-        asteriskSet.add(modulePath + "**");
+        
+        String[] item = modulePath.split("/");
+        asteriskSet.add("/" + item[1] + "/**");
+        asteriskSet.add(modulePath + "*");
         
         Set<RequestMappingInfo> set =  map.keySet();
+        boolean existsAction = false;
         for (RequestMappingInfo info : set) {
             Set<String> uriSet = info.getPatternsCondition().getPatterns();
             for (String uri : uriSet) {
@@ -87,13 +94,19 @@ public class ResController {
             		continue;
             	}
             	
+            	existsAction = true;
             	uriList.add(uri);            	
-            	String[] item = uri.split("/");
-            	if (item.length == 4) {
-            		asteriskSet.add(modulePath + item[2] + "/*");
-            	}   	
+//            	String[] item = uri.split("/");
+//            	if (item.length == 4) {
+//            		asteriskSet.add(modulePath + item[2] + "/*");
+//            	}   	
             }
         }
+        if (!existsAction) {
+        	return mapList;
+        }
+        
+        
         Set<String> asteriskSortSet = new TreeSet<String>(Comparator.naturalOrder());
         asteriskSortSet.addAll(asteriskSet);
         Collections.sort(uriList);
