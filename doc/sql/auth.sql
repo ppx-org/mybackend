@@ -32,7 +32,8 @@ create table auth_res (
 	res_type varchar(1) not null,
 	res_sort int not null,
 	menu_path varchar(64),
-	primary key(res_id)
+	primary key(res_id),
+	unique(res_name, res_parent_id)
 );
 comment on table auth_res is '权限资源';
 comment on column auth_res.res_type is '类型:目录、菜单、操作';

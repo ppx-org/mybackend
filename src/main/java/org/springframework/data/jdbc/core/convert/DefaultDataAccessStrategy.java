@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.annotation.Conflict;
 import com.planb.common.util.MyStringUtils;
@@ -136,7 +138,9 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 			// dengxz 唯一值重复返回0
 			Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
 			if (conflict != null) {
-				insertSql += " on conflict (" + conflict.value() + ") do nothing";
+				List<String> conflictColList = Arrays.asList(conflict.value());
+				String conflictVal = StringUtils.collectionToCommaDelimitedString(conflictColList);
+				insertSql += " on conflict (" + conflictVal + ") do nothing";
 			}
 			Object returnObj = executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
 			if (returnObj == null) {
@@ -186,14 +190,19 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		
 		// dengxz 判断是否使用conflict
 		boolean userConflict = false;
-		if (conflict != null && parameterSource.getValue(conflict.value()) != null) {
+		if (conflict != null && parameterSource.getValue(conflict.value()[0]) != null) {
 			userConflict = true;
 		}		
 		// dengxz 唯一值重复返回0
 		if (userConflict) {
 			String idColumnName = MyStringUtils.underscoreName(persistentEntity.getIdProperty().getName());
-			updateSql = updateSql + " and NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
-				+ " WHERE " + conflict.value() + " = :" + conflict.value() + " and " + idColumnName + " != :" + idColumnName + ")";
+			List<String> conflictColList = new ArrayList<String>();
+			for (String col : conflict.value()) {
+				conflictColList.add(col + " = :" + col);
+			}
+			String conflictSql = StringUtils.collectionToDelimitedString(conflictColList, " AND ");	
+			updateSql = updateSql + " AND NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
+				+ " WHERE " + conflictSql + " AND " + idColumnName + " != :" + idColumnName + ")";
 		}
 		
 		boolean b = operations.update(updateSql, parameterSource) != 0;

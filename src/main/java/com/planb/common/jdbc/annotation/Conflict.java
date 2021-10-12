@@ -13,6 +13,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Conflict {
 
-	String value() default "";
+	String[] value() default "";
 }
 

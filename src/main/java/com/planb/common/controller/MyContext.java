@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.common.jdbc.MyPersistable;
 import com.planb.security.user.SecurityUserDetails;
 
 /**
@@ -36,6 +37,14 @@ public class MyContext {
 	public static String setBusinessException(String msg) {
 		MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
 		MyContext.getResponseMsg().set(msg);
+		return "";
+	}
+	
+	public static String setBusinessException(MyPersistable<?> entity, String msg) {
+		if (entity.getId() == 0) {
+			MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
+			MyContext.getResponseMsg().set(msg);
+		}
 		return "";
 	}
 	

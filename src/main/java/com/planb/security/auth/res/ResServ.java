@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.planb.common.controller.MyContext;
 import com.planb.common.jdbc.MyDaoSupport;
 import com.planb.security.auth.menu.Menu;
 
@@ -21,6 +22,7 @@ public class ResServ extends MyDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	List<Map<String, Object>> listAllRes() {
+		
 		List<Map<String, Object>> returnList = new ArrayList<Map<String, Object>>();
 
 		List<Menu> resList = repo.listAllRes();
@@ -91,9 +93,8 @@ public class ResServ extends MyDaoSupport {
 	void insert(Res entity) {
 		int maxSort = repo.getMaxSort(entity.getResParentId());
 		entity.setResSort(maxSort + 1);
-    	entity.setNew(true);
-    	repo.save(entity);
-	}
+    	MyContext.setBusinessException(repo.save(entity), "同级资源名称已经存在");
+	}	
 
 	Res get(Integer id) {
 		return repo.get(id);
@@ -105,9 +106,10 @@ public class ResServ extends MyDaoSupport {
 			repo.resSort(entity.getResParentId(), entity.getResSort(), entity.getResSortOld());
 		}
 		entity.setResSort(null);
-		repo.save(entity);
+		entity.setNew(false);
+		MyContext.setBusinessException(repo.save(entity), "同级资源名称已经存在");
 	}
-
+	
 	void delResAndChildren(Integer id) {
 		repo.delResAndChildren(id);
 	}
