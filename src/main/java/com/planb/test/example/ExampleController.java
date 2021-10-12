@@ -23,6 +23,11 @@ public class ExampleController {
 
 	@GetMapping("page")
 	Page<Example> page(Example entity, Pageable pageable) {
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return serv.page(entity, pageable);
 	}
 
@@ -33,6 +38,11 @@ public class ExampleController {
 
 	@PostMapping("update")
 	void update(Example entity) {
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		serv.update(entity);
 	}
 
