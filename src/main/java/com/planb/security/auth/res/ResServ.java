@@ -93,7 +93,7 @@ public class ResServ extends MyDaoSupport {
 	void insert(Res entity) {
 		int maxSort = repo.getMaxSort(entity.getResParentId());
 		entity.setResSort(maxSort + 1);
-    	MyContext.setBusinessException(repo.save(entity), "同级资源名称已经存在");
+    	MyContext.saveConflict(repo.save(entity), "同级资源名称已经存在");
 	}	
 
 	Res get(Integer id) {
@@ -107,7 +107,7 @@ public class ResServ extends MyDaoSupport {
 		}
 		entity.setResSort(null);
 		entity.setUpdate();
-		MyContext.setBusinessException(repo.save(entity), "同级资源名称已经存在");
+		MyContext.saveConflict(repo.save(entity), "同级资源名称已经存在");
 	}
 	
 	void delResAndChildren(Integer id) {

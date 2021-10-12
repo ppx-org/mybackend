@@ -24,7 +24,7 @@ public class ExampleServ {
 	}
 	
     public void insert(Example entity) {
-    	MyContext.setBusinessException(repo.save(entity), "名称已经存在");
+    	MyContext.saveConflict(repo.save(entity), "名称已经存在");
     }
     
     public Example get(Integer id) {
@@ -33,7 +33,7 @@ public class ExampleServ {
     
     public void update(Example entity) {
     	entity.setUpdate();
-    	MyContext.setBusinessException(repo.save(entity), "名称已经存在");
+    	MyContext.saveConflict(repo.save(entity), "名称已经存在");
     }
     
     public void del(Integer id) {

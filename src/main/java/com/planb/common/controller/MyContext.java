@@ -50,11 +50,11 @@ public class MyContext {
 		return "";
 	}
 	
-	public static String setBusinessException(MyPersistable<?> entity, String content) {
+	public static String saveConflict(MyPersistable<?> entity, String confictContent) {
 		if (entity.getId() == 0) {
 			MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
 			MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
-			MyContext.getResponseContent().set(content);
+			MyContext.getResponseContent().set(confictContent);
 		}
 		return "";
 	}
