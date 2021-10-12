@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.planb.common.conf.ErrorCodeConfig;
-import com.planb.common.controller.ResponseUtils;
+import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.util.ResponseUtils;
 
 
 
@@ -26,7 +26,7 @@ public class MyExceptionHandler implements HandlerExceptionResolver {
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object,
 			Exception exception) {
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		long t = ResponseUtils.returnJson(response, ErrorCodeConfig.ERROR, exception.getMessage());
+		long t = ResponseUtils.returnJson(response, MyErrorEnum.SYSYTEM_ERROR, exception.getMessage());
 		logger.error("ERROR-" + t, exception);
 		
 		return null;

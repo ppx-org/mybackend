@@ -3,7 +3,7 @@ package com.planb.common.controller;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.common.conf.MyErrorEnum;
 import com.planb.common.jdbc.MyPersistable;
 import com.planb.security.user.SecurityUserDetails;
 
@@ -16,6 +16,7 @@ public class MyContext {
 	
 	private static ThreadLocal<Integer> responseCode = new ThreadLocal<Integer>();
 	private static ThreadLocal<String> responseMsg = new ThreadLocal<String>();
+	private static ThreadLocal<String> responseContent = new ThreadLocal<String>();
 	
 	public static ThreadLocal<String> getResponseMsg() {
 		return responseMsg;
@@ -33,17 +34,27 @@ public class MyContext {
 		MyContext.responseCode = responseCode;
 	}
 	
+	public static ThreadLocal<String> getResponseContent() {
+		return responseContent;
+	}
+
+	public static void setResponseContent(ThreadLocal<String> responseContent) {
+		MyContext.responseContent = responseContent;
+	}
+
 	// 业务异常
-	public static String setBusinessException(String msg) {
-		MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
-		MyContext.getResponseMsg().set(msg);
+	public static String setBusinessException(String content) {
+		MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
+		MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
+		MyContext.getResponseContent().set(content);
 		return "";
 	}
 	
-	public static String setBusinessException(MyPersistable<?> entity, String msg) {
+	public static String setBusinessException(MyPersistable<?> entity, String content) {
 		if (entity.getId() == 0) {
-			MyContext.getResponseCode().set(ErrorCodeConfig.BUSINESS_EXCEPTION);
-			MyContext.getResponseMsg().set(msg);
+			MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
+			MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
+			MyContext.getResponseContent().set(content);
 		}
 		return "";
 	}

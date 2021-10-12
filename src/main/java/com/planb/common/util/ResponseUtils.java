@@ -1,4 +1,4 @@
-package com.planb.common.controller;
+package com.planb.common.util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,17 +7,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.controller.MyResponse;
 
 public class ResponseUtils {
 	
-	public static long returnJson(HttpServletResponse response, Integer code, String msg) {
+	public static long returnJson(HttpServletResponse response, MyErrorEnum errorEnum, String content) {
 		long t = System.currentTimeMillis();
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json");
 		
-		MyResponse<?> r = new MyResponse<>();
-		r.setCode(code);
-		r.setMsg(msg);
+		MyResponse<String> r = new MyResponse<>();
+		r.setErrorEnum(errorEnum);
+		r.setContent(content);
 		r.setTime(t);
 		try (PrintWriter printWriter = response.getWriter()) {
 			ObjectMapper objectMapper = new ObjectMapper();

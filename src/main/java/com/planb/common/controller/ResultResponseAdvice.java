@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.planb.common.conf.ErrorCodeConfig;
+import com.planb.common.conf.MyErrorEnum;
 
 
 @RestControllerAdvice
@@ -33,6 +33,7 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 		final MyResponse<Object> result = new MyResponse<>();
 		result.setCode(MyContext.getResponseCode().get());
 		result.setMsg(MyContext.getResponseMsg().get());
+		result.setContent(MyContext.getResponseMsg().get());
 		if (body == null) {
 			return result;
 		}
@@ -46,13 +47,13 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> bodyMap = (Map<String, Object>)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
-				result.setCode(ErrorCodeConfig.NOT_FOUND);
+				result.setErrorEnum(MyErrorEnum.NOT_FOUND);
 				result.setMsg("Not Found:" + bodyMap.get("path"));
 				return result;
 			}
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 500) {
-				result.setCode(ErrorCodeConfig.ERROR);
-				result.setMsg("error:" + bodyMap.get("error"));
+				result.setErrorEnum(MyErrorEnum.SYSYTEM_ERROR);
+				result.setContent(bodyMap.get("error"));
 				return result;
 			}
 		}
