@@ -1,3 +1,15 @@
+-- planb用户
+
+-- 删除
+DROP TABLE IF EXISTS auth_user;
+DROP TABLE IF EXISTS auth_role;
+DROP TABLE IF EXISTS auth_user_role;
+DROP TABLE IF EXISTS auth_res;
+DROP TABLE IF EXISTS auth_uri;
+DROP TABLE IF EXISTS auth_res_uri;
+DROP TABLE IF EXISTS auth_role_res;
+DROP TABLE IF EXISTS auth_cache_jwt;
+DROP TABLE IF EXISTS auth_cache_version;
 
 
 -- >>>>>>>>>>>>>>>>>> 权限
@@ -71,7 +83,6 @@ create table auth_cache_jwt (
 comment on table auth_cache_jwt is 'jwt缓存,放redis';
 comment on column auth_cache_jwt.validate_version is '修改密码、作废等，禁用该token';
 comment on column auth_cache_jwt.replace_version is '修改用户名、角色等，需要换token';
-
 
 create table auth_cache_version (
 	auth_key varchar(32) not null,

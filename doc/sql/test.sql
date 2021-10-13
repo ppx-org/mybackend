@@ -1,12 +1,10 @@
 
--- 管理员名称和数据库postgres
-
-create user planb with password '#postgres14#';
-create database planb owner planb;
-grant all on database planb to planb;
-
-
 -- planb用户
+
+-- 删除
+DROP TABLE IF EXISTS test_example;
+DROP TABLE IF EXISTS test_example_sub;
+
 create table test_example (
     example_id serial not null,
     example_name varchar(16) not null,
