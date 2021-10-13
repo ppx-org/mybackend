@@ -17,12 +17,15 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.controller.MyContext;
 import com.planb.common.jdbc.page.MyCriteria;
 import com.planb.common.util.MyStringUtils;
 
@@ -49,9 +52,7 @@ public class MyCrudAspect extends MyDaoSupport {
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
-        
-        // ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments());
-        
+                
         // 根据returnType分类
         Enum<?> queryType = QueryType.DEFAULT;
         if (returnClass.equals(Page.class)) {
@@ -106,14 +107,18 @@ public class MyCrudAspect extends MyDaoSupport {
         	
         	if (queryType == QueryType.PAGE) {
 	        	if (pageable.getSort().isSorted()) {
-		        	pageable.getSort().toList().forEach(m -> {        		
-		        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
-		        	});
+	        		
+	        		for (Order order: pageable.getSort().toList()) {
+	        			if (illegalCharacter(order.getProperty())) {
+	        				return MyContext.setException(MyErrorEnum.ILLEGAL_CHARACTER, order.getProperty());
+	        			}
+	        			orderList.add(MyStringUtils.underscoreName(order.getProperty()) + " " + order.getDirection());
+	        		}
 	        	}
 	        	else {
 	        		// 默认排序
 	            	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
-	            		myCriteria.getDefaultSort().toList().forEach(m -> {        		
+	            		myCriteria.getDefaultSort().toList().forEach(m -> {
 	    	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
 	    	        	});
 	            	}
@@ -169,6 +174,13 @@ public class MyCrudAspect extends MyDaoSupport {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private boolean illegalCharacter(String str) {
+		if (str.contains("'") || str.contains(" ")) {
+			return true;
+		}
+		return false;
 	}
 	
 	

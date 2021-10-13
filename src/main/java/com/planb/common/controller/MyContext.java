@@ -42,12 +42,19 @@ public class MyContext {
 		MyContext.responseContent = responseContent;
 	}
 
-	// 业务异常
+	// 业务异常 要干掉
 	public static String setBusinessException(String content) {
 		MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
 		MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
 		MyContext.getResponseContent().set(content);
-		return "";
+		return null;
+	}
+	
+	public static Object setException(MyErrorEnum errorEnum, String content) {
+		MyContext.getResponseCode().set(errorEnum.getCode());
+		MyContext.getResponseMsg().set(errorEnum.getMsg());
+		MyContext.getResponseContent().set(content);
+		return null;
 	}
 	
 	public static String saveConflict(MyPersistable<?> entity, String confictContent) {
@@ -56,8 +63,10 @@ public class MyContext {
 			MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
 			MyContext.getResponseContent().set(confictContent);
 		}
-		return "";
+		return null;
 	}
+	
+	
 	
 	public static SecurityUserDetails getUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
