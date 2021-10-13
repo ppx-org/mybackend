@@ -16,7 +16,7 @@ public class MyResponse<T> {
 	
 	private Long totalElements;
 	
-	// 异常时，返回前端并打印后台日志，方便查报错问题
+	/** 异常时，返回前端并打印后台日志，方便查报错问题 */
 	private Long time;
 
 	public Long getTotalElements() {
