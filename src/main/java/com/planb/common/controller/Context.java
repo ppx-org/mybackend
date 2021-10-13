@@ -42,14 +42,7 @@ public class Context {
 		Context.responseContent = responseContent;
 	}
 
-	// 业务异常 要干掉
-//	public static <T> T setBusinessException(String content) {
-//		MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
-//		MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
-//		MyContext.getResponseContent().set(content);
-//		return null;
-//	}
-	
+	// 业务异常
 	public static <T> T setException(ExceptionEnum eEnum, String content) {
 		Context.getResponseCode().set(eEnum.getCode());
 		Context.getResponseMsg().set(eEnum.getMsg());
@@ -57,7 +50,7 @@ public class Context {
 		return null;
 	}
 	
-	public static String saveConflict(Persistence<?> entity, String confictContent) {
+	public static <T> T saveConflict(Persistence<?> entity, String confictContent) {
 		if (entity.getId() == 0) {
 			Context.getResponseCode().set(ExceptionEnum.BUSINESS_EXCEPTION.getCode());
 			Context.getResponseMsg().set(ExceptionEnum.BUSINESS_EXCEPTION.getMsg());
@@ -65,7 +58,6 @@ public class Context {
 		}
 		return null;
 	}
-	
 	
 	
 	public static SecurityUserDetails getUser() {
