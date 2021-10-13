@@ -36,7 +36,7 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 		result.setMsg(Context.getResponseMsg().get());
 		result.setContent(Context.getResponseContent().get());
 		if (ObjectUtils.isEmpty(body)) {
-			return toJson(result);
+			return result;
 		}
 		else if (body instanceof Response) {
 			return body;
