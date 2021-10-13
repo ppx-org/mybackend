@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -33,9 +34,9 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 		final MyResponse<Object> result = new MyResponse<>();
 		result.setCode(MyContext.getResponseCode().get());
 		result.setMsg(MyContext.getResponseMsg().get());
-		result.setContent(MyContext.getResponseMsg().get());
-		if (body == null) {
-			return result;
+		result.setContent(MyContext.getResponseContent().get());
+		if (ObjectUtils.isEmpty(body)) {
+			return toJson(result);
 		}
 		else if (body instanceof MyResponse) {
 			return body;
@@ -59,13 +60,7 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 		}
 		
 		if (returnType.getGenericParameterType().equals(String.class)) {
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-			try {
-				return objectMapper.writeValueAsString(result);
-			} catch (Exception e) {
-				throw new RuntimeException("error:" + e.getMessage());
-			}
+			return toJson(result);
 		}
 		
 		if (returnType.getGenericParameterType().getTypeName().startsWith(Page.class.getName())) {
@@ -76,5 +71,15 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 		}
 		
 		return result;
+	}
+	
+	private String toJson(Object obj) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		try {
+			return objectMapper.writeValueAsString(obj);
+		} catch (Exception e) {
+			throw new RuntimeException("error:" + e.getMessage());
+		}
 	}
 }

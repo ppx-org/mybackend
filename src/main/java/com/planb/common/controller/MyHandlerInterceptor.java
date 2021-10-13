@@ -14,6 +14,7 @@ public class MyHandlerInterceptor implements HandlerInterceptor {
 			throws Exception {
 		MyContext.getResponseCode().set(0);
 		MyContext.getResponseMsg().set("OK");
+		MyContext.getResponseContent().set(null);
 		
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}

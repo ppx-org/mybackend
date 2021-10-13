@@ -30,7 +30,8 @@ public class TestApiController {
     	String checkUri = "xxx";
     	logger.info(">>> permission roleId={} url={}", roleId, checkUri);
     	
-    	return "testApiGet:" + id;
+//    	return "testApiGet:" + id;
+    	return null;
     }
     
     @PostMapping("post") @ResponseBody

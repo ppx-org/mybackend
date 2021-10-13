@@ -24,9 +24,9 @@ public class LoginServ extends MyDaoSupport {
 	
     public String login(String username, String password) {
     	Optional<AuthUser> authUserOptional = repo.getAuthUser(username);
-    	final String msg = "用户名或密码错误";
+    	final String content = "用户名或密码错误";
     	if (authUserOptional.isEmpty()) {
-    		return MyContext.setBusinessException(msg);
+    		return MyContext.setBusinessException(content);
     	}
     	AuthUser u = authUserOptional.get();
     	if (u.getEnable() == false) {
@@ -34,7 +34,7 @@ public class LoginServ extends MyDaoSupport {
     	}
     	boolean matches = new BCryptPasswordEncoder().matches(password, u.getPassword());
     	if (matches == false) {
-    		return MyContext.setBusinessException(msg);
+    		return MyContext.setBusinessException(content);
     	}
     	
     	// 返回JWT token
