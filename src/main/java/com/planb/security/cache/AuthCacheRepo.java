@@ -4,10 +4,10 @@ import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.planb.common.jdbc.MyEmpty;
+import com.planb.common.jdbc.Empty;
 
 
-interface AuthCacheRepo extends CrudRepository<MyEmpty, Integer> {
+interface AuthCacheRepo extends CrudRepository<Empty, Integer> {
 	
 	@Query("""
 	select (select concat_ws('.', validate_version, replace_version) from auth_cache_jwt where user_id = :userId) jwt_version, 

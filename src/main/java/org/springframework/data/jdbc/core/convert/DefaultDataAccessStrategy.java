@@ -60,7 +60,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import com.planb.common.jdbc.annotation.Conflict;
-import com.planb.common.util.MyStringUtils;
+import com.planb.common.util.StrUtils;
 
 /**
  * The default {@link DataAccessStrategy} is to generate SQL statements based on meta data from the entity.
@@ -195,7 +195,7 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		}		
 		// dengxz 唯一值重复返回0
 		if (userConflict) {
-			String idColumnName = MyStringUtils.underscoreName(persistentEntity.getIdProperty().getName());
+			String idColumnName = StrUtils.underscoreName(persistentEntity.getIdProperty().getName());
 			List<String> conflictColList = new ArrayList<String>();
 			for (String col : conflict.value()) {
 				conflictColList.add(col + " = :" + col);

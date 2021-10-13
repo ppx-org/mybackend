@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
-public class MyHandlerInterceptor implements HandlerInterceptor {
+public class ControllerInterceptor implements HandlerInterceptor {
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		MyContext.getResponseCode().set(0);
-		MyContext.getResponseMsg().set("OK");
-		MyContext.getResponseContent().set(null);
+		Context.getResponseCode().set(0);
+		Context.getResponseMsg().set("OK");
+		Context.getResponseContent().set(null);
 		
 		return HandlerInterceptor.super.preHandle(request, response, handler);
 	}

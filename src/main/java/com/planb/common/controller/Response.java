@@ -2,9 +2,9 @@ package com.planb.common.controller;
 
 import org.springframework.data.domain.Pageable;
 
-import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.conf.ExceptionEnum;
 
-public class MyResponse<T> {
+public class Response<T> {
 	
 	private Integer code;
 	
@@ -67,9 +67,9 @@ public class MyResponse<T> {
 		this.time = time;
 	}
 	
-	public void setErrorEnum(MyErrorEnum errorEnum) {
-		this.code = errorEnum.getCode();
-		this.msg = errorEnum.getMsg();
+	public void setExceptionEnum(ExceptionEnum eEnum) {
+		this.code = eEnum.getCode();
+		this.msg = eEnum.getMsg();
 	}
 
 }

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.planb.common.jdbc.page.MyCriteria;
+import com.planb.common.jdbc.page.Criteria;
 
 interface ExampleRepo extends PagingAndSortingRepository<Example, Integer> {
 
@@ -14,7 +14,7 @@ interface ExampleRepo extends PagingAndSortingRepository<Example, Integer> {
 					left join test_example_sub sub on e.example_id = sub.example_id
 			    ${c}
 			""")
-	Page<Example> page(MyCriteria c, Pageable p);
+	Page<Example> page(Criteria c, Pageable p);
 
 	@Query("""
 			    select e.*, sub.sub_name from test_example e

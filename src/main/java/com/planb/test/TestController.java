@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.conf.ModuleConfig;
-import com.planb.common.controller.MyContext;
+import com.planb.common.controller.Context;
 import com.planb.security.user.SecurityUserDetails;
 import com.planb.test.serv.TestServ;
 
@@ -25,7 +26,7 @@ public class TestController {
     
 	@GetMapping("hello")
     String hello() {
-		SecurityUserDetails u = MyContext.getUser();
+		SecurityUserDetails u = Context.getUser();
 		logger.debug("--------hello---------");
 		logger.debug(">>>:" + u.getUserId());
 		logger.debug(">>>:" + u.getUsername());
@@ -50,7 +51,7 @@ public class TestController {
     	// 业务异常返回，Defensive Programming防御式编程
     	boolean canCommit = true;
     	if (canCommit) {
-    		return MyContext.setBusinessException("不能提交");
+    		return Context.setException(ExceptionEnum.BUSINESS_EXCEPTION, "不能提交");
     	}
     	return "提交成功";
     }

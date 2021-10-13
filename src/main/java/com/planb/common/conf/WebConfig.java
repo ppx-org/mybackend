@@ -6,13 +6,13 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.planb.common.controller.MyHandlerInterceptor;
+import com.planb.common.controller.ControllerInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 	
     @Autowired
-    private MyHandlerInterceptor myHandlerInterceptor;
+    private ControllerInterceptor myHandlerInterceptor;
     
     @Override
 	public void addInterceptors(InterceptorRegistry registry) {

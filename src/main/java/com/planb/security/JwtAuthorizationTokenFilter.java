@@ -22,8 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.planb.common.conf.ErrorCodeConfig;
-import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.conf.ExceptionEnum;
 import com.planb.security.auth.login.AuthUser;
 import com.planb.security.auth.login.LoginRepo;
 import com.planb.security.cache.AuthCacheService;
@@ -73,7 +72,7 @@ from auth_user_role where user_id = 2)
 				Date expirationTime = claimsSet.getExpirationTime();
 				if (expirationTime.compareTo(new Date()) == -1) {
 					// token超时返回无效错误
-					request.setAttribute(ErrorCodeConfig.ERROR_CODE, MyErrorEnum.TOKEN_EXPIRED);
+					request.setAttribute(ExceptionEnum.ERROR_CODE, ExceptionEnum.TOKEN_EXPIRED);
 					chain.doFilter(request, response);
 					return;
 				}
@@ -113,7 +112,7 @@ from auth_user_role where user_id = 2)
 				String[] redisVersionArray = redisAuthCacheVersion.getJwtVersion().split("\\.");
 				String[] jwtVersionArray = version.split("\\.");
 				if (!redisVersionArray[0].equals(jwtVersionArray[0])) {
-					request.setAttribute(ErrorCodeConfig.ERROR_CODE, MyErrorEnum.TOKEN_FORBIDDEN);
+					request.setAttribute(ExceptionEnum.ERROR_CODE, ExceptionEnum.TOKEN_FORBIDDEN);
 					chain.doFilter(request, response);
 					return;
 				}
@@ -130,7 +129,7 @@ from auth_user_role where user_id = 2)
 				
 				boolean uriPermission = permissionService.uriPermission(request.getRequestURI(), userId, roleIdList, redisAuthCacheVersion.getAuthVersion());
 				if (uriPermission == false) {
-					request.setAttribute(ErrorCodeConfig.ERROR_CODE, MyErrorEnum.URI_FORBIDDEN);
+					request.setAttribute(ExceptionEnum.ERROR_CODE, ExceptionEnum.URI_FORBIDDEN);
 					chain.doFilter(request, response);
 					return;
 				}

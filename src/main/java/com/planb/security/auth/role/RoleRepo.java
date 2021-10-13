@@ -8,14 +8,14 @@ import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.planb.common.jdbc.page.MyCriteria;
+import com.planb.common.jdbc.page.Criteria;
 
 
 interface RoleRepo extends PagingAndSortingRepository<Role, Integer> {
 	@Query("""
 			select r.* from auth_role r ${c}
 	""")
-    Page<Role> page(MyCriteria c, Pageable p);
+    Page<Role> page(Criteria c, Pageable p);
 	
 	@Query("""
 			select res_id from auth_role_res where role_id = :roleId

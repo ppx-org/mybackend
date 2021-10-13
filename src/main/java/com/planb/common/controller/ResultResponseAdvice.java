@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.conf.ExceptionEnum;
 
 
 @RestControllerAdvice
@@ -24,21 +24,21 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-		return !returnType.getGenericParameterType().equals(MyResponse.class);
+		return !returnType.getGenericParameterType().equals(Response.class);
 	}
 	
 	@Override
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
-		final MyResponse<Object> result = new MyResponse<>();
-		result.setCode(MyContext.getResponseCode().get());
-		result.setMsg(MyContext.getResponseMsg().get());
-		result.setContent(MyContext.getResponseContent().get());
+		final Response<Object> result = new Response<>();
+		result.setCode(Context.getResponseCode().get());
+		result.setMsg(Context.getResponseMsg().get());
+		result.setContent(Context.getResponseContent().get());
 		if (ObjectUtils.isEmpty(body)) {
 			return toJson(result);
 		}
-		else if (body instanceof MyResponse) {
+		else if (body instanceof Response) {
 			return body;
 		}
 		result.setContent(body);
@@ -48,12 +48,12 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> bodyMap = (Map<String, Object>)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
-				result.setErrorEnum(MyErrorEnum.NOT_FOUND);
+				result.setExceptionEnum(ExceptionEnum.NOT_FOUND);
 				result.setMsg("Not Found:" + bodyMap.get("path"));
 				return result;
 			}
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 500) {
-				result.setErrorEnum(MyErrorEnum.SYSYTEM_ERROR);
+				result.setExceptionEnum(ExceptionEnum.SYSYTEM_ERROR);
 				result.setContent(bodyMap.get("error"));
 				return result;
 			}

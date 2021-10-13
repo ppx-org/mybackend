@@ -1,6 +1,8 @@
 package com.planb.common.conf;
 
-public enum MyErrorEnum {
+public enum ExceptionEnum {
+	
+	
 	
 	SYSYTEM_ERROR(5000, "系统异常"),
 	
@@ -16,11 +18,13 @@ public enum MyErrorEnum {
 	
 	;
 	
+	public final static String ERROR_CODE = "ERROR_CODE";
+	
 	private int code;
 	
 	private String msg;
 
-	MyErrorEnum(int code, String msg) {
+	ExceptionEnum(int code, String msg) {
 		this.code = code;
 		this.msg = msg;
 	}

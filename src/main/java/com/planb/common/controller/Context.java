@@ -3,8 +3,8 @@ package com.planb.common.controller;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.planb.common.conf.MyErrorEnum;
-import com.planb.common.jdbc.MyPersistable;
+import com.planb.common.conf.ExceptionEnum;
+import com.planb.common.jdbc.Persistence;
 import com.planb.security.user.SecurityUserDetails;
 
 /**
@@ -12,7 +12,7 @@ import com.planb.security.user.SecurityUserDetails;
  * @author mark
  * @date 2018年6月20日
  */
-public class MyContext {
+public class Context {
 	
 	private static ThreadLocal<Integer> responseCode = new ThreadLocal<Integer>();
 	private static ThreadLocal<String> responseMsg = new ThreadLocal<String>();
@@ -23,7 +23,7 @@ public class MyContext {
 	}
 
 	public static void setResponseMsg(ThreadLocal<String> responseMsg) {
-		MyContext.responseMsg = responseMsg;
+		Context.responseMsg = responseMsg;
 	}
 
 	public static ThreadLocal<Integer> getResponseCode() {
@@ -31,7 +31,7 @@ public class MyContext {
 	}
 
 	public static void setResponseCode(ThreadLocal<Integer> responseCode) {
-		MyContext.responseCode = responseCode;
+		Context.responseCode = responseCode;
 	}
 	
 	public static ThreadLocal<String> getResponseContent() {
@@ -39,29 +39,29 @@ public class MyContext {
 	}
 
 	public static void setResponseContent(ThreadLocal<String> responseContent) {
-		MyContext.responseContent = responseContent;
+		Context.responseContent = responseContent;
 	}
 
 	// 业务异常 要干掉
-	public static String setBusinessException(String content) {
-		MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
-		MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
-		MyContext.getResponseContent().set(content);
+//	public static <T> T setBusinessException(String content) {
+//		MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
+//		MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
+//		MyContext.getResponseContent().set(content);
+//		return null;
+//	}
+	
+	public static <T> T setException(ExceptionEnum eEnum, String content) {
+		Context.getResponseCode().set(eEnum.getCode());
+		Context.getResponseMsg().set(eEnum.getMsg());
+		Context.getResponseContent().set(content);
 		return null;
 	}
 	
-	public static Object setException(MyErrorEnum errorEnum, String content) {
-		MyContext.getResponseCode().set(errorEnum.getCode());
-		MyContext.getResponseMsg().set(errorEnum.getMsg());
-		MyContext.getResponseContent().set(content);
-		return null;
-	}
-	
-	public static String saveConflict(MyPersistable<?> entity, String confictContent) {
+	public static String saveConflict(Persistence<?> entity, String confictContent) {
 		if (entity.getId() == 0) {
-			MyContext.getResponseCode().set(MyErrorEnum.BUSINESS_EXCEPTION.getCode());
-			MyContext.getResponseMsg().set(MyErrorEnum.BUSINESS_EXCEPTION.getMsg());
-			MyContext.getResponseContent().set(confictContent);
+			Context.getResponseCode().set(ExceptionEnum.BUSINESS_EXCEPTION.getCode());
+			Context.getResponseMsg().set(ExceptionEnum.BUSINESS_EXCEPTION.getMsg());
+			Context.getResponseContent().set(confictContent);
 		}
 		return null;
 	}

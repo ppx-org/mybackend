@@ -15,7 +15,7 @@ import org.springframework.transaction.TransactionManager;
 
 @Configuration
 @EnableJdbcRepositories(basePackages = {"com.planb"})
-class ApplicationConfig extends AbstractJdbcConfiguration {
+class JdbcConfiguration extends AbstractJdbcConfiguration {
 
     @Bean
     NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSource) {

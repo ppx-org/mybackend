@@ -24,10 +24,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.planb.common.conf.MyErrorEnum;
-import com.planb.common.controller.MyContext;
-import com.planb.common.jdbc.page.MyCriteria;
-import com.planb.common.util.MyStringUtils;
+import com.planb.common.conf.ExceptionEnum;
+import com.planb.common.controller.Context;
+import com.planb.common.jdbc.page.Criteria;
+import com.planb.common.util.StrUtils;
 
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
@@ -39,7 +39,7 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 
 @Aspect
 @Component
-public class MyCrudAspect extends MyDaoSupport {
+public class CrudAspect extends DaoSupport {
 	
 	enum QueryType { 
 	    DEFAULT, PAGE, LIST_MAP, CRITERIA;
@@ -65,7 +65,7 @@ public class MyCrudAspect extends MyDaoSupport {
         	Parameter[] parameters = method.getParameters();
         	for (short i = 0; i < parameters.length; i++) {
         		Parameter p = parameters[i];
-            	if (p.getParameterizedType().equals(MyCriteria.class)) {
+            	if (p.getParameterizedType().equals(Criteria.class)) {
             		queryType = QueryType.CRITERIA;
             		break;
             	}
@@ -77,12 +77,12 @@ public class MyCrudAspect extends MyDaoSupport {
         
         var paramMap = new HashMap<String, Object>();
         Parameter[] parameters = method.getParameters();
-        MyCriteria myCriteria = null;
+        Criteria myCriteria = null;
         Pageable pageable = null;
         for (short i = 0; i < parameters.length; i++) {
         	Parameter p = parameters[i];
-        	if (p.getParameterizedType().equals(MyCriteria.class)) {
-        		myCriteria = (MyCriteria)jp.getArgs()[i];
+        	if (p.getParameterizedType().equals(Criteria.class)) {
+        		myCriteria = (Criteria)jp.getArgs()[i];
         		continue;
         	}
         	if (p.getParameterizedType().equals(Pageable.class)) {
@@ -110,16 +110,16 @@ public class MyCrudAspect extends MyDaoSupport {
 	        		
 	        		for (Order order: pageable.getSort().toList()) {
 	        			if (illegalCharacter(order.getProperty())) {
-	        				return MyContext.setException(MyErrorEnum.ILLEGAL_CHARACTER, order.getProperty());
+	        				return Context.setException(ExceptionEnum.ILLEGAL_CHARACTER, order.getProperty());
 	        			}
-	        			orderList.add(MyStringUtils.underscoreName(order.getProperty()) + " " + order.getDirection());
+	        			orderList.add(StrUtils.underscoreName(order.getProperty()) + " " + order.getDirection());
 	        		}
 	        	}
 	        	else {
 	        		// 默认排序
 	            	if (myCriteria != null && myCriteria.getDefaultSort() != null) {
 	            		myCriteria.getDefaultSort().toList().forEach(m -> {
-	    	        		orderList.add(MyStringUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
+	    	        		orderList.add(StrUtils.underscoreName(m.getProperty()) + " " + m.getDirection());
 	    	        	});
 	            	}
 	        	}

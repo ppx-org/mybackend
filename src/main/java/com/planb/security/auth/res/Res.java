@@ -5,12 +5,12 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.planb.common.jdbc.MyPersistable;
+import com.planb.common.jdbc.Persistence;
 import com.planb.common.jdbc.annotation.Conflict;
 
 @Table("auth_res")
 @Conflict({"res_name", "res_parent_id"})
-public class Res extends MyPersistable<Integer> {
+public class Res extends Persistence<Integer> {
 	@Override @JsonIgnore
 	public Integer getId() {return resId;}
 	 

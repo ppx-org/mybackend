@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
-public class MyDaoSupport extends JdbcDaoSupport {
+public class DaoSupport extends JdbcDaoSupport {
 	
 	@Autowired
-	protected void setMyJdbcTemplate(JdbcTemplate jdbcTemplate) {
+	protected void setDaoJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		super.setJdbcTemplate(jdbcTemplate); 
 	}
 

@@ -55,7 +55,7 @@ import org.springframework.util.Assert;
  * @author Jens Schauder
  * @since 2.0
  */
-public class MyCriteria implements CriteriaDefinition {
+public class Criteria implements CriteriaDefinition {
 	
 	// dengxz
 	private Map<String, Object> paramMap = new HashMap<String, Object>();
@@ -90,7 +90,7 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 	
 	public boolean isBeginWhere() {
-    	MyCriteria pre = this.getPrevious();
+    	Criteria pre = this.getPrevious();
     	boolean isBegin = this.getBeginWhere();
     	while (pre != null) {
     		isBegin = pre.isBeginWhere();
@@ -99,9 +99,9 @@ public class MyCriteria implements CriteriaDefinition {
     	return isBegin;
     }
 
-	static final MyCriteria EMPTY = new MyCriteria(SqlIdentifier.EMPTY, Comparator.INITIAL, null);
+	static final Criteria EMPTY = new Criteria(SqlIdentifier.EMPTY, Comparator.INITIAL, null);
 
-	private final @Nullable MyCriteria previous;
+	private final @Nullable Criteria previous;
 	private final Combinator combinator;
 	private final List<CriteriaDefinition> group;
 
@@ -110,16 +110,16 @@ public class MyCriteria implements CriteriaDefinition {
 	private final @Nullable Object value;
 	private final boolean ignoreCase;
 
-	private MyCriteria(SqlIdentifier column, Comparator comparator, @Nullable Object value) {
+	private Criteria(SqlIdentifier column, Comparator comparator, @Nullable Object value) {
 		this(null, Combinator.INITIAL, Collections.emptyList(), column, comparator, value, false);
 	}
 
-	private MyCriteria(@Nullable MyCriteria previous, Combinator combinator, List<CriteriaDefinition> group,
+	private Criteria(@Nullable Criteria previous, Combinator combinator, List<CriteriaDefinition> group,
 			@Nullable SqlIdentifier column, @Nullable Comparator comparator, @Nullable Object value) {
 		this(previous, combinator, group, column, comparator, value, false);
 	}
 
-	private MyCriteria(@Nullable MyCriteria previous, Combinator combinator, List<CriteriaDefinition> group,
+	private Criteria(@Nullable Criteria previous, Combinator combinator, List<CriteriaDefinition> group,
 			@Nullable SqlIdentifier column, @Nullable Comparator comparator, @Nullable Object value, boolean ignoreCase) {
 
 		this.previous = previous;
@@ -131,7 +131,7 @@ public class MyCriteria implements CriteriaDefinition {
 		this.ignoreCase = ignoreCase;
 	}
 
-	private MyCriteria(@Nullable MyCriteria previous, Combinator combinator, List<CriteriaDefinition> group) {
+	private Criteria(@Nullable Criteria previous, Combinator combinator, List<CriteriaDefinition> group) {
 
 		this.previous = previous;
 		this.combinator = previous != null && previous.isEmpty() ? Combinator.INITIAL : combinator;
@@ -145,20 +145,20 @@ public class MyCriteria implements CriteriaDefinition {
 	/**
 	 * Static factory method to create an empty Criteria.
 	 *
-	 * @return an empty {@link MyCriteria}.
+	 * @return an empty {@link Criteria}.
 	 */
-	public static MyCriteria empty() {
-		MyCriteria myCriteria = EMPTY;
+	public static Criteria empty() {
+		Criteria myCriteria = EMPTY;
 		myCriteria.setBeginWhere(false);
 		return myCriteria;
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code AND} using the provided {@link List Criterias}.
+	 * Create a new {@link Criteria} and combine it as group with {@code AND} using the provided {@link List Criterias}.
 	 *
-	 * @return new {@link MyCriteria}.
+	 * @return new {@link Criteria}.
 	 */
-	public static MyCriteria from(MyCriteria... criteria) {
+	public static Criteria from(Criteria... criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null");
 		Assert.noNullElements(criteria, "Criteria must not contain null elements");
@@ -167,11 +167,11 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code AND} using the provided {@link List Criterias}.
+	 * Create a new {@link Criteria} and combine it as group with {@code AND} using the provided {@link List Criterias}.
 	 *
-	 * @return new {@link MyCriteria}.
+	 * @return new {@link Criteria}.
 	 */
-	public static MyCriteria from(List<MyCriteria> criteria) {
+	public static Criteria from(List<Criteria> criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null");
 		Assert.noNullElements(criteria, "Criteria must not contain null elements");
@@ -191,7 +191,7 @@ public class MyCriteria implements CriteriaDefinition {
 	 * Static factory method to create a Criteria using the provided {@code column} name.
 	 *
 	 * @param column Must not be {@literal null} or empty.
-	 * @return a new {@link CriteriaStep} object to complete the first {@link MyCriteria}.
+	 * @return a new {@link CriteriaStep} object to complete the first {@link Criteria}.
 	 */
 	public static CriteriaStep where(String column) {
 
@@ -204,10 +204,10 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it with {@code AND} using the provided {@code column} name.
+	 * Create a new {@link Criteria} and combine it with {@code AND} using the provided {@code column} name.
 	 *
 	 * @param column Must not be {@literal null} or empty.
-	 * @return a new {@link CriteriaStep} object to complete the next {@link MyCriteria}.
+	 * @return a new {@link CriteriaStep} object to complete the next {@link Criteria}.
 	 */
 	public CriteriaStep and(String column) {
 
@@ -216,20 +216,20 @@ public class MyCriteria implements CriteriaDefinition {
 		SqlIdentifier identifier = SqlIdentifier.unquoted(column);
 		return new DefaultCriteriaStep(identifier) {
 			@Override
-			protected MyCriteria createCriteria(Comparator comparator, @Nullable Object value) {
-				return new MyCriteria(MyCriteria.this, Combinator.AND, Collections.emptyList(), identifier, comparator, value);
+			protected Criteria createCriteria(Comparator comparator, @Nullable Object value) {
+				return new Criteria(Criteria.this, Combinator.AND, Collections.emptyList(), identifier, comparator, value);
 			}
 		};
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code AND} using the provided {@link MyCriteria} group.
+	 * Create a new {@link Criteria} and combine it as group with {@code AND} using the provided {@link Criteria} group.
 	 *
 	 * @param criteria criteria object.
-	 * @return a new {@link MyCriteria} object.
+	 * @return a new {@link Criteria} object.
 	 * @since 1.1
 	 */
-	public MyCriteria and(CriteriaDefinition criteria) {
+	public Criteria and(CriteriaDefinition criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null!");
 
@@ -237,24 +237,24 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code AND} using the provided {@link MyCriteria} group.
+	 * Create a new {@link Criteria} and combine it as group with {@code AND} using the provided {@link Criteria} group.
 	 *
 	 * @param criteria criteria objects.
-	 * @return a new {@link MyCriteria} object.
+	 * @return a new {@link Criteria} object.
 	 */
 	@SuppressWarnings("unchecked")
-	public MyCriteria and(List<? extends CriteriaDefinition> criteria) {
+	public Criteria and(List<? extends CriteriaDefinition> criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null!");
 
-		return new MyCriteria(MyCriteria.this, Combinator.AND, (List<CriteriaDefinition>) criteria);
+		return new Criteria(Criteria.this, Combinator.AND, (List<CriteriaDefinition>) criteria);
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it with {@code OR} using the provided {@code column} name.
+	 * Create a new {@link Criteria} and combine it with {@code OR} using the provided {@code column} name.
 	 *
 	 * @param column Must not be {@literal null} or empty.
-	 * @return a new {@link CriteriaStep} object to complete the next {@link MyCriteria}.
+	 * @return a new {@link CriteriaStep} object to complete the next {@link Criteria}.
 	 */
 	public CriteriaStep or(String column) {
 
@@ -263,20 +263,20 @@ public class MyCriteria implements CriteriaDefinition {
 		SqlIdentifier identifier = SqlIdentifier.unquoted(column);
 		return new DefaultCriteriaStep(identifier) {
 			@Override
-			protected MyCriteria createCriteria(Comparator comparator, @Nullable Object value) {
-				return new MyCriteria(MyCriteria.this, Combinator.OR, Collections.emptyList(), identifier, comparator, value);
+			protected Criteria createCriteria(Comparator comparator, @Nullable Object value) {
+				return new Criteria(Criteria.this, Combinator.OR, Collections.emptyList(), identifier, comparator, value);
 			}
 		};
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code OR} using the provided {@link MyCriteria} group.
+	 * Create a new {@link Criteria} and combine it as group with {@code OR} using the provided {@link Criteria} group.
 	 *
 	 * @param criteria criteria object.
-	 * @return a new {@link MyCriteria} object.
+	 * @return a new {@link Criteria} object.
 	 * @since 1.1
 	 */
-	public MyCriteria or(CriteriaDefinition criteria) {
+	public Criteria or(CriteriaDefinition criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null!");
 
@@ -284,51 +284,51 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Create a new {@link MyCriteria} and combine it as group with {@code OR} using the provided {@link MyCriteria} group.
+	 * Create a new {@link Criteria} and combine it as group with {@code OR} using the provided {@link Criteria} group.
 	 *
 	 * @param criteria criteria object.
-	 * @return a new {@link MyCriteria} object.
+	 * @return a new {@link Criteria} object.
 	 * @since 1.1
 	 */
 	@SuppressWarnings("unchecked")
-	public MyCriteria or(List<? extends CriteriaDefinition> criteria) {
+	public Criteria or(List<? extends CriteriaDefinition> criteria) {
 
 		Assert.notNull(criteria, "Criteria must not be null!");
 
-		return new MyCriteria(MyCriteria.this, Combinator.OR, (List<CriteriaDefinition>) criteria);
+		return new Criteria(Criteria.this, Combinator.OR, (List<CriteriaDefinition>) criteria);
 	}
 
 	/**
-	 * Creates a new {@link MyCriteria} with the given "ignore case" flag.
+	 * Creates a new {@link Criteria} with the given "ignore case" flag.
 	 *
 	 * @param ignoreCase {@literal true} if comparison should be done in case-insensitive way
-	 * @return a new {@link MyCriteria} object
+	 * @return a new {@link Criteria} object
 	 */
-	public MyCriteria ignoreCase(boolean ignoreCase) {
+	public Criteria ignoreCase(boolean ignoreCase) {
 		if (this.ignoreCase != ignoreCase) {
-			return new MyCriteria(previous, combinator, group, column, comparator, value, ignoreCase);
+			return new Criteria(previous, combinator, group, column, comparator, value, ignoreCase);
 		}
 		return this;
 	}
 
 	/**
-	 * @return the previous {@link MyCriteria} object. Can be {@literal null} if there is no previous {@link MyCriteria}.
+	 * @return the previous {@link Criteria} object. Can be {@literal null} if there is no previous {@link Criteria}.
 	 * @see #hasPrevious()
 	 */
 	@Nullable
-	public MyCriteria getPrevious() {
+	public Criteria getPrevious() {
 		return previous;
 	}
 
 	/**
-	 * @return {@literal true} if this {@link MyCriteria} has a previous one.
+	 * @return {@literal true} if this {@link Criteria} has a previous one.
 	 */
 	public boolean hasPrevious() {
 		return previous != null;
 	}
 
 	/**
-	 * @return {@literal true} if this {@link MyCriteria} is empty.
+	 * @return {@literal true} if this {@link Criteria} is empty.
 	 * @since 1.1
 	 */
 	@Override
@@ -338,7 +338,7 @@ public class MyCriteria implements CriteriaDefinition {
 			return false;
 		}
 
-		MyCriteria parent = this.previous;
+		Criteria parent = this.previous;
 
 		while (parent != null) {
 
@@ -373,7 +373,7 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * @return {@literal true} if this {@link MyCriteria} is empty.
+	 * @return {@literal true} if this {@link Criteria} is empty.
 	 */
 	public boolean isGroup() {
 		return !this.group.isEmpty();
@@ -563,136 +563,136 @@ public class MyCriteria implements CriteriaDefinition {
 	}
 
 	/**
-	 * Interface declaring terminal builder methods to build a {@link MyCriteria}.
+	 * Interface declaring terminal builder methods to build a {@link Criteria}.
 	 */
 	public interface CriteriaStep {
 
 		/**
-		 * Creates a {@link MyCriteria} using equality.
+		 * Creates a {@link Criteria} using equality.
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria is(Object value);
+		Criteria is(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using equality (is not).
+		 * Creates a {@link Criteria} using equality (is not).
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria not(Object value);
+		Criteria not(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IN}.
+		 * Creates a {@link Criteria} using {@code IN}.
 		 *
 		 * @param values must not be {@literal null}.
 		 */
-		MyCriteria in(Object... values);
+		Criteria in(Object... values);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IN}.
+		 * Creates a {@link Criteria} using {@code IN}.
 		 *
 		 * @param values must not be {@literal null}.
 		 */
-		MyCriteria in(Collection<?> values);
+		Criteria in(Collection<?> values);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code NOT IN}.
+		 * Creates a {@link Criteria} using {@code NOT IN}.
 		 *
 		 * @param values must not be {@literal null}.
 		 */
-		MyCriteria notIn(Object... values);
+		Criteria notIn(Object... values);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code NOT IN}.
+		 * Creates a {@link Criteria} using {@code NOT IN}.
 		 *
 		 * @param values must not be {@literal null}.
 		 */
-		MyCriteria notIn(Collection<?> values);
+		Criteria notIn(Collection<?> values);
 
 		/**
-		 * Creates a {@link MyCriteria} using between ({@literal BETWEEN begin AND end}).
+		 * Creates a {@link Criteria} using between ({@literal BETWEEN begin AND end}).
 		 *
 		 * @param begin must not be {@literal null}.
 		 * @param end must not be {@literal null}.
 		 * @since 2.2
 		 */
-		MyCriteria between(Object begin, Object end);
+		Criteria between(Object begin, Object end);
 
 		/**
-		 * Creates a {@link MyCriteria} using not between ({@literal NOT BETWEEN begin AND end}).
+		 * Creates a {@link Criteria} using not between ({@literal NOT BETWEEN begin AND end}).
 		 *
 		 * @param begin must not be {@literal null}.
 		 * @param end must not be {@literal null}.
 		 * @since 2.2
 		 */
-		MyCriteria notBetween(Object begin, Object end);
+		Criteria notBetween(Object begin, Object end);
 
 		/**
-		 * Creates a {@link MyCriteria} using less-than ({@literal <}).
+		 * Creates a {@link Criteria} using less-than ({@literal <}).
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria lessThan(Object value);
+		Criteria lessThan(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using less-than or equal to ({@literal <=}).
+		 * Creates a {@link Criteria} using less-than or equal to ({@literal <=}).
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria lessThanOrEquals(Object value);
+		Criteria lessThanOrEquals(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using greater-than({@literal >}).
+		 * Creates a {@link Criteria} using greater-than({@literal >}).
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria greaterThan(Object value);
+		Criteria greaterThan(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using greater-than or equal to ({@literal >=}).
+		 * Creates a {@link Criteria} using greater-than or equal to ({@literal >=}).
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria greaterThanOrEquals(Object value);
+		Criteria greaterThanOrEquals(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code LIKE}.
+		 * Creates a {@link Criteria} using {@code LIKE}.
 		 *
 		 * @param value must not be {@literal null}.
 		 */
-		MyCriteria like(Object value);
+		Criteria like(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code NOT LIKE}.
+		 * Creates a {@link Criteria} using {@code NOT LIKE}.
 		 *
 		 * @param value must not be {@literal null}
-		 * @return a new {@link MyCriteria} object
+		 * @return a new {@link Criteria} object
 		 */
-		MyCriteria notLike(Object value);
+		Criteria notLike(Object value);
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IS NULL}.
+		 * Creates a {@link Criteria} using {@code IS NULL}.
 		 */
-		MyCriteria isNull();
+		Criteria isNull();
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IS NOT NULL}.
+		 * Creates a {@link Criteria} using {@code IS NOT NULL}.
 		 */
-		MyCriteria isNotNull();
+		Criteria isNotNull();
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IS TRUE}.
+		 * Creates a {@link Criteria} using {@code IS TRUE}.
 		 *
-		 * @return a new {@link MyCriteria} object
+		 * @return a new {@link Criteria} object
 		 */
-		MyCriteria isTrue();
+		Criteria isTrue();
 
 		/**
-		 * Creates a {@link MyCriteria} using {@code IS FALSE}.
+		 * Creates a {@link Criteria} using {@code IS FALSE}.
 		 *
-		 * @return a new {@link MyCriteria} object
+		 * @return a new {@link Criteria} object
 		 */
-		MyCriteria isFalse();
+		Criteria isFalse();
 	}
 
 	/**
@@ -711,7 +711,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#is(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria is(Object value) {
+		public Criteria is(Object value) {
 			return createCriteria(Comparator.EQ, value);
 		}
 
@@ -720,7 +720,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#not(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria not(Object value) {
+		public Criteria not(Object value) {
 
 			Assert.notNull(value, "Value must not be null!");
 
@@ -732,7 +732,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#in(java.lang.Object[])
 		 */
 		@Override
-		public MyCriteria in(Object... values) {
+		public Criteria in(Object... values) {
 
 			Assert.notNull(values, "Values must not be null!");
 			Assert.noNullElements(values, "Values must not contain a null value!");
@@ -750,7 +750,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#in(java.util.Collection)
 		 */
 		@Override
-		public MyCriteria in(Collection<?> values) {
+		public Criteria in(Collection<?> values) {
 
 			Assert.notNull(values, "Values must not be null!");
 			Assert.noNullElements(values.toArray(), "Values must not contain a null value!");
@@ -763,7 +763,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#notIn(java.lang.Object[])
 		 */
 		@Override
-		public MyCriteria notIn(Object... values) {
+		public Criteria notIn(Object... values) {
 
 			Assert.notNull(values, "Values must not be null!");
 			Assert.noNullElements(values, "Values must not contain a null value!");
@@ -781,7 +781,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#notIn(java.util.Collection)
 		 */
 		@Override
-		public MyCriteria notIn(Collection<?> values) {
+		public Criteria notIn(Collection<?> values) {
 
 			Assert.notNull(values, "Values must not be null!");
 			Assert.noNullElements(values.toArray(), "Values must not contain a null value!");
@@ -794,7 +794,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#between(java.lang.Object, java.lang.Object)
 		 */
 		@Override
-		public MyCriteria between(Object begin, Object end) {
+		public Criteria between(Object begin, Object end) {
 
 			Assert.notNull(begin, "Begin value must not be null!");
 			Assert.notNull(end, "End value must not be null!");
@@ -807,7 +807,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#notBetween(java.lang.Object, java.lang.Object)
 		 */
 		@Override
-		public MyCriteria notBetween(Object begin, Object end) {
+		public Criteria notBetween(Object begin, Object end) {
 
 			Assert.notNull(begin, "Begin value must not be null!");
 			Assert.notNull(end, "End value must not be null!");
@@ -820,7 +820,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#lessThan(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria lessThan(Object value) {
+		public Criteria lessThan(Object value) {
 
 			Assert.notNull(value, "Value must not be null!");
 
@@ -832,7 +832,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#lessThanOrEquals(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria lessThanOrEquals(Object value) {
+		public Criteria lessThanOrEquals(Object value) {
 
 			Assert.notNull(value, "Value must not be null!");
 
@@ -844,7 +844,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#greaterThan(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria greaterThan(Object value) {
+		public Criteria greaterThan(Object value) {
 
 			Assert.notNull(value, "Value must not be null!");
 
@@ -856,7 +856,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#greaterThanOrEquals(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria greaterThanOrEquals(Object value) {
+		public Criteria greaterThanOrEquals(Object value) {
 
 			Assert.notNull(value, "Value must not be null!");
 
@@ -868,7 +868,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#like(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria like(Object value) {
+		public Criteria like(Object value) {
 			if (value == null) {
 				return createCriteria(Comparator.LIKE, value);
 			}
@@ -884,7 +884,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#notLike(java.lang.Object)
 		 */
 		@Override
-		public MyCriteria notLike(Object value) {
+		public Criteria notLike(Object value) {
 			Assert.notNull(value, "Value must not be null!");
 			return createCriteria(Comparator.NOT_LIKE, value);
 		}
@@ -894,7 +894,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#isNull()
 		 */
 		@Override
-		public MyCriteria isNull() {
+		public Criteria isNull() {
 			return createCriteria(Comparator.IS_NULL, null);
 		}
 
@@ -903,7 +903,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#isNotNull()
 		 */
 		@Override
-		public MyCriteria isNotNull() {
+		public Criteria isNotNull() {
 			return createCriteria(Comparator.IS_NOT_NULL, null);
 		}
 
@@ -912,7 +912,7 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#isTrue()
 		 */
 		@Override
-		public MyCriteria isTrue() {
+		public Criteria isTrue() {
 			return createCriteria(Comparator.IS_TRUE, null);
 		}
 
@@ -921,12 +921,12 @@ public class MyCriteria implements CriteriaDefinition {
 		 * @see org.springframework.data.relational.query.Criteria.CriteriaStep#isFalse()
 		 */
 		@Override
-		public MyCriteria isFalse() {
+		public Criteria isFalse() {
 			return createCriteria(Comparator.IS_FALSE, null);
 		}
 
-		protected MyCriteria createCriteria(Comparator comparator, @Nullable Object value) {
-			return new MyCriteria(this.property, comparator, value);
+		protected Criteria createCriteria(Comparator comparator, @Nullable Object value) {
+			return new Criteria(this.property, comparator, value);
 		}
 	}
 }

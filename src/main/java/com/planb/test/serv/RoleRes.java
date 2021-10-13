@@ -2,10 +2,10 @@ package com.planb.test.serv;
 
 import org.springframework.data.relational.core.mapping.Table;
 
-import com.planb.common.jdbc.MyPersistable;
+import com.planb.common.jdbc.Persistence;
 
 @Table("auth_role_res")
-public class RoleRes extends MyPersistable<Integer> {
+public class RoleRes extends Persistence<Integer> {
 
 	@Override
 	public Integer getId() {

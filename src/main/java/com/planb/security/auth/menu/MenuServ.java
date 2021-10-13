@@ -9,10 +9,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.planb.common.jdbc.MyDaoSupport;
-
 @Service
-public class MenuServ extends MyDaoSupport {
+public class MenuServ {
 	
 	@Autowired
 	MenuRepo repo;

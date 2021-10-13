@@ -8,5 +8,5 @@ public class ModuleConfig {
 	
 	public final static String SECURITY = "security/";
 	
-
+	
 }

@@ -4,12 +4,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.planb.common.jdbc.MyPersistable;
+import com.planb.common.jdbc.Persistence;
 import com.planb.common.jdbc.annotation.Conflict;
 
 @Table("auth_role")
 @Conflict("role_name")
-public class Role extends MyPersistable<Integer> {
+public class Role extends Persistence<Integer> {
 	
 	@Override @JsonIgnore
 	public Integer getId() {return this.roleId;}

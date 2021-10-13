@@ -9,8 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.planb.common.conf.ErrorCodeConfig;
-import com.planb.common.conf.MyErrorEnum;
+import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.util.ResponseUtils;
 
 @Component
@@ -20,23 +19,23 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			org.springframework.security.core.AuthenticationException authException)
 			throws IOException, ServletException {
-		MyErrorEnum errorEnum = (MyErrorEnum)request.getAttribute(ErrorCodeConfig.ERROR_CODE);
+		ExceptionEnum errorEnum = (ExceptionEnum)request.getAttribute(ExceptionEnum.ERROR_CODE);
 		if (errorEnum == null) {
-			ResponseUtils.returnJson(response, MyErrorEnum.UNAUTHORIZED, "UNAUTHORIZED");
+			ResponseUtils.returnJson(response, ExceptionEnum.UNAUTHORIZED, "UNAUTHORIZED");
 			return;
 		}
 		
-		if (errorEnum == MyErrorEnum.TOKEN_EXPIRED) {
-			ResponseUtils.returnJson(response, MyErrorEnum.TOKEN_EXPIRED, "TOKEN_EXPIRED");
+		if (errorEnum == ExceptionEnum.TOKEN_EXPIRED) {
+			ResponseUtils.returnJson(response, ExceptionEnum.TOKEN_EXPIRED, "TOKEN_EXPIRED");
 		}
-		else if (errorEnum == MyErrorEnum.TOKEN_FORBIDDEN) {
-			ResponseUtils.returnJson(response, MyErrorEnum.TOKEN_FORBIDDEN, "TOKEN_FORBIDDEN");
+		else if (errorEnum == ExceptionEnum.TOKEN_FORBIDDEN) {
+			ResponseUtils.returnJson(response, ExceptionEnum.TOKEN_FORBIDDEN, "TOKEN_FORBIDDEN");
 		}
-		else if (errorEnum == MyErrorEnum.URI_FORBIDDEN) {
-			ResponseUtils.returnJson(response, MyErrorEnum.URI_FORBIDDEN, "URI_FORBIDDEN");
+		else if (errorEnum == ExceptionEnum.URI_FORBIDDEN) {
+			ResponseUtils.returnJson(response, ExceptionEnum.URI_FORBIDDEN, "URI_FORBIDDEN");
 		}
 		else {
-			ResponseUtils.returnJson(response, MyErrorEnum.UNAUTHORIZED, "UNAUTHORIZED");
+			ResponseUtils.returnJson(response, ExceptionEnum.UNAUTHORIZED, "UNAUTHORIZED");
 		}
 	}
 }

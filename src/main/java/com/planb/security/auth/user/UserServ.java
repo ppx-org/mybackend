@@ -12,40 +12,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import com.planb.common.controller.MyContext;
-import com.planb.common.jdbc.MyDaoSupport;
-import com.planb.common.jdbc.page.MyCriteria;
+import com.planb.common.controller.Context;
+import com.planb.common.jdbc.page.Criteria;
 import com.planb.security.auth.role.Role;
 
 @Service
-public class UserServ extends MyDaoSupport {
+public class UserServ {
 	
 	@Autowired
 	UserRepo repo;
 	
 	Page<User> page(User entity, Pageable pageable) {
-		MyCriteria c = MyCriteria.where("u.username").like(entity.getUsername());
+		Criteria c = Criteria.where("u.username").like(entity.getUsername());
 		c.setDefaultSort(Sort.by(Direction.DESC, "u.user_id"));
 		return repo.page(c, pageable);
 	}
 	
-	String insert(User entity) {
+	void insert(User entity) {
 		String newPassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
 		entity.setPassword(newPassword);
-		User r = repo.save(entity);
-		return r.getId() == 0 ? MyContext.setBusinessException("用户名已经存在") : "";
+		Context.saveConflict(repo.save(entity), "用户名已经存在");
 	}
 	
 	@Transactional
-	String update(User entity) {
+	void update(User entity) {
 		// 密码变量时才需要存入
 		if (!ObjectUtils.isEmpty(entity.getPassword())) {
 			String encodePassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
 			entity.setPassword(encodePassword);
 		}
 		entity.setUpdate();
-		User r = repo.save(entity);
-		return r.getId() == 0 ? MyContext.setBusinessException("用户名已经存在") : "";
+		Context.saveConflict(repo.save(entity), "用户名已经存在");
 	}
 	
 	void disable(Integer userId) {
@@ -69,7 +66,7 @@ public class UserServ extends MyDaoSupport {
 	}
 	
 	List<Role> listRole(String roleName) {
-		MyCriteria c = MyCriteria.where("r.role_name").like(roleName);
+		Criteria c = Criteria.where("r.role_name").like(roleName);
 		return repo.listRole(c);
 	}
 	

@@ -2,7 +2,7 @@ package com.planb.common.util;
 
 import org.springframework.util.StringUtils;
 
-public class MyStringUtils {
+public class StrUtils extends StringUtils {
 	
 	/**
 	 * Convert a name in camelCase to an underscored name in lower case. Any upper

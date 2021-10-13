@@ -3,10 +3,8 @@ package com.planb.test.serv;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.planb.common.jdbc.MyDaoSupport;
-
 @Service
-public class TestServ extends MyDaoSupport {
+public class TestServ {
 	
 	@Autowired
 	TestRepo repo;

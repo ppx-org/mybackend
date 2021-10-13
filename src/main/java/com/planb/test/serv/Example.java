@@ -8,12 +8,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.data.relational.core.mapping.Table;
 
-import com.planb.common.jdbc.MyPersistable;
+import com.planb.common.jdbc.Persistence;
 import com.planb.common.jdbc.annotation.Conflict;
 
 @Table("test_example")
 @Conflict("example_name")
-public class Example extends MyPersistable<Integer> {
+public class Example extends Persistence<Integer> {
 	@Override
 	public Integer getId() {
 		return exampleId;

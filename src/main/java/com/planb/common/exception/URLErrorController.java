@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MyErrorController implements ErrorController {
+public class URLErrorController implements ErrorController {
 
 	private static final String ERROR_PATH = "/error";
 

@@ -5,7 +5,8 @@ import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class MyPersistable<T> implements Persistable<Integer> {
+public abstract class Persistence<T> implements Persistable<Integer> {
+	
 	@ReadOnlyProperty
     private boolean isNew = true;
 	

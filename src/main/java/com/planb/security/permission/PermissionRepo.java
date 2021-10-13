@@ -6,10 +6,10 @@ import java.util.Map;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.planb.common.jdbc.MyEmpty;
+import com.planb.common.jdbc.Empty;
 
 
-interface PermissionRepo extends CrudRepository<MyEmpty, Integer> {
+interface PermissionRepo extends CrudRepository<Empty, Integer> {
 	
 	@Query("""
 	       select uri_id, uri_path from auth_uri

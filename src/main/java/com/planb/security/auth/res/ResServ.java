@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.planb.common.controller.MyContext;
-import com.planb.common.jdbc.MyDaoSupport;
+import com.planb.common.controller.Context;
 import com.planb.security.auth.menu.Menu;
 
 @Service
-public class ResServ extends MyDaoSupport {
+public class ResServ {
 
 	@Autowired
 	ResRepo repo;
@@ -93,7 +92,7 @@ public class ResServ extends MyDaoSupport {
 	void insert(Res entity) {
 		int maxSort = repo.getMaxSort(entity.getResParentId());
 		entity.setResSort(maxSort + 1);
-    	MyContext.saveConflict(repo.save(entity), "同级资源名称已经存在");
+    	Context.saveConflict(repo.save(entity), "同级资源名称已经存在");
 	}	
 
 	Res get(Integer id) {
@@ -107,7 +106,7 @@ public class ResServ extends MyDaoSupport {
 		}
 		entity.setResSort(null);
 		entity.setUpdate();
-		MyContext.saveConflict(repo.save(entity), "同级资源名称已经存在");
+		Context.saveConflict(repo.save(entity), "同级资源名称已经存在");
 	}
 	
 	void delResAndChildren(Integer id) {

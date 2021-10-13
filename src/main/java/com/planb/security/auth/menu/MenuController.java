@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.planb.common.conf.ModuleConfig;
-import com.planb.common.controller.MyContext;
+import com.planb.common.controller.Context;
 
 
 @RestController
@@ -21,7 +21,7 @@ public class MenuController {
     
 	@GetMapping("list")
 	List<Map<String, Object>> list() {
-		int userId = MyContext.getUser().getUserId();
+		int userId = Context.getUser().getUserId();
 		return serv.listUserMenu(userId);
 	}
 	
