@@ -9,13 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.planb.common.conf.ExceptionEnum;
+import com.planb.common.util.StrUtils;
 
 
 @RestControllerAdvice
@@ -31,20 +31,25 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
 			Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
 			ServerHttpResponse response) {
+		
+		if (body instanceof Response) {
+			return body;
+		}
+		
 		final Response<Object> result = new Response<>();
 		result.setCode(Context.getResponseCode().get());
 		result.setMsg(Context.getResponseMsg().get());
-		result.setContent(Context.getResponseContent().get());
-		if (ObjectUtils.isEmpty(body)) {
-			return result;
+		
+		if (StrUtils.hasText(Context.getResponseContent().get())) {
+			result.setContent(Context.getResponseContent().get());
 		}
-		else if (body instanceof Response) {
-			return body;
+		else {
+			result.setContent(body);
 		}
-		result.setContent(body);
+		
 		
 		// 404 500
-		if (LinkedHashMap.class.equals(body.getClass())) {
+		if (body != null && LinkedHashMap.class.equals(body.getClass())) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> bodyMap = (Map<String, Object>)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
