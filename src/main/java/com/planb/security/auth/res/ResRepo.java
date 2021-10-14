@@ -21,16 +21,6 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 				""")
 	Res get(Integer id);
 	
-	@Modifying
-	@Query("""
-	with recursive t(res_id, res_name, res_parent_id) as (
-			select res_id, res_name, res_parent_id from auth_res where res_id = :resId
-			union all SELECT tt.res_id, tt.res_name, tt.res_parent_id from auth_res tt join t on tt.res_parent_id = t.res_id
-	)
-	delete from auth_res where res_id in (select res_id from t)
-			""")
-	int delResAndChildren(Integer resId);
-	
 	@Query("""
 			select max(res_sort) from auth_res where res_parent_id = :resParentId
 			""")
@@ -76,6 +66,35 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 			delete from auth_res_uri where res_id = :resId and uri_id = (select uri_id from auth_uri where uri_path = :uriPath) 
 			""")
 	int resDelUri(Integer resId, String uriPath);
+	
+	
+	// 删除RES >>>>>>>>>>>>>
+	@Query("""
+	with recursive t(res_id, res_name, res_parent_id) as (
+			select res_id, res_name, res_parent_id from auth_res where res_id = :resId
+			union all SELECT tt.res_id, tt.res_name, tt.res_parent_id from auth_res tt join t on tt.res_parent_id = t.res_id
+	)
+	select res_id from t
+			""")
+	List<Integer> listResAndChildren(Integer resId);
+	
+	@Modifying
+	@Query("""
+			delete from auth_res where res_id in (:resIdList)
+			""")
+	int delResAndChildren(List<Integer> resId);
+	
+	@Modifying
+	@Query("""
+			delete from auth_res_uri where res_id in (:resIdList)
+			""")
+	int delResUriByRes(List<Integer> resIdList);
+	
+	@Modifying
+	@Query("""
+			delete from auth_role_res where res_id in (:resIdList)
+			""")
+	int delRoleResByRes(List<Integer> resIdList);
 	
 	
 }

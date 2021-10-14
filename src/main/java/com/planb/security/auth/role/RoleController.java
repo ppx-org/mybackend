@@ -38,7 +38,12 @@ public class RoleController {
 	@PostMapping("update")
     void update(Role entity) {
 		serv.update(entity);
-    }
+	}
+	
+	@PostMapping("del")
+    void del(Integer id) {
+		serv.del(id);
+	}
 	
 	@GetMapping("listResIdByRole")
 	List<Integer> listResIdByRole(Integer roleId) {

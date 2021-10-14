@@ -33,11 +33,17 @@ public class RoleServ {
 		Context.saveConflict(repo.save(entity), "角色名称已经存在");
 	}
 	
-	@Transactional
 	void update(Role entity) {
 		entity.setUpdate();
 		Context.saveConflict(repo.save(entity), "角色名称已经存在");
 	}
+	
+	@Transactional
+	public void del(Integer id) {
+		repo.delUserRoleIdByRole(id);
+		repo.delRoleResByRole(id);
+    	repo.deleteById(id);
+    }
 	
 	List<Integer> listResIdByRole(Integer roleId) {
 		return repo.listResIdByRole(roleId);
@@ -45,7 +51,7 @@ public class RoleServ {
 	
 	@Transactional
 	void saveRoleRes(Integer roleId, Integer[] resId) {
-		repo.delResIdByRole(roleId);
+		repo.delRoleResByRole(roleId);
 		List<RoleRes> myList = new ArrayList<RoleRes>();
 		for (int i = 0; i < resId.length; i++) {
 			RoleRes rr = new RoleRes();

@@ -22,10 +22,16 @@ interface RoleRepo extends PagingAndSortingRepository<Role, Integer> {
 			""")
 	List<Integer> listResIdByRole(Integer roleId);
 	
-	
 	@Query("""
 			delete from auth_role_res where role_id = :roleId
 			""")
 	@Modifying
-	void delResIdByRole(Integer roleId);
+	void delRoleResByRole(Integer roleId);
+	
+	@Query("""
+			delete from auth_user_role where role_id = :roleId
+			""")
+	@Modifying
+	void delUserRoleIdByRole(Integer roleId);
+	
 }
