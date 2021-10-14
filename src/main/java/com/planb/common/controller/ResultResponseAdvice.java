@@ -21,7 +21,6 @@ import com.planb.common.util.StrUtils;
 @RestControllerAdvice
 public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 	
-	
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
 		return !returnType.getGenericParameterType().equals(Response.class);
@@ -54,7 +53,7 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			Map<String, Object> bodyMap = (Map<String, Object>)body;
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 404) {
 				result.setExceptionEnum(ExceptionEnum.NOT_FOUND);
-				result.setMsg("Not Found:" + bodyMap.get("path"));
+				result.setContent("Not Found:" + bodyMap.get("path"));
 				return result;
 			}
 			if (bodyMap.get("status") != null && (Integer)bodyMap.get("status") == 500) {

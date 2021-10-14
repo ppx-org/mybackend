@@ -41,8 +41,7 @@ public class Context {
 	public static void setResponseContent(ThreadLocal<String> responseContent) {
 		Context.responseContent = responseContent;
 	}
-
-	// 业务异常
+		
 	public static <T> T setException(ExceptionEnum eEnum, String content) {
 		Context.getResponseCode().set(eEnum.getCode());
 		Context.getResponseMsg().set(eEnum.getMsg());
