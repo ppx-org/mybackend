@@ -37,6 +37,11 @@ public class TestController {
 		return "Hello World:userName:" + u.getUsername();
 	}
 	
+	@GetMapping("hello2")
+    Integer hello2(Integer id) {
+		return id;
+	}
+	
 	@GetMapping("sleep")
     String sleep() throws Exception {
 		Thread.sleep(3000);

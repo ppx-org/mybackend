@@ -8,10 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.planb.common.conf.ExceptionEnum;
+import com.planb.common.controller.Context;
 import com.planb.common.util.ResponseUtils;
 
 
@@ -24,9 +26,16 @@ public class HandlerExceptionHandler implements HandlerExceptionResolver {
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object object,
 			Exception exception) {
 		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		long t = ResponseUtils.returnJson(response, ExceptionEnum.SYSYTEM_ERROR, exception.getMessage());
-		logger.error("ERROR-" + t, exception);
 		
+		// 入参数类型不匹配
+		if (exception.getClass() == MethodArgumentTypeMismatchException.class) {
+			long t = ResponseUtils.returnJson(response, ExceptionEnum.ILLEGAL_CHARACTER, exception.getMessage());
+			logger.error("ERROR-{}-URI:{}\n{}", t, request.getRequestURI(), exception.getMessage());
+		}
+		else {
+			long t = ResponseUtils.returnJson(response, ExceptionEnum.SYSYTEM_ERROR, exception.getMessage());
+			logger.error("ERROR-{}-URI:{}", t, request.getRequestURI(), exception);
+		}
 		return null;
 	}
 	
