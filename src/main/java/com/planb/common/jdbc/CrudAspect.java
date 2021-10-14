@@ -41,6 +41,8 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 @Component
 public class CrudAspect extends DaoSupport {
 	
+	private final int MAX_PAGE_SIZE = 50;
+	
 	enum QueryType { 
 	    DEFAULT, PAGE, LIST_MAP, CRITERIA;
 	} 
@@ -87,6 +89,10 @@ public class CrudAspect extends DaoSupport {
         	}
         	if (p.getParameterizedType().equals(Pageable.class)) {
         		pageable = (Pageable)jp.getArgs()[i];
+        		if (pageable.getPageSize() > MAX_PAGE_SIZE) {
+        			return Context.setException(ExceptionEnum.ILLEGAL_CHARACTER,
+        					"pageSize=" + pageable.getPageSize() + " MAX_PAGE_SIZE=" + MAX_PAGE_SIZE);
+        		}
         	}
         	paramMap.put(p.getName(), jp.getArgs()[i]);
 		}
@@ -140,7 +146,8 @@ public class CrudAspect extends DaoSupport {
         	
         	if (!orderList.isEmpty()) {
         		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
-        	}  
+        	}
+        	System.out.println("xxxxxxxxxxeeee:" + pageable.getPageSize());
         	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();        	
     		
     		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];

@@ -68,7 +68,7 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			return toJson(result);
 		}
 		
-		if (returnType.getGenericParameterType().getTypeName().startsWith(Page.class.getName())) {
+		if (body != null && returnType.getGenericParameterType().getTypeName().startsWith(Page.class.getName())) {
 			Page<?> page = (Page<?>)body;
 			result.setContent(page.toList());
 			result.setPageable(page.getPageable());
