@@ -26,7 +26,8 @@ comment on table auth_user is '用户';
 create table auth_role (
 	role_id serial not null,
 	role_name varchar(32) not null,
-	primary key(role_id)
+	primary key(role_id),
+	unique(role_name)
 );
 comment on table auth_role is '角色';
 

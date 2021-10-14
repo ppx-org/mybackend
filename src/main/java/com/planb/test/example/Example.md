@@ -29,6 +29,7 @@ pageable.page.size=15 或 @PageableDefault(size=3)Pageable pageable
 
 # sequence
 select nextval('test_example_example_id_seq');
+select currval('test_example_example_id_seq');
 alter sequence test_example_example_id_seq restart with 300;
 ```
 
