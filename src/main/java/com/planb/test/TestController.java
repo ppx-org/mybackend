@@ -94,10 +94,4 @@ public class TestController {
     void test() {
     	testServ.test();
     }
-    
-    public static void main(String[] args) {
-    	int i = 0;
-    	// \u000b\u000c\u000d i++;
-		System.out.println(i);
-	}
 }
