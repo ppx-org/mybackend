@@ -21,7 +21,7 @@ INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (2, '/test/example/
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (3, '/test/example/page');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (4, '/test/example/insert');
 INSERT INTO "public"."auth_uri"("uri_id", "uri_path") VALUES (5, '/test/example/update');
-alter sequence auth_uri_uri_id_seq restart with 4;
+alter sequence auth_uri_uri_id_seq restart with 6;
 
 INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_sort", "menu_path") VALUES (1, '测试目录', 0, 'd', 1, NULL);
 INSERT INTO "public"."auth_res"("res_id", "res_name", "res_parent_id", "res_type", "res_sort", "menu_path") VALUES (2, '测试菜单', 1, 'm', 2, '/test/Example');
