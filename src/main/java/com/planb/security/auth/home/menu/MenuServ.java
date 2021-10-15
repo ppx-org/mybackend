@@ -1,4 +1,4 @@
-package com.planb.security.auth.home;
+package com.planb.security.auth.home.menu;
 
 import java.util.ArrayList;
 import java.util.HashMap;

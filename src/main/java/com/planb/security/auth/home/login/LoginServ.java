@@ -1,14 +1,14 @@
-package com.planb.security.auth.login;
+package com.planb.security.auth.home.login;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.controller.Context;
+import com.planb.common.util.PasswordUtils;
 import com.planb.security.cache.AuthCacheService;
 import com.planb.security.jwt.JwtTokenUtils;
 import com.planb.security.user.SecurityUserDetails;
@@ -33,7 +33,7 @@ public class LoginServ {
     	if (u.getEnable() == false) {
     		return Context.setException(ExceptionEnum.BUSINESS_EXCEPTION, "该用户被禁止");
     	}
-    	boolean matches = new BCryptPasswordEncoder().matches(password, u.getPassword());
+    	boolean matches = PasswordUtils.match(password, u.getPassword());
     	if (matches == false) {
     		return Context.setException(ExceptionEnum.BUSINESS_EXCEPTION, content);
     	}

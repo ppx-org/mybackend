@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.planb.common.controller.Context;
-import com.planb.security.auth.home.Menu;
+import com.planb.security.auth.home.menu.Menu;
 
 @Service
 public class ResServ {

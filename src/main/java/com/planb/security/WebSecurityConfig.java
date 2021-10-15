@@ -28,7 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-    		.and().authorizeRequests().antMatchers("/", "/security/login/login", "/test/testapi/**", "/static/**").permitAll()
+    		.and().authorizeRequests().antMatchers("/", "/security/home/login", "/test/testapi/**", "/static/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

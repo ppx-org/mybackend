@@ -12,15 +12,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.controller.Context;
 import com.planb.common.jdbc.page.Criteria;
+import com.planb.common.util.PasswordUtils;
 import com.planb.security.auth.role.Role;
+import com.planb.security.cache.AuthCacheService;
 
 @Service
 public class UserServ {
 	
 	@Autowired
 	UserRepo repo;
+	
+	@Autowired
+	AuthCacheService authCacheService;
 	
 	Page<User> page(User entity, Pageable pageable) {
 		Criteria c = Criteria.where("u.username").like(entity.getUsername());
@@ -34,16 +40,33 @@ public class UserServ {
 		Context.saveConflict(repo.save(entity), "用户名已经存在");
 	}
 	
-	@Transactional
 	void update(User entity) {
 		// 密码变量时才需要存入
 		if (!ObjectUtils.isEmpty(entity.getPassword())) {
-			String encodePassword = new BCryptPasswordEncoder(5).encode(entity.getPassword());
+			String encodePassword = PasswordUtils.encode(entity.getPassword());
 			entity.setPassword(encodePassword);
 		}
 		entity.setUpdate();
 		Context.saveConflict(repo.save(entity), "用户名已经存在");
 	}
+	
+	public void updatePassword(String oldPassword, String newPassword) {
+		Integer userId = Context.getUser().getUserId();
+		String dbPassword = repo.getPassword(userId);
+		boolean oldValidate = PasswordUtils.match(oldPassword, dbPassword);
+		if (!oldValidate) {
+			Context.setException(ExceptionEnum.BUSINESS_EXCEPTION, "旧密码不正确");
+			return;
+		}
+		authCacheService.updateJwtValidateVersion(userId);
+		
+		User entity = new User();
+		entity.setUserId(userId);
+		entity.setPassword(PasswordUtils.encode(newPassword));
+		entity.setUpdate();
+		repo.save(entity);
+	}
+	
 	
 	void disable(Integer userId) {
 		User entity = new User();

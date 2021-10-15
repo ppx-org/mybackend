@@ -1,4 +1,4 @@
-package com.planb.security.auth.login;
+package com.planb.security.auth.home.login;
 
 import org.springframework.data.annotation.Id;
 

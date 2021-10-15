@@ -12,7 +12,6 @@ public enum ExceptionEnum {
 	TOKEN_EXPIRED(4011, "token过期"),
 	URI_FORBIDDEN(4030, "URI禁止访问"),
 	TOKEN_FORBIDDEN(4031, "token不合法"),
-	
 	ILLEGAL_CHARACTER(4060, "非法字符，不可接受")
 	
 	

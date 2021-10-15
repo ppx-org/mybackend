@@ -34,8 +34,8 @@ public class PermissionService {
     	}
     	    	
     	// 登录后不拦截的URI
-    	var permissionUriSet = Set.of("/security/login/logout");
-    	if (permissionUriSet.contains(uri)) {
+    	var permissionUriSet = Set.of("/security/home/logout");
+    	if (permissionUriSet.contains(uri) || uri.startsWith("/security/home/")) {
     		return true;
     	}
     	

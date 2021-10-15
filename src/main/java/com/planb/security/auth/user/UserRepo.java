@@ -41,4 +41,9 @@ interface UserRepo extends PagingAndSortingRepository<User, Integer> {
 	""")
 	@Modifying
 	void userDelRole(Integer userId, Integer roleId);
+	
+	@Query("""
+			select password from auth_user where user_id = :userId
+	""")
+	String getPassword(Integer userId);
 }

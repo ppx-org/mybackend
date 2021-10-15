@@ -6,7 +6,7 @@ import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.planb.security.auth.home.Menu;
+import com.planb.security.auth.home.menu.Menu;
 
 
 interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
