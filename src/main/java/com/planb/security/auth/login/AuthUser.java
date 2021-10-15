@@ -11,6 +11,8 @@ public class AuthUser {
 	private String password;
 	
 	private Boolean enable;
+	
+	private String token;
 
 	public Integer getUserId() {
 		return userId;
@@ -43,6 +45,16 @@ public class AuthUser {
 	public void setEnable(Boolean enable) {
 		this.enable = enable;
 	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
+	
 	
 	
 }

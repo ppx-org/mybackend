@@ -22,7 +22,8 @@ public class LoginServ {
 	@Autowired
 	AuthCacheService authCacheService;
 	
-    public String login(String username, String password) {
+    public AuthUser login(String username, String password) {
+    	AuthUser user = new AuthUser();
     	Optional<AuthUser> authUserOptional = repo.getAuthUser(username);
     	final String content = "用户名或密码错误";
     	if (authUserOptional.isEmpty()) {
@@ -41,7 +42,10 @@ public class LoginServ {
     	List<Integer> roleIdList = repo.listRoleId(u.getUserId());
     	String version = repo.getJwtVersion(u.getUserId());
     	var token = JwtTokenUtils.createToken(u.getUserId(), u.getUsername(), roleIdList, version);
-    	return token;
+    	user.setToken(token);
+    	user.setUsername(authUserOptional.get().getUsername());
+    	
+    	return user;
     }
     
     public void logout() {

@@ -12,12 +12,11 @@ import com.planb.common.conf.ModuleConfig;
 @RestController
 @RequestMapping(ModuleConfig.SECURITY + "login")
 public class LoginController {
-	
 	@Autowired
 	LoginServ serv;
     
 	@PostMapping("login")
-    String login(@RequestParam(required = true)String username, @RequestParam(required = true)String password) {
+	AuthUser login(@RequestParam(required = true)String username, @RequestParam(required = true)String password) {
 		return serv.login(username, password);
 	}
 	
