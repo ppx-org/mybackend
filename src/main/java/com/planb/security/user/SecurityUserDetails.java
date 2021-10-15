@@ -32,10 +32,6 @@ public class SecurityUserDetails extends SysUser implements UserDetails {
         this.setRoleIdList(roleIdList);
         this.setAuthorities(authorities);
     }
-    
-    public static void test() {
-    	
-    }
 
     /**
      * 账户是否过期

@@ -1,4 +1,4 @@
-package com.planb.security.auth.menu;
+package com.planb.security.auth.home;
 
 public class Menu {
 	
