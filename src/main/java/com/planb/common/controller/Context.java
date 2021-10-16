@@ -7,11 +7,7 @@ import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.jdbc.Persistence;
 import com.planb.security.user.SecurityUserDetails;
 
-/**
- * 分配权限上下文
- * @author mark
- * @date 2018年6月20日
- */
+
 public class Context {
 	
 	private static ThreadLocal<Integer> responseCode = new ThreadLocal<Integer>();
