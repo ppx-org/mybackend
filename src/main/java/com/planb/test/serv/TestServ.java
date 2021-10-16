@@ -17,5 +17,6 @@ public class TestServ {
 //		rr.setExampleType("t");
 //		Example r = repo.save(rr);
 //		System.out.println("xxxxxxxxx:r:" + r.getExampleId());
+		repo.update();
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -54,6 +55,16 @@ public class CrudAspect extends DaoSupport {
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
         Class<?> returnClass = method.getReturnType();
+        
+        Query[] query = method.getAnnotationsByType(Query.class);
+        Modifying[] modifying = method.getAnnotationsByType(Modifying.class);
+        if (query.length == 1 && modifying.length == 1 ) {
+        	String sql = query[0].value().trim().toLowerCase();
+        	if ((sql.startsWith("update") || sql.startsWith("delete")) && !sql.contains("where")) {
+        		return Context.setException(ExceptionEnum.ILLEGAL_SQL, "update或delete必须包含where");
+        	}
+        }
+        
                 
         // 根据returnType分类
         Enum<?> queryType = QueryType.DEFAULT;

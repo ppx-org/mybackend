@@ -124,9 +124,9 @@ function clickTd(obj) {
 function login() {
 	localStorage.setItem(TOKEN_NAME, "");
 	var paramJson = {"username":$("#username").val(), "password":$("#username").val()};
-	axios.post([[@{/security/login/login}]], paramJson).then(res=> {
+	axios.post([[@{/security/home/login}]], paramJson).then(res=> {
 		if (res.data.code == 0) {
-			let token = res.data.content;
+			let token = res.data.content.token;
 			localStorage.setItem(TOKEN_NAME, token);
 			alert("登录成功");
 		}
@@ -213,7 +213,7 @@ a:visited {color: blue;}
 <table border="1" id="myTable" style="display: ">
 <tr>
 	<td>no intercept</td>
-	<td><a onclick="clickTd(this)" method="post" param='{"username":"test", "password":"test"}'>security/login/login</a></td>
+	<td><a onclick="clickTd(this)" method="post" param='{"username":"test", "password":"test"}'>security/home/login</a></td>
 	<td><a onclick="clickTd(this)" method="get">test/testapi/get?id=100</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100}'>test/testapi/post</a></td>
 	<td><a onclick="clickTd(this)" method="post" param='{"id":100, "name":"myname", "date":"2021-09-22", "dateTime":"2021-09-22 19:08:30"}'>test/testapi/submit</a></td>
