@@ -5,4 +5,5 @@
 rebel.xml
 org.eclipse.*
 /.settings/
+/bin/
 
