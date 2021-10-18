@@ -32,7 +32,6 @@ axios.interceptors.request.use(
 			config.data = Qs.stringify(config.data, {arrayFormat: 'repeat'})
 		}
 		
-		
 		return config;
   	},
   	err => {
@@ -138,8 +137,6 @@ function logout() {
 	})
 }
 
-
-
 function ehrTest() {
 	
 }
@@ -147,9 +144,144 @@ function ehrTest() {
 function uploadFile(file) {
 	var formData = new FormData();
 	formData.append("file", file.files[0]);
-	axios.post([[@{/file/upload/uploadImg}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
-		
+	axios.post([[@{/file/upload/uploadTestImg}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
+		alert(res.data.content);
 	})
+}
+
+
+
+
+//---------------------------断点续传---------------------------
+function setFileProgress(sliceN) {
+	$("#progressId").css("width", (sliceN + 1)/uploadTimes * 100 + "%");
+}
+var fileObject = {};
+function pointFileChange(f) {
+	uploadFile = f.files[0];
+    fileObject.file = uploadFile;
+    fileObject.fileName = uploadFile.name;
+    fileObject.fileSize = uploadFile.size;
+    fileObject.lastModified = uploadFile.lastModified;
+	$("#uploadFileName").text("文件名：" + uploadFile.name);
+	$("#uploadFileSize").text("大小：" +　uploadFile.size);
+	
+	// 重新生成一个，防失效
+	$(f).prop("outerHTML", $(f).prop("outerHTML"));
+	uploadPointFile();
+}
+
+// 断点续传(5242880=5M)
+var SLICE_LEN = 5242880;
+var uploadTimes = 0;
+function uploadPointFile() {
+	if (fileObject.file == undefined) {
+		alert("请选择文件");
+		return;
+	}
+	
+	var fileName = fileObject.fileName;
+	var times = parseInt(fileObject.fileSize / SLICE_LEN);
+	if (fileObject.fileSize % SLICE_LEN != 0) times++;
+	
+	uploadTimes = times;
+	var sliceN = 0;
+	// 切片
+	var fileSlice;	
+	// 最后一次剩余的字节
+	if (sliceN == times - 1 && fileObject.fileSize % SLICE_LEN != 0) {
+		fileSlice = fileObject.file.slice(SLICE_LEN * sliceN, SLICE_LEN * sliceN + fileObject.fileSize % SLICE_LEN);
+	}
+	else {
+		fileSlice = fileObject.file.slice(SLICE_LEN * sliceN, SLICE_LEN * sliceN + SLICE_LEN);
+	}
+	
+	$("#uploadHit").text("");
+	$("#selectFileButton").attr("disabled", true);
+	$("#selectFileButton span").text("正在上传....");
+	$("#progressId").css("width", "0%");
+	
+	uploadFileToServer(fileObject, sliceN, fileSlice,0);
+}
+
+function uploadFileToServer(f, sliceN, fileSlice,startPoint) {
+	var formData = new FormData();
+	formData.append("file", fileSlice);
+	formData.append("fileName", f.fileName);
+	formData.append("fileSize", f.fileSize);
+	formData.append("sliceLen", SLICE_LEN);
+	formData.append("sliceN", sliceN);
+	formData.append("lastModified", f.lastModified);
+	formData.append("startIndex", startPoint);
+	formData.append("jobId", "jobId");
+	
+	axios.post([[@{/file/upload/uploadPoint}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
+		json = res.data;
+		var startPoint = 0;// 起点迁移量
+		if (json.status == -1) {
+			alert("服务器异常，请稍后再试");
+			$("#selectFileButton").attr("disabled", false);
+			$("#selectFileButton span").text("[上传文件]");
+			return;
+		}
+		else if (json.status == -2) {
+			alert("文件内容不能空");
+			$("#selectFileButton").attr("disabled", false);
+			$("#selectFileButton span").text("[上传文件]");
+			return;
+		}
+		else if (json.status == 1) {
+			$("#progressId").css("width", "100%");
+			$("#uploadHit").text("上传成功，文件已经存在");
+			$("#selectFileButton").attr("disabled", false);
+			$("#selectFileButton span").text("[上传文件]");
+			
+			successCallback(json);
+			return;
+		}
+		else if (json.status == 2) {
+			if(json.posiN && json.startPoint) {// 有返回不完整分片信息，则补完整该分片
+				// 服务器已经存在文件部分，断点续传
+				sliceN = json.posiN;
+				startPoint = json.posiN;// 不完整分片已录长度作为起点迁移量
+			} else {
+				alert("文件出现异常，不能再续传，请修改文件名称，重新上传");
+				$("#selectFileButton").attr("disabled", false);
+				$("#selectFileButton span").text("[上传文件]");
+				return;
+			}
+		}
+		else if (json.status == 3) {
+			// 服务器已经存在文件部分，断点续传
+			sliceN = json.posiN;
+		}
+		
+		setFileProgress(sliceN);
+		sliceN++;
+		if (sliceN < uploadTimes) {
+			// 切片
+			var fileSlice;	
+			// 最后一次剩余的字节
+			if (sliceN == uploadTimes - 1 && fileObject.fileSize % SLICE_LEN != 0) {
+				fileSlice = fileObject.file.slice(SLICE_LEN * sliceN + startPoint, SLICE_LEN * sliceN + fileObject.fileSize % SLICE_LEN);
+			}
+			else {
+				fileSlice = fileObject.file.slice(SLICE_LEN * sliceN + startPoint, SLICE_LEN * sliceN + SLICE_LEN);
+			}
+			uploadFileToServer(fileObject, sliceN, fileSlice,startPoint);
+		}
+		else {
+			$("#uploadHit").text("上传完成");
+			$("#selectFileButton").attr("disabled", false);
+			$("#selectFileButton span").text("[上传文件]");
+			successCallback(json);
+		}
+	})
+}
+
+function successCallback(r) {
+	$("#originalFilename").text(fileObject.name);
+	$("#uploadPath").val(r.result);
 }
 
 </script>
@@ -170,14 +302,23 @@ a:visited {color: blue;}
 	<button type="button" onclick="logout()">logout</button>
 </div>
 
-
-
 <div style="margin-top:10px">
 	<textarea id="result" rows="9" style="width:1024px;" wrap="off"></textarea>]
-	
-	<input type="file" onchange="uploadFile(this)">
 </div>
 
+<div><input type="file" onchange="uploadFile(this)"></div>
+
+<div> 
+	<button type="button" id="selectFileButton" onclick="$(this).next().click()" style="border:0px;color:blue;background-color: white;">
+		<span>[上传文件]</span>
+	</button>
+	<input id="addFile" type="file" onchange="pointFileChange(this)" style="display:none;" accept=".zip">
+	<span id="originalFilename">&nbsp;</span>
+	<span id="uploadHit"></span>
+</div>
+<div class="progress" style="border: 1px solid red;width:500px">
+	<div id="progressId" style="border: 1px solid blue; width:30%;"></div>
+</div>
 
 
 </body>
