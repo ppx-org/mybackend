@@ -8,5 +8,7 @@ public class ModuleConfig {
 	
 	public final static String SECURITY = "/security/";
 	
+	public final static String FILE = "/file/";
+	
 	
 }

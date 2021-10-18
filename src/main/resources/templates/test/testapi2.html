@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title></title>
+<script type="text/javascript" th:src="@{/static/axios/axios.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/zepto/zepto.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/qs.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+let TOKEN_NAME = "my_auth_token";
+let inReq = false;
+
+function resetReq() {
+	$("#reqButton").removeAttr("disabled");
+	$("#reqButton").text("send");
+	inReq = false;
+}
+
+$(function(){ 
+	$("#token").val(localStorage.getItem(TOKEN_NAME));
+})
+
+// axios config
+axios.interceptors.request.use(
+	config => {
+		let token = localStorage.getItem(TOKEN_NAME);
+		if (token) {
+	      config.headers.Authorization = "Bearer " + token;
+	    }
+		
+		if (config.headers["Content-Type"] !== "multipart/form-data") {
+			config.data = Qs.stringify(config.data, {arrayFormat: 'repeat'})
+		}
+		
+		
+		return config;
+  	},
+  	err => {
+		return Promise.reject(err);
+  	}
+);
+axios.interceptors.response.use(
+	response => {
+		if (response.headers.authorization) {
+			let token = response.headers.authorization;
+			localStorage.setItem(TOKEN_NAME, token);
+			$("#token").val(token);
+		}
+		return response;
+	},
+	error => {
+		// 统一异常处理
+		$("#result").css("color", "red");
+		console.log(error);
+		if (error.isAxiosError && error.message == "Network Error") {
+			$("#result").val("网络异常,URL:" + error.config.url);
+		}
+		else {
+			let data = JSON.stringify(error.response.data);
+			$("#result").val(error + "\n" + data);
+		}
+		return Promise.reject(error);
+	}
+);
+
+function send() {
+	if (inReq) {
+		alert("请求中...")
+		return;
+	}
+	inReq = true;
+	$("#result").val("");
+	$("#result").css("color", "");
+	$("#reqButton").attr("disabled", true);
+	$("#reqButton").text("......");
+	$("#spend").text("");
+	
+	const url = [[@{/}]] + $("#url").val();
+	const t_begin = new Date().getTime();
+	const method = $("#post").prop("checked") ? "post" : "get";
+	let param = "";
+	if ($.trim($("#param").val()) != "") {
+		try {
+			let paramJson = JSON.parse($("#param").val());
+			// param = Qs.stringify(paramJson);
+			param = paramJson;
+			$("#param").val(JSON.stringify(paramJson, null, 4))
+		}
+		catch(e) {
+			alert("JSON参数出错:" + e);
+			resetReq();
+			return;
+		}
+	}
+	let axiosParam = {method:method, url:url, data:param};
+	if (method == "get") {
+		var params = $.trim($("#param").val()) == "" ? {} : JSON.parse($("#param").val());
+		axiosParam = {method:method, url:url, params:params};
+	}
+	axios(axiosParam).then(function(response) {
+		console.log(response);
+		$("#result").val(JSON.stringify(response.data, null, 4));
+	}).catch(function(error) {
+		// 由axios.interceptors.response.use处理
+	}).finally(()=>{
+		$("#spend").text(new Date().getTime() - t_begin);
+		resetReq();
+	})
+}
+
+
+
+function login() {
+	localStorage.setItem(TOKEN_NAME, "");
+	var paramJson = {"username":$("#username").val(), "password":$("#username").val()};
+	axios.post([[@{/security/home/login}]], paramJson).then(res=> {
+		if (res.data.code == 0) {
+			let token = res.data.content.token;
+			localStorage.setItem(TOKEN_NAME, token);
+			alert("登录成功");
+		}
+		else {
+			alert(res.data.content);
+		}
+	})
+}
+
+function logout() {
+	axios.post([[@{/security/home/logout}]]).then(res=> {
+		if (res.data.code == 0) {
+			let token = res.data.content;
+			localStorage.setItem(TOKEN_NAME, "");
+			alert("退出成功");
+		}
+		else {
+			alert(res.data.content);
+		}
+	})
+}
+
+
+
+function ehrTest() {
+	
+}
+
+function uploadFile(file) {
+	var formData = new FormData();
+	formData.append("file", file.files[0]);
+	axios.post([[@{/file/upload/uploadImg}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
+		
+	})
+}
+
+</script>
+<style type="text/css">
+a:visited {color: blue;}
+#myTable a {text-decoration: underline; color: blue; cursor: pointer;}
+</style>
+</head>
+
+<body>
+
+<button type="button" onclick="ehrTest()" style="width:200px">EHR测试</button>
+
+<div>
+	<input type="text" id="username" placeholder="用户名" value="test" style="width:80px">
+	<input type="text" id="password" placeholder="密码" value="test" style="width:80px">
+	<button type="button" onclick="login()">login</button>
+	<button type="button" onclick="logout()">logout</button>
+</div>
+
+
+
+<div style="margin-top:10px">
+	<textarea id="result" rows="9" style="width:1024px;" wrap="off"></textarea>]
+	
+	<input type="file" onchange="uploadFile(this)">
+</div>
+
+
+
+</body>
+</html>
+

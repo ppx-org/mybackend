@@ -137,7 +137,7 @@ function login() {
 }
 
 function logout() {
-	axios.post([[@{/security/login/logout}]]).then(res=> {
+	axios.post([[@{/security/home/logout}]]).then(res=> {
 		if (res.data.code == 0) {
 			let token = res.data.content;
 			localStorage.setItem(TOKEN_NAME, "");

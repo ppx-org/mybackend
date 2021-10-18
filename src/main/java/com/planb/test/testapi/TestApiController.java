@@ -23,6 +23,12 @@ public class TestApiController {
     	ModelAndView mv = new ModelAndView("test/testapi");
     	return mv;
     }
+	
+	@GetMapping("home2")
+    ModelAndView home2() {
+    	ModelAndView mv = new ModelAndView("test/testapi2");
+    	return mv;
+    }
     
     @GetMapping("get") @ResponseBody
     String get(Integer id) {
