@@ -3,16 +3,11 @@ package com.planb.file.upload;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.DigestUtils;
@@ -25,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.conf.ModuleConfig;
 import com.planb.common.controller.Context;
-import com.planb.common.util.StrUtils;
 
 @RestController
 @RequestMapping(ModuleConfig.FILE + "upload")
@@ -35,7 +29,7 @@ public class UploadPointController extends UploadConfig {
 	
 	
 	@PostMapping("uploadPoint")
-	public Map<String, Object> uploadPointFastFile(HttpServletRequest request, @RequestParam("file") MultipartFile file, 
+	public Point uploadPointFastFile(HttpServletRequest request, @RequestParam("file") MultipartFile file, 
 			@RequestParam String fileName, @RequestParam long fileSize, @RequestParam long sliceLen, @RequestParam long sliceN,
 			@RequestParam long lastModified,  @RequestParam long startIndex) throws Exception {
 				
@@ -58,8 +52,6 @@ public class UploadPointController extends UploadConfig {
 			pathFile.mkdirs();
 		}
 		
-		Map<String, Object> returnMap = new HashMap<String, Object>();
-		
 		String tempFileName = DigestUtils.md5DigestAsHex((fileName + fileSize + lastModified).getBytes()) + "." + suffix;
 		File tempFile = new File(filePath + tempFileName);
 		
@@ -68,20 +60,18 @@ public class UploadPointController extends UploadConfig {
 			long fSize = tempFile.length();
 			// 文件已经存在
 			if (fSize >= fileSize) {
-				returnMap.put("status", "exist");
-				returnMap.put("result", tempFileName);
-				return returnMap;
+				return new Point("exist", tempFileName);
 			}
 
 			// 文件出异常，不能再续传，请重新上传，startIndex大于0说明已进入过该判断，跳过，补充完整分片内容
 			if (fSize % sliceLen != 0 && startIndex <= 0) {
-				returnMap.put("status", "fileError");
 				// 存着分片未完整保存，先把分片补完整
 				long posiN = fSize / sliceLen;
 				long startPoint = fSize % sliceLen;
-				returnMap.put("posiN", posiN - 1);// 前一个完整分片序列
-				returnMap.put("startPoint", startPoint);// 不完整分片已录长度
-				return returnMap;
+				Point point = new Point("fileError", null);
+				point.setPosiN(posiN - 1);// 前一个完整分片序列
+				point.setStartPoint(startPoint);// 不完整分片已录长度
+				return point;
 			}
 
 			// 判断是否为正确的断点续传，不正确返回继点位置
@@ -89,9 +79,9 @@ public class UploadPointController extends UploadConfig {
 			// startIndex大于0标识当前为补充完整分片内容，跳过
 			if (!ok && startIndex <= 0) {
 				long posiN = fSize / sliceLen;
-				returnMap.put("status", "partContinue");
-				returnMap.put("posiN", posiN - 1);
-				return returnMap;
+				Point point = new Point("partContinue", null);
+				point.setPosiN(posiN - 1);
+				return point;
 			}
 
 			// 继写文件
@@ -101,14 +91,10 @@ public class UploadPointController extends UploadConfig {
 		}
 		
 		if (fileSize <= sliceLen * (sliceN + 1)) {
-			returnMap.put("status", "finish");
-			returnMap.put("result", tempFileName);
-			return returnMap;
+			return new Point("finish", tempFileName);
 		}
 		
-		returnMap.put("status", "continue");
-		returnMap.put("result", tempFileName);
-		return returnMap;
+		return new Point("continue", tempFileName);
 	}
 	
 }
