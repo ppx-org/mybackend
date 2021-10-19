@@ -59,6 +59,7 @@ public class UploadController extends UploadConfig {
 		File saveFile = new File(filePath + "/" + fileName);
 		file.transferTo(saveFile);
 		
+		
 		return uploadType + "/" + dataStr + "/" + fileName;
 	}
 	

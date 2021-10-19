@@ -98,17 +98,67 @@ function ehrTest() {
 }
 
 function uploadFile(file) {
-	var formData = new FormData();
-	formData.append("file", file.files[0]);
-	axios.post([[@{/file/upload/uploadTestImg}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
-		alert(res.data.content);
+	// compressImage(file).then(function(r) {
+		// alert(r.compressFile.size);
+		var formData = new FormData();
+		formData.append("file", file.files[0]);
+		axios.post([[@{/file/upload/uploadTestImg}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
+			alert(res.data.content);
+		})
+	// })
+}
+
+
+// 
+function compressImage(file) {
+	// 参数file,是通过input 选择本地文件获取的
+	return new Promise((resolve, reject) => {
+		const { type, name } = file.files[0]
+        let img = new Image()
+        // 创建一个reader实例
+        let reader = new FileReader()
+
+        // 读取拿到的文件
+        reader.readAsDataURL(file.files[0])
+        reader.onload = function(e) {
+			// 文件加载成功后去转成Img对象，为了拿到图片的原始宽高
+          	img.src = e.target.result
+          	img.onload = function() {
+	            // 创建画布canvas
+	            let canvas = document.createElement('canvas')
+	            let content = canvas.getContext('2d')
+	
+	            // 设置画布的宽高
+	            canvas.width = img.width  // 需要压缩到的图片宽度
+	            canvas.height = img.width * (img.height / img.width)
+	
+	            // 将图片画在画布上
+	            content.drawImage(img, 0, 0, canvas.width, canvas.height)
+	
+	            //画布转成blob格式的图片
+	            canvas.toBlob(function(blob) {
+	              // blob 格式的图片 转成file对象，这里主要看接口支不支持blob格式的文件上传，如果支持就没有必要转
+	              let file = new File([blob], name, { type: type })
+	              resolve({type: type, compressFile: file})
+	            }, `image/${type.split('/')[1]}`, 0.5)  // 0.7 是文件压缩程度
+			}
+		}
 	})
 }
 
 
 
 
-//---------------------------断点续传---------------------------
+
+
+
+
+
+
+
+
+// --------------------------- 断点续传 begin ---------------------------
+
 function setFileProgress(sliceN) {
 	$("#progressId").css("width", (sliceN + 1)/uploadTimes * 100 + "%");
 }
@@ -226,6 +276,9 @@ function successCallback(ret) {
 	$("#originalFilename").text(ret.result);
 }
 
+//--------------------------- 断点续传 end ---------------------------
+
+
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -248,7 +301,7 @@ a:visited {color: blue;}
 	<textarea id="result" rows="9" style="width:1024px;" wrap="off"></textarea>]
 </div>
 
-<div><input type="file" onchange="uploadFile(this)"></div>
+<div><input type="file" onchange="uploadFile(this)" accept=".jpg"></div>
 
 <br>
 <div> 
