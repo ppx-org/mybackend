@@ -12,6 +12,7 @@ public class ControllerInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
+		
 		Context.getResponseCode().set(0);
 		Context.getResponseMsg().set("OK");
 		Context.getResponseContent().set(null);

@@ -6,6 +6,8 @@ public enum ExceptionEnum {
 	
 	SYSYTEM_ERROR(5000, "系统异常"),
 	ILLEGAL_SQL(5001, "不合法的SQL"),
+	LIMIT_REQ(5030, "流量限制"),
+	LIMIT_ACTION(5031, "变更限制"),
 	
 	BUSINESS_EXCEPTION(4000, "业务异常"),
 	NOT_FOUND(4040, "找不到资源路径"),

@@ -134,6 +134,20 @@ from auth_user_role where user_id = 2)
 					return;
 				}
 				
+				boolean limitActionPermission = permissionService.limitActionPermission(request, userId);
+				if (limitActionPermission == false) {
+					request.setAttribute(ExceptionEnum.ERROR_CODE, ExceptionEnum.LIMIT_ACTION);
+					chain.doFilter(request, response);
+					return;
+				}
+				
+				boolean limitReqPermission = permissionService.limitReqPermission(request, userId);
+				if (limitReqPermission == false) {
+					request.setAttribute(ExceptionEnum.ERROR_CODE, ExceptionEnum.LIMIT_REQ);
+					chain.doFilter(request, response);
+					return;
+				}
+				
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				SecurityContextHolder.getContext().setAuthentication(authentication);

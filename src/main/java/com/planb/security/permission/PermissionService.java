@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,5 +93,16 @@ public class PermissionService {
     }
     
     
+    public boolean limitActionPermission(HttpServletRequest request, Integer userId) {
+    	
+    	
+    	return false;
+    }
+    
+    public boolean limitReqPermission(HttpServletRequest request, Integer userId) {
+    	
+    	return true;
+    }
+
 
 }

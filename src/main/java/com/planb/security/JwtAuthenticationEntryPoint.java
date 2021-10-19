@@ -34,6 +34,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		else if (errorEnum == ExceptionEnum.URI_FORBIDDEN) {
 			ResponseUtils.returnJson(response, ExceptionEnum.URI_FORBIDDEN, "URI_FORBIDDEN");
 		}
+		else if (errorEnum == ExceptionEnum.LIMIT_ACTION) {
+			ResponseUtils.returnJson(response, ExceptionEnum.LIMIT_ACTION, "LIMIT_ACTION");
+		}
+		else if (errorEnum == ExceptionEnum.LIMIT_REQ) {
+			ResponseUtils.returnJson(response, ExceptionEnum.LIMIT_REQ, "LIMIT_REQ");
+		}
 		else {
 			ResponseUtils.returnJson(response, ExceptionEnum.UNAUTHORIZED, "UNAUTHORIZED");
 		}
