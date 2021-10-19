@@ -123,12 +123,12 @@ function pointFileChange(f) {
 	$("#uploadFileSize").text("大小：" +　uploadFile.size);
 	
 	// 重新生成一个，防失效
-	$(f).attr("outerHTML", $(f).prop("outerHTML"));
+	$(f).attr("outerHTML", $(f).attr("outerHTML"));
 	uploadPointFile();
 }
 
 // 断点续传(5242880=5M)
-var SLICE_LEN = 200*1024;
+var SLICE_LEN = 5*1024;
 var uploadTimes = 0;
 function uploadPointFile() {
 	if (fileObject.file == undefined) {
@@ -145,7 +145,7 @@ function uploadPointFile() {
 	// 切片
 	var fileSlice;	
 	// 最后一次剩余的字节
-	if (sliceN == times - 1 && fileObject.fileSize % SLICE_LEN != 0) {
+	if (sliceN === times - 1 && fileObject.fileSize % SLICE_LEN != 0) {
 		fileSlice = fileObject.file.slice(SLICE_LEN * sliceN, SLICE_LEN * sliceN + fileObject.fileSize % SLICE_LEN);
 	}
 	else {
@@ -171,40 +171,28 @@ function uploadFileToServer(f, sliceN, fileSlice,startPoint) {
 	formData.append("startIndex", startPoint);
 	
 	axios.post([[@{/file/upload/uploadPoint}]], formData, {headers:{"Content-Type": "multipart/form-data"}}).then(res=> {
-		json = res.data;
-		json.status = res.data.content.status;
+		var ret = res.data.content;
 		
 		var startPoint = 0;// 起点迁移量
-		if (json.status == -1) {
-			alert("服务器异常，请稍后再试");
-			$("#selectFileButton").attr("disabled", false);
-			$("#selectFileButton span").text("[上传文件]");
-			return;
-		}
-		else if (json.status == 'exist') {
+		if (ret.status === 'exist') {
 			$("#progressId").css("width", "100%");
-			$("#uploadHit").text("上传成功，文件已经存在");
-			$("#selectFileButton").removeAttr("disabled");
-			$("#selectFileButton span").text("[上传文件]");
-			
-			successCallback(json);
+			restoreUpload("上传成功，文件已经存在");
+			successCallback(ret);
 			return;
 		}
-		else if (json.status == 2) {
-			if(json.posiN && json.startPoint) {// 有返回不完整分片信息，则补完整该分片
+		else if (ret.status === 'fileError') {
+			if(ret.posiN && ret.startPoint) {// 有返回不完整分片信息，则补完整该分片
 				// 服务器已经存在文件部分，断点续传
-				sliceN = json.posiN;
-				startPoint = json.posiN;// 不完整分片已录长度作为起点迁移量
+				sliceN = ret.posiN;
+				startPoint = ret.posiN;// 不完整分片已录长度作为起点迁移量
 			} else {
-				alert("文件出现异常，不能再续传，请修改文件名称，重新上传");
-				$("#selectFileButton").attr("disabled", false);
-				$("#selectFileButton span").text("[上传文件]");
+				restoreUpload("文件出现异常，不能再续传，请修改文件名称，重新上传");
 				return;
 			}
 		}
-		else if (json.status == 3) {
+		else if (ret.status === 'partContinue') {
 			// 服务器已经存在文件部分，断点续传
-			sliceN = json.posiN;
+			sliceN = ret.posiN;
 		}
 		
 		setFileProgress(sliceN);
@@ -213,26 +201,29 @@ function uploadFileToServer(f, sliceN, fileSlice,startPoint) {
 			// 切片
 			var fileSlice;	
 			// 最后一次剩余的字节
-			if (sliceN == uploadTimes - 1 && fileObject.fileSize % SLICE_LEN != 0) {
+			if (sliceN === uploadTimes - 1 && fileObject.fileSize % SLICE_LEN !== 0) {
 				fileSlice = fileObject.file.slice(SLICE_LEN * sliceN + startPoint, SLICE_LEN * sliceN + fileObject.fileSize % SLICE_LEN);
 			}
 			else {
 				fileSlice = fileObject.file.slice(SLICE_LEN * sliceN + startPoint, SLICE_LEN * sliceN + SLICE_LEN);
 			}
-			uploadFileToServer(fileObject, sliceN, fileSlice,startPoint);
+			uploadFileToServer(fileObject, sliceN, fileSlice, startPoint);
 		}
 		else {
-			$("#uploadHit").text("上传完成");
-			$("#selectFileButton").attr("disabled", false);
-			$("#selectFileButton span").text("[上传文件]");
-			successCallback(json);
+			restoreUpload("上传完成");
+			successCallback(ret);
 		}
 	})
 }
 
-function successCallback(r) {
-	$("#originalFilename").text(r.content.result);
-	$("#uploadPath").val(r.content.result);
+function restoreUpload(msg) {
+	$("#uploadHit").text(msg);
+	$("#selectFileButton").removeAttr("disabled", false);
+	$("#selectFileButton span").text("[上传文件]");
+}
+
+function successCallback(ret) {
+	$("#originalFilename").text(ret.result);
 }
 
 </script>
@@ -268,7 +259,7 @@ a:visited {color: blue;}
 	<span id="originalFilename">&nbsp;</span>
 	<span id="uploadHit"></span>
 </div>
-<div class="progress" style="border: 1px solid gray;width:500px;height:6px">
+<div class="progress" style="border: 1px solid gray;width:600px;height:6px">
 	<div id="progressId" style="border: 1px solid white; width:0%;height:4px;background-color: blue"></div>
 </div>
 

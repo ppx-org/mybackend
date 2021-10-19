@@ -21,19 +21,14 @@ import com.planb.common.util.StrUtils;
 
 @RestController
 @RequestMapping(ModuleConfig.FILE + "upload")
-public class UploadController {
-	
-	private String TEST_IMG_PAHT = "test_img"; 
-	
-	private String DATE_FORMAT =  "yyyyMMdd";
+public class UploadController extends UploadConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 	
 	@PostMapping("uploadTestImg")
 	public String uploadTestImg(@RequestParam("file") MultipartFile file) throws Exception {
-		return upload(TEST_IMG_PAHT, file);
+		return upload(TYPE_TEST_IMG, file);
 	}
-
 
 	private String upload(String uploadType, @RequestParam(value="file", required=true) MultipartFile file) throws Exception {
 		
@@ -51,7 +46,6 @@ public class UploadController {
 		fileName = fileName + "." + suffix;
 		
 		String dataStr = LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-		String UPLOAD_PATH = "D:/tmp/uploadfile/";
 		if (!new File(UPLOAD_PATH).exists()) {
 			String msg = "没有找到上传路径:" + UPLOAD_PATH + "，请检查配置";
 			logger.error(msg);
@@ -67,11 +61,6 @@ public class UploadController {
 		file.transferTo(saveFile);
 		
 		return uploadType + "/" + dataStr + "/" + fileName;
-	}
-	
-	public static void main(String[] args) {
-		String passwordMd5 = DigestUtils.md5DigestAsHex("abc3fg".getBytes());
-		System.out.println("xxxxxxxxxx001:" + passwordMd5);
 	}
 	
 }
