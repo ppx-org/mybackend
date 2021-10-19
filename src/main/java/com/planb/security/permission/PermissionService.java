@@ -1,9 +1,13 @@
 package com.planb.security.permission;
 
+import java.time.LocalDateTime;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -94,12 +98,33 @@ public class PermissionService {
     
     
     public boolean limitActionPermission(HttpServletRequest request, Integer userId) {
-    	
-    	
-    	return false;
+//    	if ("POST".equals(request.getMethod())) {
+//    		return false;
+//    	}
+    	return true;
     }
     
+    private static Map<Integer, LimitReq> userIdLimitReq = new HashMap<Integer, LimitReq>();
+//    private static Map<Integer, Long> userIdBeginTime = new HashMap<Integer, Long>();
+    
+    
     public boolean limitReqPermission(HttpServletRequest request, Integer userId) {
+    	
+//    	LimitReq limitReq = userIdLimitReq.get(userId);
+//    	if (limitReq == null) {
+//    		userIdLimitReq.put(userId, new LimitReq());
+//    	}
+//    	else {
+//    		if (TimeUnit.SECONDS.convert(System.nanoTime() - limitReq.getBeginTime(), TimeUnit.NANOSECONDS) >= 10) {
+//    			userIdLimitReq.put(userId, new LimitReq());
+//    			if (limitReq.getTimes().get() >= 3) {
+//    				// 修改数据库和redis
+//    				System.out.println("xxxxxxxERROR:limitReqPermission");
+//    				return false;
+//    			}
+//    		}
+//    		limitReq.getTimes().getAndIncrement();
+//    	}
     	
     	return true;
     }
