@@ -17,7 +17,7 @@ public class MobExampleServ {
 	
 	public MobPage<MobExample> page(MobExample entity, Pageable pageable) {
 		Criteria c = Criteria.where("e.example_title").like(entity.getExampleTitle());
-		c.setDefaultSort(Sort.by(Direction.DESC, "e.example_id"));		
+		c.setDefaultSort(Sort.by(Direction.DESC, "e.example_id"));
 		return repo.page(c, pageable);
 	}
 	
