@@ -10,5 +10,7 @@ public class ModuleConfig {
 	
 	public final static String FILE = "/file/";
 	
+
+	public final static String MOBILE = "/mobile/";
 	
 }
