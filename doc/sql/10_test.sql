@@ -24,3 +24,18 @@ create table test_example_sub (
 );
 comment on table test_example_sub is 'test_example_sub';
 
+
+-- >>> mobile
+create table mob_example (
+	example_id serial not null,
+    example_title varchar(16) not null,
+    example_price money not null,
+    example_main_img varchar(128) not null, 
+	primary key(example_id),
+    unique(example_title)
+)
+
+
+
+
+
