@@ -23,7 +23,7 @@ interface ResRepo extends PagingAndSortingRepository<Res, Integer> {
 	Res get(Integer id);
 	
 	@Query("""
-			select max(res_sort) from auth_res where res_parent_id = :resParentId
+			select COALESCE(max(res_sort), 1) from auth_res where res_parent_id = :resParentId
 			""")
 	int getMaxSort(Integer resParentId);
 	
