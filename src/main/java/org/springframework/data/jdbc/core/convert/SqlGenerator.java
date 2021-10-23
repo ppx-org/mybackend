@@ -603,8 +603,8 @@ class SqlGenerator {
 		return render(createBaseUpdate().build());
 	}
 	
-	public String createUpdateSqlNew(SqlIdentifierParameterSource parameterSource) {
-		String sql = render(createBaseUpdateNew(parameterSource).build());
+	public String createUpdateSqlNew(SqlIdentifierParameterSource parameterSource, Set<String> idSet) {
+		String sql = render(createBaseUpdateNew(parameterSource, idSet).build());
 		return sql;
 	}
 
@@ -618,12 +618,12 @@ class SqlGenerator {
 	}
 	
 	// dengxz 新增去掉null
-	private UpdateBuilder.UpdateWhereAndOr createBaseUpdateNew(SqlIdentifierParameterSource parameterSource) {
+	private UpdateBuilder.UpdateWhereAndOr createBaseUpdateNew(SqlIdentifierParameterSource parameterSource, Set<String> idSet) {
 		Table table = getTable();		
 		
 		Set<SqlIdentifier> mySet = new HashSet<SqlIdentifier>();
 		columns.getUpdateableColumns().forEach(o -> {
-			if (parameterSource.getValue(o.getReference()) != null) {
+			if (!idSet.contains(o.getReference()) && parameterSource.getValue(o.getReference()) != null) {
 				mySet.add(o);
 			}
 		});

@@ -158,7 +158,6 @@ public class CrudAspect extends DaoSupport {
         	if (!orderList.isEmpty()) {
         		querySql = querySql + "order by " + StringUtils.collectionToCommaDelimitedString(orderList);
         	}
-        	System.out.println("xxxxxxxxxxeeee:" + pageable.getPageSize());
         	querySql = querySql + " LIMIT " + pageable.getPageSize() + " OFFSET " + pageable.getOffset();        	
     		
     		Class<?> returnTypeClass = (Class<?>) ((ParameterizedType)method.getGenericReturnType()).getActualTypeArguments()[0];

@@ -29,12 +29,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jdbc.support.JdbcUtil;
@@ -142,7 +144,9 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 				String conflictVal = StringUtils.collectionToCommaDelimitedString(conflictColList);
 				insertSql += " on conflict (" + conflictVal + ") do nothing";
 			}
-			Object returnObj = executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
+			// Object returnObj = executeInsertAndReturnGeneratedId(domainType, persistentEntity, parameterSource, insertSql);
+			Object returnObj = executeInsertAndReturnEffect(domainType, persistentEntity, parameterSource, insertSql);
+			
 			if (returnObj == null) {
 				return 0;
 			}
@@ -175,6 +179,27 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 
 		return getIdFromHolder(holder, persistentEntity);
 	}
+	
+	// dengxz
+	@Nullable
+	private <T> Object executeInsertAndReturnEffect(Class<T> domainType, RelationalPersistentEntity<T> persistentEntity, SqlIdentifierParameterSource parameterSource, String insertSql) {
+
+		KeyHolder holder = new GeneratedKeyHolder();
+
+		IdGeneration idGeneration = sqlGeneratorSource.getDialect().getIdGeneration();
+
+		if (idGeneration.driverRequiresKeyColumnNames()) {
+
+			String[] keyColumnNames = getKeyColumnNames(domainType);
+			if (keyColumnNames.length == 0) {
+				 return operations.update(insertSql, parameterSource, holder);
+			} else {
+				return operations.update(insertSql, parameterSource, holder, keyColumnNames);
+			}
+		} else {
+			return operations.update(insertSql, parameterSource, holder);
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -185,14 +210,35 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 		RelationalPersistentEntity<S> persistentEntity = getRequiredPersistentEntity(domainType);
 		SqlIdentifierParameterSource parameterSource = getParameterSource(instance, persistentEntity, "", Predicates.includeAll(), getIdentifierProcessing());
 		
+		// dengxz
+		Id id = persistentEntity.getIdProperty().getRequiredAnnotation(Id.class);
 		Conflict conflict = persistentEntity.getType().getAnnotation(Conflict.class);
-		String updateSql = sql(domainType).createUpdateSqlNew(parameterSource);
+		boolean isCompositePk = (id.value().length != 1);
 		
-		// dengxz 判断是否使用conflict
+		String updateSql = "";
+		if (isCompositePk) {
+			Set<String> idSet = new HashSet<String>();
+			List<String> idColList = new ArrayList<String>();
+			for (int i = 0; i < id.value().length; i++) {
+				String idColumnName = StrUtils.underscoreName(id.value()[i]);
+				idSet.add(idColumnName);
+				idColList.add(idColumnName + " = :" + idColumnName);
+			}
+			updateSql = sql(domainType).createUpdateSqlNew(parameterSource, idSet);
+			
+			String[] sqlItem = updateSql.split(" WHERE ");
+			updateSql = sqlItem[0] + " WHERE " + StringUtils.collectionToDelimitedString(idColList, " AND ");
+		}
+		else {
+			updateSql = sql(domainType).createUpdateSqlNew(parameterSource, Set.of());
+		}
+		
+		// dengxz 判断是否使用conflict，复合主键更新不使用, conflict值为空不使用
 		boolean userConflict = false;
-		if (conflict != null && parameterSource.getValue(conflict.value()[0]) != null) {
+		if (!isCompositePk && conflict != null && parameterSource.getValue(conflict.value()[0]) != null) {
 			userConflict = true;
-		}		
+		}
+		
 		// dengxz 唯一值重复返回0
 		if (userConflict) {
 			String idColumnName = StrUtils.underscoreName(persistentEntity.getIdProperty().getName());
@@ -204,7 +250,6 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 			updateSql = updateSql + " AND NOT EXISTS (SELECT 1 FROM " + persistentEntity.getTableName() 
 				+ " WHERE " + conflictSql + " AND " + idColumnName + " != :" + idColumnName + ")";
 		}
-		
 		boolean b = operations.update(updateSql, parameterSource) != 0;
 		if (userConflict && b == false) {
 			try {
@@ -217,6 +262,16 @@ public class DefaultDataAccessStrategy implements DataAccessStrategy {
 			return true;
 		}
 		else {
+			if (isCompositePk) {
+				// 组合主键需要设置一个返回值，否则会报异常
+				try {
+					Field ff = persistentEntity.getIdProperty().getField();
+					ff.setAccessible(true);
+					ff.set(instance, 1);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
 			return b;
 		}	
 	}

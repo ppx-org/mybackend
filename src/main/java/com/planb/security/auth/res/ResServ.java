@@ -112,7 +112,6 @@ public class ResServ {
 	@Transactional
 	void del(Integer id) {
 		List<Integer> resIdList = repo.listResAndChildren(id);
-		System.out.println("xxxresIdList:" + resIdList);
 		repo.delResUriByRes(resIdList);
 		repo.delRoleResByRes(resIdList);
 		repo.delResAndChildren(resIdList);

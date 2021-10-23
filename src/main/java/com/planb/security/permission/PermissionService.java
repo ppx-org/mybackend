@@ -85,8 +85,6 @@ public class PermissionService {
     		for (Integer roleId : roleIdList) {
     			if (PermissionCache.getRoleBitSet().get(roleId) != null &&
     					PermissionCache.getRoleBitSet().get(roleId).get(uriId)) {
-    				System.out.println("cccc:" + PermissionCache.getRoleBitSet().get(roleId));
-    				System.out.println(">>>>>>>>>>permission:" + roleId + "|" + checkUri);
     				logger.debug(">>> permission roleId={} url={}", roleId, checkUri);
         			return true;
         		}
@@ -119,7 +117,7 @@ public class PermissionService {
 //    			userIdLimitReq.put(userId, new LimitReq());
 //    			if (limitReq.getTimes().get() >= 3) {
 //    				// 修改数据库和redis
-//    				System.out.println("xxxxxxxERROR:limitReqPermission");
+//    				logger.info("xxxxxxxERROR:limitReqPermission");
 //    				return false;
 //    			}
 //    		}
