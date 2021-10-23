@@ -21,13 +21,16 @@ $(function(){
 })
 
 // axios config
+axios.defaults.paramsSerializer = function(params) {return Qs.stringify(params, {arrayFormat: 'repeat'})};
 axios.interceptors.request.use(
 	config => {
 		let token = localStorage.getItem(TOKEN_NAME);
 		if (token) {
 	      config.headers.Authorization = "Bearer " + token;
 	    }
-		config.data = Qs.stringify(config.data, {arrayFormat: 'repeat'})
+		if (config.method === 'post') {
+			config.data = Qs.stringify(config.data, {arrayFormat: 'repeat'})
+		}
 		return config;
   	},
   	err => {
@@ -181,6 +184,20 @@ function ehrTest() {
 	console.log(returnObj);
 }
 
+
+var a = {
+	    "t0": "测试值0",
+	    "t1": "测试值1"
+	};
+var b = {
+    "t2": "测试值2"
+};
+
+
+
+console.log(Object.assign(a, b));
+
+
 </script>
 <style type="text/css">
 a:visited {color: blue;}
@@ -260,6 +277,9 @@ a:visited {color: blue;}
 	<td><a onclick="clickTd(this)" method="post" param='{"dictVal":"00", "dictType":"base-sex", "dictName":"女女1"}'>base/dict/update</a></td>
 </tr>
 
+<tr>
+	<td><td><a onclick="clickTd(this)" method="get" param='{"dictType":["base-sex", "base-test"]}'>security/home/listDict</a></td></td>
+</tr>
 
 
 
