@@ -27,6 +27,10 @@ public class Dict extends Persistence<Integer> {
 	private String dictVal;
 	
 	private String dictType;
+	
+	private String dictName;
+	
+	private Boolean dictEnable;
 
 	public String getDictVal() {
 		return dictVal;
@@ -44,12 +48,6 @@ public class Dict extends Persistence<Integer> {
 		this.dictType = dictType;
 	}
 	
-	
-	private String dictName;
-	
-	private Boolean dictEnable;
-
-
 	public String getDictName() {
 		return dictName;
 	}

@@ -36,14 +36,4 @@ public class DictController {
 	void update(Dict entity) {
 		serv.update(entity);
 	}
-	
-	@PostMapping("disable")
-	void disable(@RequestParam String dictVal, @RequestParam String dictType) {
-		serv.disable(dictVal, dictType);
-	}
-	
-	@PostMapping("enable")
-	void enable(@RequestParam String dictVal, @RequestParam String dictType) {
-		serv.enable(dictVal, dictType);
-	}
 }

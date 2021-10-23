@@ -31,21 +31,4 @@ public class DictServ {
     	repo.save(entity);
     }
     
-    public void disable(String dictVal, String dictType) {
-    	Dict entity = new Dict();
-    	entity.setDictVal(dictVal);
-    	entity.setDictType(dictType);
-    	entity.setDictEnable(false);
-    	entity.setUpdate();
-    	repo.save(entity);
-    }
-    
-    public void enable(String dictVal, String dictType) {
-    	Dict entity = new Dict();
-    	entity.setDictVal(dictVal);
-    	entity.setDictType(dictType);
-    	entity.setDictEnable(true);
-    	entity.setUpdate();
-    	repo.save(entity);
-    }
 }
