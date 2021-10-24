@@ -1,5 +1,7 @@
 package com.planb.test.example;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.planb.base.dict.DictServ;
 import com.planb.common.conf.ModuleConfig;
 
 @RestController
@@ -21,9 +24,13 @@ public class ExampleController {
 
 	@Autowired
 	ExampleServ serv;
+	
+	@Autowired
+	DictServ dictServ;
 
 	@GetMapping("page")
-	Page<Example> page(Example entity, Pageable pageable) {
+	Page<Example> page(Example entity, Pageable pageable, String[] dictType) {
+		pageable.setExt(dictServ.listDict(dictType));
 		return serv.page(entity, pageable);
 	}
 

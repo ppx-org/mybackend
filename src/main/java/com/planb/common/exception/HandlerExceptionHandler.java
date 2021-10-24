@@ -38,6 +38,7 @@ public class HandlerExceptionHandler implements HandlerExceptionResolver {
 			logger.error("ERROR-{}-URI:{}\n{}", t, request.getRequestURI(), exception.getMessage());
 		}
 		else {
+			exception.printStackTrace();
 			long t = ResponseUtils.returnJson(response, ExceptionEnum.SYSYTEM_ERROR, exception.getMessage());
 			logger.error("ERROR-{}-URI:{}", t, request.getRequestURI(), exception);
 		}

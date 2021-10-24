@@ -72,6 +72,8 @@ public class ResultResponseAdvice implements ResponseBodyAdvice<Object> {
 			result.setContent(page.toList());
 			result.setPageable(page.getPageable());
 			result.setTotalElements(page.getTotalElements());
+			result.setExt(page.getPageable().getExt());
+			page.getPageable().setExt(null);
 		}
 		
 		return result;

@@ -16,6 +16,8 @@ public class Response<T> {
 	
 	private Long totalElements;
 	
+	private Object ext;
+	
 	/** 异常时，返回前端并打印后台日志，方便查报错问题 */
 	private Long time;
 
@@ -72,4 +74,12 @@ public class Response<T> {
 		this.msg = eEnum.getMsg();
 	}
 
+	public Object getExt() {
+		return ext;
+	}
+
+	public void setExt(Object ext) {
+		this.ext = ext;
+	}
+	
 }

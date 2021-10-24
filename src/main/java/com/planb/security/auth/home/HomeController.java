@@ -78,7 +78,7 @@ public class HomeController {
 	
 	// spring boot 会对LinkedHashMap字典数字排序，字母不会
 	@GetMapping("listDict")
-	void listDict(@RequestParam List<String> dictType, HttpServletResponse response) {
+	void listDict(@RequestParam String[] dictType, HttpServletResponse response) {
 		try {
 			Thread.sleep(2000);
 		} catch (Exception e) {

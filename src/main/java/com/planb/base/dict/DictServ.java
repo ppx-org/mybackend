@@ -1,5 +1,6 @@
 package com.planb.base.dict;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,10 +37,15 @@ public class DictServ {
     	repo.save(entity);
     }
     
-    // 查询接口，供前端用, 
-    public Map<String, Map<String, String>> listDict(List<String> dictType) {
+    // 查询接口，供前端用 
+    public Map<String, Map<String, String>> listDict(String[] dictType) {
+    	if (dictType == null) {
+    		return null;
+    	}
+    	
+    	List<String> dictTypeList = Arrays.asList(dictType);
     	Map<String, Map<String, String>> returnMap = new HashMap<String, Map<String, String>>();
-    	List<Dict> list = repo.listDict(dictType);
+    	List<Dict> list = repo.listDict(dictTypeList);
     	for (String type : dictType) {
     		Map<String, String> dictMap = new LinkedHashMap<String, String>();
     		Map<String, String> dictMapDisable = new LinkedHashMap<String, String>();
@@ -48,10 +54,11 @@ public class DictServ {
     				dictMap.put(d.getDictVal(), d.getDictName());
     			}
     			else if (d.getDictType().equals(type) && !d.getDictEnable()) {
-    				dictMap.put(d.getDictVal(), d.getDictName());
+    				dictMapDisable.put(d.getDictVal(), d.getDictName());
     			}
 			}
-    		returnMap.put(type + "-d", dictMapDisable);
+    		// 作废的名称带Dis
+    		returnMap.put(type + "Dis", dictMapDisable);
     		returnMap.put(type, dictMap);
 		}
     	return returnMap;
