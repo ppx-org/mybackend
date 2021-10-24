@@ -18,7 +18,7 @@ interface DictRepo extends PagingAndSortingRepository<Dict, Integer> {
 	
 	
 	@Query("""
-			select * from base_dict where dict_type in (:dictType) order by dict_val desc
+			select * from base_dict where dict_type in (:dictType) order by dict_val asc
 				""")
 	List<Dict> listDict(List<String> dictType);
 }

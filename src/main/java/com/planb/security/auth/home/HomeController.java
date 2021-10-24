@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.planb.base.dict.DictServ;
+import com.planb.common.conf.ExceptionEnum;
 import com.planb.common.conf.ModuleConfig;
 import com.planb.common.controller.Context;
+import com.planb.common.util.ResponseUtils;
 import com.planb.security.auth.home.login.AuthUser;
 import com.planb.security.auth.home.login.LoginServ;
 import com.planb.security.auth.home.menu.MenuServ;
@@ -72,8 +76,16 @@ public class HomeController {
 		userServ.updatePassword(oldPassword, newPassword);
 	}
 	
+	// spring boot 会对LinkedHashMap字典数字排序，字母不会
 	@GetMapping("listDict")
-	Map<String, Map<String, String>> listDict(@RequestParam List<String> dictType) {
-		return dictServ.listDict(dictType);
+	void listDict(@RequestParam List<String> dictType, HttpServletResponse response) {
+		try {
+			Thread.sleep(2000);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		Map<String, Map<String, String>> map = dictServ.listDict(dictType);
+		ResponseUtils.returnJson(response, map);
 	}
 }

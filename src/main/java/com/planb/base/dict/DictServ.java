@@ -36,7 +36,7 @@ public class DictServ {
     	repo.save(entity);
     }
     
-    // 查询接口，供前端用
+    // 查询接口，供前端用, 
     public Map<String, Map<String, String>> listDict(List<String> dictType) {
     	Map<String, Map<String, String>> returnMap = new HashMap<String, Map<String, String>>();
     	List<Dict> list = repo.listDict(dictType);
@@ -45,10 +45,10 @@ public class DictServ {
     		Map<String, String> dictMapDisable = new LinkedHashMap<String, String>();
     		for (Dict d : list) {
     			if (d.getDictType().equals(type) && d.getDictEnable()) {
-    				dictMap.put(d.getDictName(), d.getDictVal());
+    				dictMap.put(d.getDictVal(), d.getDictName());
     			}
     			else if (d.getDictType().equals(type) && !d.getDictEnable()) {
-    				dictMapDisable.put(d.getDictName(), d.getDictVal());
+    				dictMap.put(d.getDictVal(), d.getDictName());
     			}
 			}
     		returnMap.put(type + "-d", dictMapDisable);
