@@ -11,7 +11,8 @@ DROP TABLE IF EXISTS mob_example;
 create table base_dict (
 	dict_val varchar(3) not null,
 	dict_type varchar(32) not null,
-	dict_enable boolean not null,
+	dict_name varchar(32) not null,
+	dict_enable boolean not null default true,
 	primary key(dict_val, dict_type)
 );
 comment on table base_dict is '业务数据字典';
